@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>虚拟电厂智能云平台</title>
+  <style>
+    :root {
+      --primary: #28acd6;
+      --secondary: #a323e1;
+      --dark-bg: #0f172a;
+      --glass-bg: rgba(15, 23, 42, 0.6);
+      --text-light: rgba(255, 255, 255, 0.9);
+      --text-lighter: rgba(255, 255, 255, 0.7);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, var(--dark-bg) 0%, #1e293b 100%);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 背景动画元素 */
+    .bg-elements {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.15;
+    }
+
+    .circle-1 {
+      width: 300px;
+      height: 300px;
+      background: var(--primary);
+      top: -50px;
+      left: -50px;
+      animation: float 15s ease-in-out infinite;
+    }
+
+    .circle-2 {
+      width: 400px;
+      height: 400px;
+      background: var(--secondary);
+      bottom: -100px;
+      right: -100px;
+      animation: float 18s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(30px, 50px); }
+    }
+
+    /* 毛玻璃登录卡片 */
+    .login-card {
+      position: relative;
+      z-index: 10;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: 420px;
+      max-width: 90vw;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform: translateY(0);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .login-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    /* 头部样式 */
+    .card-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 18px;
+      box-shadow: 0 4px 20px rgba(39, 172, 214, 0.4);
+    }
+
+    .logo svg {
+      width: 50%;
+      height: 50%;
+    }
+
+    .card-header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .card-header p {
+      font-size: 0.95rem;
+      color: var(--text-lighter);
+    }
+
+    /* 表单样式 */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-lighter);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: var(--text-light);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(39, 172, 214, 0.2);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* 按钮样式 */
+    .btn-login {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      margin-top: 0.5rem;
+      box-shadow: 0 4px 15px rgba(163, 35, 225, 0.3);
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(163, 35, 225, 0.4);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
+
+    /* 按钮光效 */
+    .btn-login::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+              90deg,
+              transparent,
+              rgba(255, 255, 255, 0.2),
+              transparent
+      );
+      transition: 0.5s;
+    }
+
+    .btn-login:hover::after {
+      left: 100%;
+    }
+
+    /* 底部链接 */
+    .card-footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-lighter);
+    }
+
+    .card-footer a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: all 0.3s;
+      margin: 0 0.5rem;
+    }
+
+    .card-footer a:hover {
+      color: var(--secondary);
+      text-decoration: underline;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 2rem 1.5rem;
+        border-radius: 12px;
+      }
+
+      .card-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .logo {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- 背景动画元素 -->
+<div class="bg-elements">
+  <div class="bg-circle circle-1"></div>
+  <div class="bg-circle circle-2"></div>
+</div>
+
+<!-- 毛玻璃登录卡片 -->
+<div class="login-card">
+  <div class="card-header">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white"/>
+        <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2"/>
+        <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2"/>
+      </svg>
+    </div>
+    <h1>虚拟电厂云平台</h1>
+    <p>能源数字化管理 · 智能电网调度</p>
+  </div>
+
+  <form>
+    <div class="form-group">
+      <label for="username">用户名</label>
+      <input type="text" id="username" class="form-control" placeholder="输入您的账号" required>
+    </div>
+
+    <div class="form-group">
+      <label for="password">密码</label>
+      <input type="password" id="password" class="form-control" placeholder="输入您的密码" required>
+    </div>
+
+    <button type="submit" class="btn-login">登 录 系 统</button>
+  </form>
+
+  <div class="card-footer">
+    <a href="#">注册账号</a> |
+    <a href="#">忘记密码</a> |
+    <a href="#">系统帮助</a>
+  </div>
+</div>
+
+<script>
+  // 添加微交互效果
+  document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('.form-control');
+
+    inputs.forEach(input => {
+      // 输入框聚焦效果
+      input.addEventListener('focus', function() {
+        this.parentNode.style.transform = 'translateY(-3px)';
+      });
+
+      input.addEventListener('blur', function() {
+        this.parentNode.style.transform = 'translateY(0)';
+      });
+
+      // 输入时动态效果
+      input.addEventListener('input', function() {
+        if (this.value.length > 0) {
+          this.style.boxShadow = `0 0 0 2px rgba(39, 172, 214, 0.3)`;
+        } else {
+          this.style.boxShadow = 'none';
+        }
+      });
+    });
+
+    // 随机背景元素动画
+    function createRandomElement() {
+      const element = document.createElement('div');
+      element.className = 'bg-circle';
+      element.style.width = `${100 + Math.random() * 200}px`;
+      element.style.height = element.style.width;
+      element.style.background = Math.random() > 0.5 ? 'var(--primary)' : 'var(--secondary)';
+      element.style.opacity = '0.1';
+      element.style.left = `${Math.random() * 100}%`;
+      element.style.top = `${Math.random() * 100}%`;
+      element.style.animation = `float ${15 + Math.random() * 10}s ease-in-out infinite`;
+
+      document.querySelector('.bg-elements').appendChild(element);
+
+      // 一段时间后移除
+      setTimeout(() => {
+        element.remove();
+      }, 30000);
+    }
+
+    // 定期创建新元素
+    setInterval(createRandomElement, 3000);
+
+    // 初始创建几个元素
+    for (let i = 0; i < 3; i++) {
+      createRandomElement();
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+/*
+/documentation/*
+
+# Ignore all files except those
+!/dist
+!/extensions
+
+!/documentation/dist
+!/documentation/bootstrap.mjs
+!/documentation/vite.config.mjs
+
+# Generic files
+!/LICENSE
+!/package.json
+!/README.md

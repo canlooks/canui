@@ -1,0 +1,29 @@
+# compiled output
+node_modules
+dist
+/documentation/bootstrap.mjs
+/documentation/vite.config.mjs
+package-lock.json
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

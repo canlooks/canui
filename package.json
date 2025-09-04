@@ -1,0 +1,86 @@
+{
+  "name": "@canlooks/can-ui",
+  "version": "0.0.70",
+  "author": "C.CanLiang <canlooks@gmail.com>",
+  "description": "My ui framework",
+  "license": "MIT",
+  "keywords": [
+    "ui framework"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "homepage": "https://gitee.com/canlooks/c_canui",
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/canlooks/c_canui"
+  },
+  "bugs": {
+    "url": "https://gitee.com/canlooks/c_canui/issues",
+    "email": "canlooks@gmail.com"
+  },
+  "bin": {
+    "can-ui-doc": "documentation/bootstrap.mjs"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./extensions/*": {
+      "types": "./extensions/*.d.ts",
+      "import": "./extensions/*.js",
+      "require": "./extensions/*.cjs"
+    }
+  },
+  "scripts": {
+    "clean": "npx shx rm -rf dist documentation/bootstrap.mjs documentation/vite.config.mjs",
+    "build:core": "tsc -m esnext --outDir dist/esm & tsc -m commonjs --outDir dist/cjs",
+    "build:documentation": "vite build -c documentation/vite.config.mts && tsc -p documentation/tsconfig.bootstrap.json",
+    "rebuild": "npm run clean && npm run build:core && npm run build:documentation",
+    "dev": "vite -c test/vite.config.mts",
+    "dev:documentation": "vite -c documentation/vite.config.mts --host",
+    "test:unit": "npx ts-node test/unit.ts"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@emotion/react": "^11.14.0",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@types/react-transition-group": "^4.4.12",
+    "color": "^5.0.0",
+    "dayjs": "^1.11.13",
+    "react-transition-group": "^4.4.5",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@ant-design/icons": "^6.0.0",
+    "@canlooks/react-router": "^1.0.11",
+    "@canlooks/reactive": "^4.2.5",
+    "@emotion/styled": "^11.14.0",
+    "@mdi/js": "^7.4.47",
+    "@mdi/react": "^1.6.1",
+    "@mui/icons-material": "^7.1.2",
+    "@types/node": "^24.0.3",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "mime": "^4.0.7",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-markdown": "^10.1.0",
+    "react-syntax-highlighter": "^15.6.1",
+    "remark-gfm": "^4.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  }
+}
