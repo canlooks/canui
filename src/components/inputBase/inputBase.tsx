@@ -1,14 +1,20 @@
-import React, {ComponentProps, ReactElement, ReactNode, useRef} from 'react'
+import React, {ComponentProps, ReactElement, ReactNode, Ref, useImperativeHandle, useRef} from 'react'
 import {ColorPropsValue, DivProps, Size} from '../../types'
 import {classes, useStyle} from './inputBase.style'
-import {fixInputNumber, mergeComponentProps, useControlled} from '../../utils'
+import {fixInputNumber, mergeComponentProps, toArray, useControlled} from '../../utils'
 import {useTheme} from '../theme'
 import {Button} from '../button'
 import {LoadingIndicator} from '../loadingIndicator'
 import {Icon} from '../icon'
 import {faCircleXmark} from '@fortawesome/free-solid-svg-icons/faCircleXmark'
 
-export interface InputBaseProps<T extends 'input' | 'textarea'> extends Omit<DivProps, 'prefix' | 'onChange' | 'children'> {
+export interface InputBaseRef extends HTMLDivElement {
+    select?: HTMLInputElement['select']
+    setSelectionRange?: HTMLInputElement['setSelectionRange']
+}
+
+export interface InputBaseProps<T extends 'input' | 'textarea'> extends Omit<DivProps, 'ref' | 'prefix' | 'onChange' | 'children'> {
+    ref?: Ref<InputBaseRef>
     variant?: 'outlined' | 'underlined' | 'plain'
     size?: Size
     shape?: 'square' | 'rounded'
@@ -37,6 +43,7 @@ export interface InputBaseProps<T extends 'input' | 'textarea'> extends Omit<Div
 }
 
 export const InputBase = (({
+    ref,
     variant = 'outlined',
     size,
     shape,
@@ -63,11 +70,22 @@ export const InputBase = (({
 
     ...props
 }: InputBaseProps<any>) => {
+    const innerRef = useRef<InputBaseRef>(null)
+    const innerInputRef = useRef<HTMLInputElement>(null)
+
+    useImperativeHandle(ref, () => {
+        if (innerRef.current) {
+            innerRef.current.focus = () => innerInputRef.current?.focus()
+            innerRef.current.blur = () => innerInputRef.current?.blur()
+            innerRef.current.select = () => innerInputRef.current?.select()
+            innerRef.current.setSelectionRange = (...args) => innerInputRef.current?.setSelectionRange(...args)
+        }
+        return innerRef.current!
+    })
+
     const theme = useTheme()
 
     size ??= theme.size
-
-    const innerInputRef = useRef<HTMLInputElement>(null)
 
     const wrapClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
         // 点击包裹元素时，聚焦到内部的input元素
@@ -109,6 +127,7 @@ export const InputBase = (({
             {...mergeComponentProps(
                 props,
                 {
+                    ref: innerRef,
                     className: classes.root,
                     onClick: wrapClickHandler,
                     onPointerDown: e => {
@@ -151,7 +170,7 @@ export const InputBase = (({
             {loading &&
                 <LoadingIndicator/>
             }
-            {clearable && !disabled && !readOnly && (Array.isArray(innerValue.current) ? !!innerValue.current.length : !!innerValue.current) &&
+            {clearable && !disabled && !readOnly && toArray(innerValue.current)?.length &&
                 <Button
                     className={classes.clear}
                     variant="plain"

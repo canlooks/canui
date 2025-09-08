@@ -2,7 +2,7 @@ import {ReactNode, Ref, memo, useMemo, ComponentProps} from 'react'
 import {Popper, PopperProps, PopperRef} from '../popper'
 import {InputBase} from '../inputBase'
 import {classes, colorPickerPopperStyle, style} from './colorPicker.style'
-import {clsx, cloneRef, colorTransfer, useControlled, useTouchSpread} from '../../utils'
+import {clsx, colorTransfer, useControlled, useTouchSpread, mergeComponentProps} from '../../utils'
 import {ColorPropsValue, DivProps, Size} from '../../types'
 import {useTheme} from '../theme'
 import {Palette} from '../palette'
@@ -93,18 +93,14 @@ export const ColorPicker = memo(({
                     size={size}
                     shape={shape === 'circular' ? 'rounded' : shape}
                 >
-                    {({ref, ...rest}) =>
+                    {inputBaseProps =>
                         <>
-                            <BlockItem
-                                color={innerValue.current}
-                            />
+                            <BlockItem color={innerValue.current}/>
                             {!!label &&
                                 <div className={classes.label}>{label}</div>
                             }
                             <input
-                                {...rest}
-                                {...inputProps}
-                                ref={cloneRef(ref, inputProps?.ref)}
+                                {...mergeComponentProps<'input'>(inputProps, inputBaseProps)}
                                 data-hidden="true"
                             />
                         </>
