@@ -1,8 +1,8 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, FormRef, Input, Select, SerialInput} from '../src'
-import React, {useState} from 'react'
-import {Chip, RC, useReactive} from '@canlooks/reactive/react'
+import {App, FormItem, SerialInput} from '../src'
+import React from 'react'
+import {RC, useReactive} from '@canlooks/reactive/react'
 import {RF} from '../src/extensions/reactiveForm'
 
 const Root = RC(() => {
@@ -10,12 +10,15 @@ const Root = RC(() => {
         msg: 'hello',
         obj: {
             a: 'world'
-        }
+        },
+        serial: [1, 2, 3, 4, 5, 6]
     }, {deep: true})
-    console.log('render')
+
     return (
         <>
-            <SerialInput count={6} onChange={console.log} separator="-"/>
+            <RF.Item refer={() => formValue.serial}>
+                <SerialInput count={6} onChange={console.log} separator="-"/>
+            </RF.Item>
         </>
     )
 })

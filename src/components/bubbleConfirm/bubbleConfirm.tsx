@@ -1,7 +1,7 @@
 import React, {ReactNode, SetStateAction} from 'react'
 import {Popper, PopperProps} from '../popper'
 import {classes, style} from './bubbleConfirm.style'
-import {clsx, mergeComponentProps, useControlled, useLoading} from '../../utils'
+import {mergeComponentProps, useControlled, useLoading} from '../../utils'
 import {Button} from '../button'
 import {useTheme} from '../theme'
 import {Icon} from '../icon'

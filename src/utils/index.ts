@@ -1,6 +1,4 @@
 export * from './bezier'
-export * from './curd'
-export * from './dataGrid'
 export * from './dnd'
 export * from './form'
 export * from './gesture'
@@ -10,3 +8,6 @@ export * from './polyfill'
 export * from './style'
 export * from './tree'
 export * from './utils'
+
+export * from './dataGrid'
+export * from './curd'

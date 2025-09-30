@@ -1,6 +1,6 @@
 {
   "name": "@canlooks/can-ui",
-  "version": "0.0.70",
+  "version": "0.0.71",
   "author": "C.CanLiang <canlooks@gmail.com>",
   "description": "My ui framework",
   "license": "MIT",
@@ -11,13 +11,13 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "homepage": "https://gitee.com/canlooks/c_canui",
+  "homepage": "https://github.com/canlooks/canui",
   "repository": {
     "type": "git",
-    "url": "https://gitee.com/canlooks/c_canui"
+    "url": "https://github.com/canlooks/canui"
   },
   "bugs": {
-    "url": "https://gitee.com/canlooks/c_canui/issues",
+    "url": "https://github.com/canlooks/canui/issues",
     "email": "canlooks@gmail.com"
   },
   "bin": {
@@ -79,7 +79,6 @@
     "react-markdown": "^10.1.0",
     "react-syntax-highlighter": "^15.6.1",
     "remark-gfm": "^4.0.1",
-    "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "vite": "^6.3.5"
   }

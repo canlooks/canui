@@ -1,4 +1,4 @@
-import {memo, useMemo} from 'react'
+import {ComponentProps, memo, useMemo} from 'react'
 import {DocumentViewerBaseProps, useBlob, useDocumentTitle} from './documentViewer'
 import {SkeletonCard} from '../../components/skeleton'
 import {iframeStyle} from './documentViewer.style'
