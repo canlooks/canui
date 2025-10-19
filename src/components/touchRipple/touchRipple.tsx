@@ -34,7 +34,10 @@ export const TouchRipple = memo(({
     useEffect(() => {
         const parentElement = containerEl.current ?? ref.current!.parentElement
         if (parentElement) {
-            const pointerDown = ({offsetX, offsetY}: PointerEvent) => {
+            const pointerDown = ({clientX, clientY}: PointerEvent) => {
+                const {left, top} = parentElement.getBoundingClientRect()
+                const offsetX = clientX - left
+                const offsetY = clientY - top
                 const maxWidth = Math.max(parentElement.clientWidth - offsetX, offsetX)
                 const maxHeight = Math.max(parentElement.clientHeight - offsetY, offsetY)
                 setRipples(o => {
