@@ -1,7 +1,7 @@
 import React, {ComponentProps, ReactElement, ReactNode, Ref, useImperativeHandle, useRef} from 'react'
 import {ColorPropsValue, DivProps, Size} from '../../types'
 import {classes, useStyle} from './inputBase.style'
-import {fixInputNumber, mergeComponentProps, toArray, useControlled} from '../../utils'
+import {fixInputNumber, mergeComponentProps, useControlled} from '../../utils'
 import {useTheme} from '../theme'
 import {Button} from '../button'
 import {LoadingIndicator} from '../loadingIndicator'
@@ -170,7 +170,7 @@ export const InputBase = (({
             {loading &&
                 <LoadingIndicator/>
             }
-            {clearable && !disabled && !readOnly && toArray(innerValue.current)?.length &&
+            {clearable && !disabled && !readOnly && !!innerValue.current?.length &&
                 <Button
                     className={classes.clear}
                     variant="plain"

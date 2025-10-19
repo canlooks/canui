@@ -1,3 +1,25 @@
+/**
+ * @example
+ * ```tsx
+ * import {RC, useReactive} from '@canlooks/reactive/react'
+ * import {RF} from '@canlooks/can-ui'
+ *
+ * const Example = RC(() => {
+ *     const formValue = useReactive({
+ *         msg: 'hello'
+ *     }, {deep: true})
+ *
+ *     return (
+ *         <RF>
+ *             <RF.Item refer={() => formValue.msg}>
+ *                 <Input/>
+ *             </RF.Item>
+ *         </RF>
+ *     )
+ * })
+ * ```
+ */
+
 import {RC} from '@canlooks/reactive/react'
 import {Form, FormProps, FormRef} from '../../components/form'
 import {createContext, ReactElement, Ref, useContext, useImperativeHandle, useMemo, useRef} from 'react'
