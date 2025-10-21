@@ -1,39 +1,36 @@
 import {css} from '@emotion/react'
 import {defineInnerClasses, defineCss} from '../../utils'
+import {commonNativeInputStyle} from '../input/input.style'
 import {classes as calendarClasses} from '../calendar/calendar.style'
 import {classes as timerClasses} from './timer.style'
 import {popperStyleCallback} from '../popper/popper.style'
 
 export const classes = defineInnerClasses('date-time-picker', [
+    'input',
     'container',
+    'inputGroup',
+    'inputUnit',
     'dateTimeIcon',
-    'placeholder',
-    'backfill'
+    'calendar',
+    'calendarHead',
+    'calendarHeadSide',
+    'calendarHeadControl',
+    'calendarHeadCenter',
+    'calendarHeadButton',
+    'calendarBody',
+    'calendarDays',
+    'dateItem'
 ])
 
-export const style = defineCss(({text, spacing}) => css`
-    cursor: pointer;
-    
+export const style = defineCss(({text}) => css`
     .${classes.container} {
         display: flex;
         align-items: center;
 
-        .${classes.placeholder} {
-            flex: 1;
-            color: ${text.placeholder};
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
+        .${classes.input} {
+            ${commonNativeInputStyle}
         }
-
-        .${classes.backfill} {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: ${spacing[1]}px;
-        }
-        
+    
         .${classes.dateTimeIcon} {
             color: ${text.secondary};
         }

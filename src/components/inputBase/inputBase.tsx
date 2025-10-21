@@ -1,7 +1,7 @@
 import React, {ComponentProps, ReactElement, ReactNode, Ref, useImperativeHandle, useRef} from 'react'
 import {ColorPropsValue, DivProps, Size} from '../../types'
 import {classes, useStyle} from './inputBase.style'
-import {fixInputNumber, mergeComponentProps, useControlled} from '../../utils'
+import {fixInputNumber, isUnset, mergeComponentProps, useControlled} from '../../utils'
 import {useTheme} from '../theme'
 import {Button} from '../button'
 import {LoadingIndicator} from '../loadingIndicator'
@@ -122,6 +122,16 @@ export const InputBase = (({
         }
     }
 
+    const shouldRenderClearButton = () => {
+        if (!clearable ||disabled || readOnly || isUnset(innerValue.current)) {
+            return false
+        }
+        if (Array.isArray(innerValue.current) || typeof innerValue.current === 'string') {
+            return !!innerValue.current.length
+        }
+        return true
+    }
+
     return (
         <div
             {...mergeComponentProps(
@@ -170,7 +180,7 @@ export const InputBase = (({
             {loading &&
                 <LoadingIndicator/>
             }
-            {clearable && !disabled && !readOnly && !!innerValue.current?.length &&
+            {shouldRenderClearButton() &&
                 <Button
                     className={classes.clear}
                     variant="plain"

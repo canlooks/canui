@@ -77,8 +77,6 @@ export const Descriptions = memo(
         const renderGridItems = () => {
             return items?.map((itemProps, i) =>
                 <ItemComponent
-                    // 最后一项沾满剩余行空间
-                    flex={i === items.length - 1 ? 1 : void 0}
                     {...itemProps}
                     key={itemProps.key ?? i}
                 />

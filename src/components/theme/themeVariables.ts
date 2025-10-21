@@ -144,8 +144,8 @@ export const defaultLightTheme: ThemeDefinition = {
     spacing: defaultSpacing,
     gap: defaultSpacing[6],
     gray,
-    /* divider: gray(.1), */
-    divider: '#e6e6e6',
+    /* divider: gray(.15), */
+    divider: '#d9d9d9',
     colors: {
         primary: '#1E71EC',
         secondary: '#925CC1',

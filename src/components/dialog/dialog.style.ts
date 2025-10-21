@@ -37,6 +37,7 @@ export const style = defineCss(({background, borderRadius, boxShadow, spacing, c
     }
 
     .${classes.content} {
+        min-width: 0;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -92,6 +93,7 @@ export const style = defineCss(({background, borderRadius, boxShadow, spacing, c
         }
 
         .${classes.bodyWrap} {
+            min-width: 0;
             flex: 1;
         }
 
