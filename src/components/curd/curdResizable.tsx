@@ -12,9 +12,10 @@ export const CurdResizable = memo(({innerSize, setInnerSize}: {
     setInnerSize: Dispatch<SetStateAction<Size>>
 }) => {
     return (
-        <Tooltip title="表格尺寸">
+        <Tooltip title="表格尺寸" clickToClose>
             <Bubble
                 placement="bottom"
+                trigger="click"
                 content={
                     <>
                         <MenuItem

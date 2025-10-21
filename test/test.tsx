@@ -1,6 +1,6 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Dialog, FormItem, Icon, Segmented, Select, SerialInput, TouchRipple} from '../src'
+import {App, Curd, DataGrid, Dialog, FormItem, Icon, Segmented, Select, SerialInput, TouchRipple} from '../src'
 import {DateTimePicker as DateTimePickerB} from '../src/components/dateTimePicker.b'
 import {DateTimePicker} from '../src/components/dateTimePicker'
 import React from 'react'
@@ -13,17 +13,6 @@ const Root = RC(() => {
         <>
             <DateTimePicker
                 format="YYYY-MM-DD HH时"
-            />
-            <DateTimePickerB
-                format="YYYY-MM-DD HH"
-            />
-            <Select
-                options={[
-                    {
-                        label: '选项1',
-                        value: '1',
-                    }
-                ]}
             />
         </>
     )

@@ -136,21 +136,37 @@ export function mergeDeep(target: any, ...sources: any[]) {
     return target
 }
 
+export type OverflowEdge = 'top' | 'bottom' | 'left' | 'right'
 
 /**
  * 判断元素是否完全在目标容器内，用于Popper组件
- * @param target
- * @param container
+ * @param target 目标元素
+ * @param container 容器
+ * @returns 'top' | 'bottom' | 'left' | 'right' | false
  */
-export function isElementVisibleCompletely(target: Element, container?: Element) {
+export function isElementOverflowed(target: Element, container?: Element): OverflowEdge | false {
     const {left, top, right, bottom} = target.getBoundingClientRect()
+    const judge = (containerBounding: Pick<DOMRectReadOnly, 'top' | 'bottom' | 'left' | 'right'>) => {
+        if (left < containerBounding.left) {
+            return 'left'
+        }
+        if (top < containerBounding.top) {
+            return 'top'
+        }
+        if (right > containerBounding.right) {
+            return 'right'
+        }
+        if (bottom > containerBounding.bottom) {
+            return 'bottom'
+        }
+        return false
+    }
     if (container) {
-        const {left: containerLeft, top: containerTop, right: containerRight, bottom: containerBottom} = container.getBoundingClientRect()
-        return left >= containerLeft && top >= containerTop && right <= containerRight && bottom <= containerBottom
+        return judge(container.getBoundingClientRect())
     }
     const vWidth = window.innerWidth || document.documentElement.clientWidth
     const vHeight = window.innerHeight || document.documentElement.clientHeight
-    return left >= 0 && top >= 0 && right <= vWidth && bottom <= vHeight
+    return judge({left: 0, top: 0, right: vWidth, bottom: vHeight})
 }
 
 /**

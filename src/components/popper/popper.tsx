@@ -1,7 +1,7 @@
 import React, {CSSProperties, ReactElement, ReactNode, Ref, SetStateAction, cloneElement, isValidElement, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {DivProps, DefineElement, Placement} from '../../types'
 import {createPortal} from 'react-dom'
-import {clsx, cloneRef, isElementVisibleCompletely, listenAllPredecessorsScroll, toArray, useControlled, useDerivedState, useForceUpdate, useSync, useSyncState, useUnmounted, useContainer} from '../../utils'
+import {clsx, cloneRef, listenAllPredecessorsScroll, toArray, useControlled, useDerivedState, useForceUpdate, useSync, useSyncState, useUnmounted, useContainer, isElementOverflowed, OverflowEdge} from '../../utils'
 import {ClickAway} from '../clickAway'
 import {classes, style} from './popper.style'
 import {PopperContext, usePopperContext} from './popperContext'
@@ -15,8 +15,8 @@ const getAttemptOrder = (placement: Placement) => {
     if (index > -1) {
         return [
             placement,
-            ...order.slice(0, index),
             ...order.slice(index + 1),
+            ...order.slice(0, index),
             placement
         ]
     }
@@ -157,8 +157,8 @@ export function Popper({
         tellParentOpenChange(innerOpen.current)
     }, [innerOpen.current])
 
-    const onChildrenOpenChange = (open: boolean) => {
-        hold(open) === 0 && setInnerOpen(false)
+    const onChildrenOpenChange = (childrenOpen: boolean) => {
+        hold(childrenOpen) === 0 && setInnerOpen(false)
     }
 
     const setOpenForce = (open: SetStateAction<boolean>) => {
@@ -237,13 +237,13 @@ export function Popper({
         let width: number | undefined, height: number | undefined
         let originX: string, originY: string
 
-        let attempt
+        let attempt: (placement: Placement) => OverflowEdge | false
 
         if (contextMenuEvent.current) {
             // 右键菜单
             const mouseX = contextMenuEvent.current.clientX - containerRect.left
             const mouseY = contextMenuEvent.current.clientY - containerRect.top
-            attempt = (placement: Placement) => {
+            attempt = placement => {
                 [, pA, pB] = placement.match(/^(top|bottom|left|right)(Top|Bottom|Left|Right)?/)!
                 if (pB) {
                     switch (placement) {
@@ -305,7 +305,7 @@ export function Popper({
                 }
                 popperEl.style.left = left + 'px'
                 popperEl.style.top = top + 'px'
-                return isElementVisibleCompletely(popperEl, containerEl.current === document.body ? void 0 : containerEl.current)
+                return isElementOverflowed(popperEl, containerEl.current === document.body ? void 0 : containerEl.current)
             }
         } else {
             // 非右键菜单
@@ -313,7 +313,7 @@ export function Popper({
             const topEdge = anchorRect.top - containerRect.top
             const leftEdge = anchorRect.left - containerRect.left
 
-            attempt = (placement: Placement) => {
+            attempt = placement => {
                 [, pA, pB] = placement.match(/^(top|bottom|left|right)(Top|Bottom|Left|Right)?/)!
 
                 if (sizeAdaptable) {
@@ -375,7 +375,7 @@ export function Popper({
                 }
                 popperEl.style.left = left + 'px'
                 popperEl.style.top = top + 'px'
-                return isElementVisibleCompletely(popperEl, containerEl.current === document.body ? void 0 : containerEl.current)
+                return isElementOverflowed(popperEl, containerEl.current === document.body ? void 0 : containerEl.current)
             }
         }
 
@@ -384,7 +384,7 @@ export function Popper({
         } else {
             const attemptOrder = getAttemptOrder(placement)
             for (let i = 0; i < attemptOrder.length; i++) {
-                if (attempt(attemptOrder[i])) {
+                if (attempt(attemptOrder[i]) === false) {
                     break
                 }
             }
@@ -412,8 +412,8 @@ export function Popper({
             popperEl.style.transform = variant === 'collapse'
                 ? pA! === 'top' || pA! === 'bottom' ? 'scaleY(0)' : 'scaleX(0)'
                 : 'scale(0)'
+            animating.current = true
             requestAnimationFrame(() => {
-                animating.current = true
                 settle()
                 setOpenNextFrame(true)
             })
@@ -487,28 +487,28 @@ export function Popper({
     const hoverable = triggersSet.has('hover')
     const enterTimeout = useRef<any>(void 0)
     const leaveTimeout = useRef<any>(void 0)
-    const isEntered = useRef(false)
+    const hoverStack = useRef(0)
 
     const pointerEnter = () => {
-        if (isEntered.current) {
+        if (hoverStack.current++) {
             return
         }
-        isEntered.current = true
-        hold(true)
         clearTimeout(leaveTimeout.current)
         mouseEnterDelay
             ? enterTimeout.current = setTimeout(() => setInnerOpen(true), mouseEnterDelay)
             : setInnerOpen(true)
     }
     const pointerLeave = () => {
-        isEntered.current = false
-        hold(false)
+        if (--hoverStack.current) {
+            return
+        }
         clearTimeout(enterTimeout.current)
         mouseLeaveDelay
             ? leaveTimeout.current = setTimeout(() => setInnerOpen(false), mouseLeaveDelay)
             : setInnerOpen(false)
     }
 
+    // 绑定锚点元素
     useEffect(() => {
         if (!hoverable) {
             return
@@ -522,6 +522,7 @@ export function Popper({
         }
     }, [hoverable])
 
+    // 绑定弹框元素，鼠标移入弹框也要保持弹框打开
     useEffect(() => {
         if (!hoverable || !innerPopperRef.current) {
             return
@@ -567,7 +568,9 @@ export function Popper({
             return
         }
         const keyDown = (e: KeyboardEvent) => {
-            e.key === 'Enter' && openAndHold(true)
+            if (e.key === 'Enter') {
+                openAndHold(true)
+            }
         }
         const anchorEl = anchorRef.current!
         anchorEl.addEventListener('keydown', keyDown)
@@ -586,9 +589,7 @@ export function Popper({
         if (!clickable) {
             return
         }
-        const click = () => {
-            openAndHold(true)
-        }
+        const click = () => openAndHold(true)
         const anchorEl = anchorRef.current!
         anchorEl.addEventListener('click', click)
         return () => {
@@ -597,7 +598,7 @@ export function Popper({
     }, [])
 
     const onClickAway = () => {
-        innerOpen.current && openAndHold(false)
+        innerOpen.current && setOpenForce(false)
     }
 
     /**
