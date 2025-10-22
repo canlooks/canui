@@ -25,10 +25,10 @@ import {Form, FormProps, FormRef} from '../../components/form'
 import {createContext, ReactElement, Ref, useContext, useImperativeHandle, useMemo, useRef} from 'react'
 import {ReactiveFormItem} from './reactiveFormItem'
 
-export type ReactiveFormPropsRef = Pick<FormRef, 'submit' | 'getFormErrors' | 'getFieldError' | 'resetForm' | 'resetField' | 'isFormTouched' | 'isFieldTouched'>
+export type ReactiveFormRef = Pick<FormRef, 'submit' | 'getFormErrors' | 'getFieldError' | 'resetForm' | 'resetField' | 'isFormTouched' | 'isFieldTouched'>
 
 export interface ReactiveFormProps extends Omit<FormProps, 'ref' | 'initialValue' | 'onChange' | 'onFinish' | 'items'> {
-    ref?: Ref<ReactiveFormPropsRef>
+    ref?: Ref<ReactiveFormRef>
     onChange?(): void
     onFinish?(): void
 }

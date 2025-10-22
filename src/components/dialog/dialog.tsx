@@ -135,12 +135,12 @@ export function Dialog({
     useEffect(() => {
         if (innerOpen.current) {
             const resizeObserver = new ResizeObserver(onScroll)
+            resizeObserver.observe(bodyRef.current!)
             resizeObserver.observe(bodyWrapRef.current!)
             return () => {
                 resizeObserver.disconnect()
             }
         }
-        return
     }, [innerOpen.current])
 
     /**

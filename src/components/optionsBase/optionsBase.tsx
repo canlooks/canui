@@ -2,14 +2,18 @@ import React, {ReactElement, useMemo, memo, ReactNode, Children, isValidElement,
 import {Highlight} from '../highlight'
 import {MenuItemProps, MenuItem} from '../menuItem'
 import {Placeholder} from '../placeholder'
-import {clsx, isSelected, useKeyboard, useSync} from '../../utils'
+import {clsx, isSelected, mergeComponentProps, useKeyboard, useSync} from '../../utils'
 import {classes, style} from './optionsBase.style'
 import {Loading, LoadingProps} from '../loading'
-import {usePopperContext, useScrollToSelected} from '../popper'
+import {usePopperContext, useScrollToTarget} from '../popper'
 import {OptionType} from '../selectionContext'
 import {Id} from '../../types'
 
 export interface MenuOptionType<V extends Id = Id> extends Omit<MenuItemProps, 'children'>, Omit<OptionType<V>, 'children'> {
+    /**
+     * 若指定为`true`，则弹框打开时会自动滚动到该选项，默认为`false`
+     */
+    scrollHere?: boolean
 }
 
 export type OptionsBaseSharedProps<O extends MenuOptionType<V>, V extends Id = Id> = {
@@ -106,7 +110,7 @@ export const OptionsBase = memo(<O extends MenuOptionType<V>, V extends Id = Id>
 
     const scrollerRef = useRef<HTMLDivElement>(null)
 
-    const selectedItemRef = useScrollToSelected<HTMLDivElement>(scrollerRef)
+    const selectedItemRef = useScrollToTarget<HTMLDivElement>(scrollerRef)
 
     const syncOnToggleSelected = useSync(onToggleSelected)
 
@@ -115,13 +119,14 @@ export const OptionsBase = memo(<O extends MenuOptionType<V>, V extends Id = Id>
             return <Placeholder/>
         }
         const makeProps = (params: {
-            opt: O
+            opt?: O
             label: ReactNode
             value: V
             index: number
             selected: boolean
+            scrollHere?: boolean
         }): MenuItemProps => ({
-            ref: params.selected ? selectedItemRef : void 0,
+            ref: params.scrollHere || params.selected ? selectedItemRef : void 0,
             showCheckbox,
             selected: params.selected,
             focused: verticalIndex.current === params.index,
@@ -130,11 +135,11 @@ export const OptionsBase = memo(<O extends MenuOptionType<V>, V extends Id = Id>
                 : params.label,
             onClick: e => {
                 e.stopPropagation()
-                params.opt.onClick?.(e)
+                params.opt?.onClick?.(e)
                 syncOnToggleSelected.current?.(params.value, e)
             },
             onPointerEnter: e => {
-                params.opt.onPointerEnter?.(e)
+                params.opt?.onPointerEnter?.(e)
                 setVerticalIndex(-1)
             },
             children: null
@@ -147,14 +152,16 @@ export const OptionsBase = memo(<O extends MenuOptionType<V>, V extends Id = Id>
                     <MenuItem
                         key={opt.key ?? value as any ?? index}
                         value={value}
-                        {...opt}
-                        {...makeProps({
+                        {...mergeComponentProps(
                             opt,
-                            label,
-                            value,
-                            index,
-                            selected: isSelected(value, selectedValue)
-                        })}
+                            makeProps({
+                                label,
+                                value,
+                                index,
+                                selected: isSelected(value, selectedValue),
+                                scrollHere: opt.scrollHere
+                            })
+                        )}
                     />
                 )
             })
@@ -164,13 +171,14 @@ export const OptionsBase = memo(<O extends MenuOptionType<V>, V extends Id = Id>
             if (!isValidElement(c)) {
                 return c as ReactNode
             }
-            const {value, label} = c.props as MenuOptionType<V>
+            const {value, label, scrollHere} = c.props as MenuOptionType<V>
             return cloneElement(c, makeProps({
                 opt: c.props as O,
                 label,
                 value: value as V,
                 index,
-                selected: isSelected(value, selectedValue)
+                selected: isSelected(value, selectedValue),
+                scrollHere
             }))
         })
     }, [filteredOptions, selectedValue, verticalIndex.current, showCheckbox])

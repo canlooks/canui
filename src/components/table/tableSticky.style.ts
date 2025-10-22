@@ -4,14 +4,6 @@ import {css} from '@emotion/react'
 export const style = defineCss(({background, easing}) => css`
     overflow: auto;
 
-    tbody tr {
-        &:not(:hover):not([data-selected=true]) {
-            th, td {
-                background-color: ${background.content};
-            }
-        }
-    }
-
     th, td {
         &[data-sticky=left], &[data-sticky=right] {
             overflow: visible;

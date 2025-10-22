@@ -1,6 +1,6 @@
-import {ComponentProps} from 'react'
+import {ComponentProps, useRef} from 'react'
 import {classes, style} from './table.style'
-import {clsx} from '../../utils'
+import {cloneRef, clsx} from '../../utils'
 import {Size} from '../../types'
 import {useTheme} from '../theme'
 import {TdCell, ThCell} from './tableSticky'
@@ -10,7 +10,7 @@ export interface TableProps extends Partial<ComponentProps<'table'>> {
     /**
      * 是否渲染边框，默认为`none`
      * @enum 'all' 所有单元格都渲染边框
-     * @enum true 所有单元格都渲染边框
+     * @enum true 同'all', 所有单元格都渲染边框
      * @enum 'out' 仅table外边缘渲染边框
      * @enum 'none' 不渲染边框
      */
@@ -29,10 +29,13 @@ export function Table({
 
     size ??= theme.size
 
+    const tableRef = useRef<HTMLTableElement>(null)
+
     return (
         <table
             {...props}
             css={style}
+            ref={cloneRef(props.ref, tableRef)}
             className={clsx(classes.root, props.className)}
             data-size={size}
             data-bordered={bordered}

@@ -324,7 +324,7 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
     const renderPaginationFn = () => {
         return renderPagination
             ? renderPagination(_paginationProps)
-            : <Pagination {..._paginationProps}/>
+            : paginatable && <Pagination {..._paginationProps}/>
     }
 
     const paginatedRows = useMemo(() => {

@@ -1,4 +1,4 @@
-import {Ref, memo, ComponentProps} from 'react'
+import {Ref, memo, ComponentProps, CSSProperties} from 'react'
 import {InputBase, InputBaseProps} from '../inputBase'
 import {classes, style} from './textarea.style'
 import {clsx, mergeComponentProps} from '../../utils'
@@ -8,6 +8,12 @@ export interface TextareaProps extends Omit<InputBaseProps<'textarea'>, 'childre
     textareaRef?: Ref<HTMLTextAreaElement>
     rows?: number
     fullWidth?: boolean
+    /**
+     * @enum {@link fullWidth} 为`true`时，默认为`vertical`
+     * @enum {@link fullWidth} 为`false`时，默认为`both`
+     * @enum 若设为`none`，则不可调整尺寸
+     */
+    resize?: CSSProperties['resize']
 }
 
 export const Textarea = memo(({
@@ -15,6 +21,7 @@ export const Textarea = memo(({
     textareaRef,
     rows,
     fullWidth = false,
+    resize = fullWidth ? 'vertical' : 'both',
     ...props
 }: TextareaProps) => {
     return (
@@ -31,7 +38,8 @@ export const Textarea = memo(({
                         {
                             rows,
                             ref: textareaRef,
-                            className: classes.textarea
+                            className: classes.textarea,
+                            style: {resize}
                         }
                     )}
                 />

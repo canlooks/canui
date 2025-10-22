@@ -1,7 +1,6 @@
 import {ComponentProps, createContext, memo, useContext, useMemo, useRef} from 'react'
 import {classes, datePickerPopperStyle, style} from './dateTimePicker.style'
 import dayjs, {Dayjs} from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
 import {InputBase, InputBaseProps} from '../inputBase'
 import {mergeComponentProps, useControlled} from '../../utils'
 import {Popper, PopperProps} from '../popper'
@@ -10,8 +9,6 @@ import {Icon} from '../icon'
 import {faCalendar} from '@fortawesome/free-regular-svg-icons/faCalendar'
 import {faClock} from '@fortawesome/free-regular-svg-icons/faClock'
 import { Timer } from './timer'
-
-dayjs.extend(customParseFormat)
 
 export type DatePickerSharedProps = {
     min?: Dayjs
@@ -93,7 +90,7 @@ export const DateTimePicker = memo(({
 
     const showTimer = /[Hms]/.test(format)
 
-    // 若外部没有值，内部需要默认值为现在
+    // 若外部没有值，内部需要“现在”作为默认值
     const innerValue = dateValue.current || dayjs()
 
     return (

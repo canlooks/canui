@@ -1,41 +1,46 @@
 import {ComponentProps, useEffect, useRef, useState} from 'react'
-import {clsx, cloneRef} from '../../utils'
+import {mergeComponentProps} from '../../utils'
 import {classes} from './table.style'
 import {OverridableComponent, OverridableProps} from '../../types'
 import {style} from './tableSticky.style'
-import {SerializedStyles} from '@emotion/react'
 
 export const TableContainer = (
     ({
         component: Component = 'div',
         ...props
     }: OverridableProps<{}, 'div'>) => {
-        const [scrolledLeft, setScrolledLeft] = useState(false)
-        const [scrolledRight, setScrolledRight] = useState(false)
-
         const innerRef = useRef<HTMLDivElement>(null)
 
         useEffect(() => {
             const el = innerRef.current!
             const scroll = () => {
-                setScrolledLeft(!!el.scrollLeft)
-                setScrolledRight(!!(el.scrollWidth - el.clientWidth - el.scrollLeft))
+                el.dataset.scrolledLeft = (el.scrollLeft > 0).toString()
+                el.dataset.scrolledRight = (el.scrollWidth - el.clientWidth > el.scrollLeft).toString()
             }
             scroll()
+
             el.addEventListener('scroll', scroll)
+
+            const table = el.getElementsByTagName('table')[0]
+            const resizeObserver = new ResizeObserver(scroll)
+            resizeObserver.observe(el)
+            table && resizeObserver.observe(table)
             return () => {
                 el.removeEventListener('scroll', scroll)
+                resizeObserver.disconnect()
             }
         }, [])
 
         return (
             <Component
-                {...props}
-                ref={cloneRef(props.ref, innerRef)}
-                css={style}
-                className={clsx(classes.container, props.className)}
-                data-scrolled-left={scrolledLeft}
-                data-scrolled-right={scrolledRight}
+                {...mergeComponentProps(
+                    props,
+                    {
+                        ref: innerRef,
+                        css: style,
+                        className: classes.container
+                    }
+                )}
             />
         )
     }
@@ -60,7 +65,6 @@ export function ThCell(props: ThCellProps) {
 }
 
 function useStickyCellProps({
-    ref,
     sticky,
     ...props
 }: TdCellProps | ThCellProps) {
@@ -99,18 +103,14 @@ function useStickyCellProps({
         }
     })
 
-    return {
-        ...props,
-        ref: cloneRef(ref, innerRef),
-        css: style,
-        className: clsx(classes.cell, props.className),
-        'data-sticky': sticky,
-        style: {
-            ...sticky && {[sticky]: offset},
-            ...props.style
+    return mergeComponentProps<'td' | 'th'>(
+        props,
+        {
+            ref: innerRef,
+            css: style,
+            className: classes.cell,
+            style: sticky && {[sticky]: offset},
+            'data-sticky': sticky
         }
-    } as ComponentProps<'td'> & {
-        css(): SerializedStyles
-        'data-sticky'?: 'left' | 'right'
-    }
+    )
 }

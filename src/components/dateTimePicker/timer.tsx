@@ -3,7 +3,7 @@ import {classes, style} from './timer.style'
 import {MenuItem} from '../menuItem'
 import {Dayjs} from 'dayjs'
 import {useDateTimePickerContext} from './dateTimePicker'
-import {useScrollToSelected} from '../popper'
+import {useScrollToTarget} from '../popper'
 
 export const Timer = memo(({
     showHours,
@@ -70,7 +70,7 @@ function TimerItem({
 
     const scrollerRef = useRef<HTMLDivElement>(null)
 
-    const selectedItemRef = useScrollToSelected<HTMLDivElement>(scrollerRef)
+    const selectedItemRef = useScrollToTarget<HTMLDivElement>(scrollerRef)
 
     const renderItems = (count: number) => {
         const ret = []

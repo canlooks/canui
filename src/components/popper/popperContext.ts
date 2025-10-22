@@ -18,7 +18,7 @@ export function usePopperContext() {
  * 当弹框打开时，滚动至已选项
  * @returns {RefObject} ref
  */
-export function useScrollToSelected<T extends HTMLElement>(scrollerRef: RefObject<Element | null>): RefObject<T | null> {
+export function useScrollToTarget<T extends HTMLElement>(scrollerRef: RefObject<Element | null>): RefObject<T | null> {
     const ref = useRef<T>(null)
 
     const {beforeOpenCallbacks} = usePopperContext()
@@ -26,7 +26,7 @@ export function useScrollToSelected<T extends HTMLElement>(scrollerRef: RefObjec
     useEffect(() => {
         const beforeOpen = () => {
             if (ref.current && scrollerRef.current && scrollerRef.current.scrollHeight > scrollerRef.current.clientHeight) {
-                scrollerRef.current.scrollTop = ref.current.offsetTop - scrollerRef.current.clientHeight / 2 + ref.current.clientHeight / 2
+                scrollerRef.current.scrollTop = ref.current.offsetTop + ref.current.clientHeight / 2 - scrollerRef.current.clientHeight / 2
             }
         }
         beforeOpenCallbacks.add(beforeOpen)

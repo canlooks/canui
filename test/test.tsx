@@ -1,20 +1,16 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Curd, DataGrid, Dialog, FormItem, Icon, Segmented, Select, SerialInput, TouchRipple} from '../src'
-import {DateTimePicker as DateTimePickerB} from '../src/components/dateTimePicker.b'
+import {App, Curd, DataGrid, Dialog, FormItem, Icon, Segmented, Select, SerialInput, Table, TableContainer, TouchRipple} from '../src'
 import {DateTimePicker} from '../src/components/dateTimePicker'
 import React from 'react'
 import {RC, useReactive} from '@canlooks/reactive/react'
 import {Input} from '../src'
 import {faPassport} from '@fortawesome/free-solid-svg-icons'
+import {PowerTable} from './powerTable/powerTable'
 
 const Root = RC(() => {
     return (
-        <>
-            <DateTimePicker
-                format="YYYY-MM-DD HH时"
-            />
-        </>
+        <PowerTable style={{height: '50%', marginLeft: 50}}/>
     )
 })
 

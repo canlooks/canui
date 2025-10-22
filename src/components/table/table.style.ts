@@ -7,9 +7,9 @@ export const classes = defineInnerClasses('table', [
     'cell'
 ])
 
-export const style = defineCss(({mode, spacing, gray, divider, easing, colors}) => {
-    const headerBg = gray(mode === 'light' ? .02 : .22)
-    const stripedBg = gray(mode === 'light' ? .01 : .21)
+export const style = defineCss(({mode, spacing, gray, divider, background, easing, colors}) => {
+    const headerBg = gray(mode === 'light' ? .03 : .22)
+    const stripedBg = gray(mode === 'light' ? .02 : .21)
     const selectedBg = Color(colors.primary.main).alpha(mode === 'light' ? .05 : .1).string()
 
     return css`
@@ -37,6 +37,14 @@ export const style = defineCss(({mode, spacing, gray, divider, easing, colors}) 
             }
         }
 
+        tbody tr {
+            &:not(:hover):not([data-selected=true]) {
+                th, td {
+                    background-color: ${background.content};
+                }
+            }
+        }
+
         th, td {
             position: relative;
             text-align: left;
@@ -58,11 +66,18 @@ export const style = defineCss(({mode, spacing, gray, divider, easing, colors}) 
         }
 
         &[data-bordered=all], &[data-bordered=true] {
-            border-top: 1px solid ${divider};
-            border-left: 1px solid ${divider};
-
             th, td {
                 border-right: 1px solid ${divider};
+                
+                &:first-of-type {
+                    border-left: 1px solid ${divider};
+                }
+            }
+            
+            thead tr:first-of-type {
+                th, td {
+                    border-top: 1px solid ${divider};
+                }
             }
         }
 
