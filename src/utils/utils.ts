@@ -229,15 +229,29 @@ export function getPromiseState(promise: Promise<any>) {
 }
 
 /**
+ * 判断表单控件是否为空值
+ * @param value
+ */
+export function isNoValue(value: any) {
+    if (isUnset(value)) {
+        return true
+    }
+    if (Array.isArray(value) || typeof value === 'string') {
+        return !value.length
+    }
+    return false
+}
+
+/**
  * 将节点用某个分隔符拼接起来，通常用于渲染多选项
  * @param arr
  * @param callback
- * @param seperator
+ * @param separator
  */
-export function joinNodes<T>(arr: T[], callback: (item: T, index: number) => ReactNode, seperator: ReactNode = ' / ') {
+export function joinNodes<T>(arr: T[], callback: (item: T, index: number) => ReactNode, separator: ReactNode = ' / ') {
     return arr.flatMap((item, index) => {
         return index > 0
-            ? [seperator, callback(item, index)]
+            ? [separator, callback(item, index)]
             : callback(item, index)
     })
 }

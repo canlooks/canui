@@ -1,5 +1,5 @@
 import {Dispatch, ReactElement, ReactNode, Ref, SetStateAction, createContext, memo, useContext, useDeferredValue, useEffect, useMemo, useState, ComponentProps} from 'react'
-import {useControlled, useLoading, useKeyboard, CallbackInfo, joinNodes, clsx, toArray, mergeComponentProps} from '../../utils'
+import {useControlled, useLoading, useKeyboard, CallbackInfo, joinNodes, clsx, mergeComponentProps, isNoValue} from '../../utils'
 import {Input, InputProps} from '../input'
 import {InputBase, InputBaseProps} from '../inputBase'
 import {Popper, PopperProps, PopperRef} from '../popper'
@@ -161,7 +161,7 @@ export const Cascade = memo(<O extends OptionType<V>, V extends Id = Id>({
     }, loading)
 
     useEffect(() => {
-        if (loadOptions && !searchable && !innerOpen.current && toArray(innerValue)?.length) {
+        if (loadOptions && !searchable && !innerOpen.current && !isNoValue(innerValue)) {
             // 第一次渲染就有value，需要请求数据
             innerLoadOptions(innerSearchValue.current)
         }

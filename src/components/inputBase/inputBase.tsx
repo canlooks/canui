@@ -1,7 +1,7 @@
 import React, {ComponentProps, ReactElement, ReactNode, Ref, useImperativeHandle, useRef} from 'react'
 import {ColorPropsValue, DivProps, Size} from '../../types'
 import {classes, useStyle} from './inputBase.style'
-import {fixInputNumber, isUnset, mergeComponentProps, useControlled} from '../../utils'
+import {fixInputNumber, isNoValue, mergeComponentProps, useControlled} from '../../utils'
 import {useTheme} from '../theme'
 import {Button} from '../button'
 import {LoadingIndicator} from '../loadingIndicator'
@@ -123,13 +123,10 @@ export const InputBase = (({
     }
 
     const shouldRenderClearButton = () => {
-        if (!clearable ||disabled || readOnly || isUnset(innerValue.current)) {
+        if (!clearable ||disabled || readOnly) {
             return false
         }
-        if (Array.isArray(innerValue.current) || typeof innerValue.current === 'string') {
-            return !!innerValue.current.length
-        }
-        return true
+        return isNoValue(innerValue.current)
     }
 
     return (

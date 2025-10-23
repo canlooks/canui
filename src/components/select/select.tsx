@@ -1,6 +1,6 @@
 import {Children, ReactElement, ReactNode, Ref, isValidElement, memo, useCallback, useDeferredValue, useMemo, useRef, ComponentProps} from 'react'
 import {InputBase, InputBaseProps} from '../inputBase'
-import {mergeComponentProps, toArray, useControlled} from '../../utils'
+import {isNoValue, mergeComponentProps, useControlled} from '../../utils'
 import {classes, style} from './select.style'
 import {Popper, PopperProps, PopperRef} from '../popper'
 import {MenuItem} from '../menuItem'
@@ -241,7 +241,7 @@ export const Select = memo(<O extends MenuOptionType, V extends Id = Id>({
             >
                 {inputBaseProps =>
                     <div className={classes.contentWrap}>
-                        {!toArray(innerValue)?.length
+                        {isNoValue(innerValue)
                             ? <div className={classes.placeholder}>{props.placeholder ?? '请选择'}</div>
                             : <div className={classes.backfill}>
                                 {renderBackfillFn()}

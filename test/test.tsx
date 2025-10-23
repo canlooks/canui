@@ -10,7 +10,15 @@ import {PowerTable} from './powerTable/powerTable'
 
 const Root = RC(() => {
     return (
-        <PowerTable style={{height: '50%', marginLeft: 50}}/>
+        <Select
+            value=""
+            options={[
+                {
+                    label: '选项1',
+                    value: '1'
+                }
+            ]}
+        />
     )
 })
 

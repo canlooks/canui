@@ -1,7 +1,7 @@
 import {Children, ReactElement, ReactNode, Ref, isValidElement, memo, useMemo, ComponentProps} from 'react'
 import {Popper, PopperProps, PopperRef} from '../popper'
 import {NodeType, Tree, TreeBaseProps, TreeNode} from '../tree'
-import {useControlled, toArray, clsx, mergeComponentProps} from '../../utils'
+import {useControlled, toArray, clsx, mergeComponentProps, isNoValue} from '../../utils'
 import {InputBase} from '../inputBase'
 import {LoadingIndicator} from '../loadingIndicator'
 import {popperStyle} from '../popper/popper.style'
@@ -188,7 +188,7 @@ export const TreeSelect = memo(<N extends NodeType<V>, V extends Id = Id>({
             >
                 {inputBaseProps =>
                     <div className={classes.contentWrap}>
-                        {!toArray(innerValue)?.length
+                        {isNoValue(innerValue)
                             ? <div className={classes.placeholder}>{placeholder}</div>
                             : <div className={classes.backfill}>
                                 {renderBackfillFn()}
