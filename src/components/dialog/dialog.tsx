@@ -37,10 +37,16 @@ export interface DialogProps extends Omit<ModalProps, 'title' | 'prefix'> {
     cancelProps?: ButtonProps
     onCancel?(e: React.MouseEvent<HTMLButtonElement | HTMLDivElement> | KeyboardEvent): void
 
+    /**
+     * 滚动的行为，默认为`card`
+     * @enum 'card' 卡片内部滚动
+     * @enum 'body' 对话框整体滚动
+     */
+    scrollBehavior?: 'card' | 'body'
     draggable?: boolean
-    /** 是否可通过点击遮罩层关闭对话框，默认为true */
+    /** 是否可通过点击遮罩层关闭对话框，默认为`true` */
     maskClosable?: boolean
-    /** 是否可通过键盘的【ESC】键关闭对话框，默认为true */
+    /** 是否可通过键盘的【ESC】键关闭对话框，默认为`true` */
     escapeClosable?: boolean
 
     defaultOpen?: boolean
@@ -67,6 +73,7 @@ export function Dialog({
     cancelText = '取 消',
     cancelProps,
     onCancel,
+    scrollBehavior = 'card',
     draggable = true,
     maskClosable = true,
     escapeClosable = true,
@@ -184,6 +191,7 @@ export function Dialog({
             className={clsx(classes.root, props.className)}
             open={innerOpen.current}
             onMaskClick={onMaskClick}
+            data-scroll-behavior={scrollBehavior}
             data-draggable={draggable}
         >
             <Draggable container={() => overlayRef.current}>

@@ -1,5 +1,7 @@
 import {css} from '@emotion/react'
 import {defineInnerClasses, defineCss} from '../../utils'
+import {classes as modalClasses} from '../modal/modal.style'
+import {classes as overlayBaseClasses} from '../overlayBase/overlayBase.style'
 
 export const classes = defineInnerClasses('dialog', [
     'card',
@@ -17,11 +19,34 @@ export const classes = defineInnerClasses('dialog', [
 
 export const style = defineCss(({background, borderRadius, boxShadow, spacing, colors, divider}) => css`
     .${classes.card} {
-        max-height: 100%;
         display: flex;
         background-color: ${background.content};
         border-radius: ${borderRadius}px;
         box-shadow: ${boxShadow[0]};
+    }
+
+    .${modalClasses.childrenWrap} {
+        padding: 40px;
+    }
+
+    &[data-scroll-behavior=card] {
+        .${modalClasses.childrenWrap} {
+            height: 100%;
+        }
+        
+        .${classes.card} {
+            max-height: 100%;
+        }
+    }
+
+    &[data-scroll-behavior=body] {
+        .${modalClasses.modal} {
+            height: auto;
+        }
+
+        .${overlayBaseClasses.childrenWrap} {
+            overflow: hidden auto;
+        }
     }
 
     .${classes.icon} {
@@ -50,7 +75,7 @@ export const style = defineCss(({background, borderRadius, boxShadow, spacing, c
         font-size: ${16 / 14}em;
         font-weight: bold;
         margin-right: -${spacing[8]}px;
-        
+
         .${classes.title} {
             flex: 1;
             padding: ${spacing[6]}px 0 ${spacing[3]}px;

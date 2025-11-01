@@ -1,8 +1,8 @@
-import {memo} from 'react'
+import {ComponentProps, memo} from 'react'
 import {Id} from '../../types'
 import {DataGrid, DataGridProps, RowType, useDataGridContext} from './dataGrid'
 import {useSelectionContext} from '../selectionContext'
-import {clsx, isUnset, renderCell} from '../../utils'
+import {clsx, isUnset, mergeComponentProps, renderCell} from '../../utils'
 import {Checkbox} from '../checkbox'
 import {Radio} from '../radio'
 import {TdCell} from '../table'
@@ -26,9 +26,18 @@ export const DataGridRows = memo(<R extends RowType, V extends Id = Id>({
     const {multiple, toggleSelected, selectionStatus} = useSelectionContext()
 
     const {
+        slots, slotProps,
         rowProps, primaryKey, childrenKey, clickRowToSelect, indent, renderExpandIcon,
         expandedSet, flattedColumns, toggleExpanded
     } = useDataGridContext()
+
+    const {
+        tr: Tr = 'tr'
+    } = slots || {}
+
+    const {
+        tr: TrProps
+    } = slotProps || {}
 
     return rows?.flatMap((row, i, arr) => {
         const trKey = row[primaryKey]
@@ -43,14 +52,18 @@ export const DataGridRows = memo(<R extends RowType, V extends Id = Id>({
         let expandableIndex = -2
 
         const ret = [
-            <tr
-                {..._rowProps}
+            <Tr
+                {...mergeComponentProps<ComponentProps<'tr'>>(
+                    TrProps,
+                    _rowProps,
+                    {
+                        className: clsx(_rowProps, _level > 0 && classes.sub),
+                        onClick() {
+                            clickRowToSelect && toggleSelected!(trKey, row)
+                        }
+                    }
+                )}
                 key={trKey}
-                className={clsx(_rowProps, _level > 0 && classes.sub)}
-                onClick={e => {
-                    _rowProps?.onClick?.(e)
-                    clickRowToSelect && toggleSelected!(trKey, row)
-                }}
                 data-selected={status === 2}
             >
                 {flattedColumns?.flatMap((col, j) => {
@@ -125,7 +138,7 @@ export const DataGridRows = memo(<R extends RowType, V extends Id = Id>({
                         </TdCell>
                     )
                 })}
-            </tr>
+            </Tr>
         ]
 
         if (Array.isArray(children)) {

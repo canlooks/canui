@@ -97,8 +97,11 @@ export function OverlayBase({
                         onExited
                     }
                 )}
-            />
-            {props.children}
+            >
+                <div className={classes.childrenWrap}>
+                    {props.children}
+                </div>
+            </Fade>
         </div>,
         containerEl.current
     )

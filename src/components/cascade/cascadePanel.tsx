@@ -58,8 +58,7 @@ export function CascadePanel({
                 <MenuItem
                     {...mergeComponentProps<MenuItemProps>(
                         {
-                            showCheckbox,
-                            key: optVal
+                            showCheckbox
                         },
                         opt,
                         {
@@ -87,6 +86,7 @@ export function CascadePanel({
                             children: null
                         }
                     )}
+                    key={optVal}
                 />
             )
         })

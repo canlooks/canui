@@ -114,7 +114,7 @@ export interface CurdBaseProps<R extends RowType = RowType, F extends FormValue 
     /** 行数据转换为表单值的方法，若不指定，行数据会直接填入表单 */
     rowToForm?(row: R): F | Promise<F>
 
-    dialogProps?: CurdDialogProps<R, F>
+    dialogProps?: Partial<CurdDialogProps<R, F>>
     formProps?: FormProps<F>
     formRef?: Ref<FormRef<F>>
 }

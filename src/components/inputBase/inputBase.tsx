@@ -123,10 +123,10 @@ export const InputBase = (({
     }
 
     const shouldRenderClearButton = () => {
-        if (!clearable ||disabled || readOnly) {
+        if (!clearable || disabled || readOnly) {
             return false
         }
-        return isNoValue(innerValue.current)
+        return !isNoValue(innerValue.current)
     }
 
     return (

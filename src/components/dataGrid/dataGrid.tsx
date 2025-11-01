@@ -1,6 +1,6 @@
 import React, {ComponentProps, createContext, memo, ReactElement, ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 import {classes, style} from './dataGrid.style'
-import {DivProps, Id, Obj, ToRequired} from '../../types'
+import {DivProps, Id, Obj, SlotsAndProps, ToRequired} from '../../types'
 import {SelectionContext, SelectionContextProps, useSelectionContext} from '../selectionContext'
 import {Pagination, PaginationProps} from '../pagination'
 import {Table, TableContainer, TableProps} from '../table'
@@ -48,7 +48,9 @@ export interface ColumnType<R extends RowType = RowType> extends Omit<ComponentP
 }
 
 // props与context共享的属性
-type DataGridSharedProps<R extends RowType = RowType> = {
+interface DataGridSharedProps<R extends RowType = RowType> extends SlotsAndProps<{
+    tr: ComponentProps<'tr'>
+}> {
     rowProps?(row: R, index: number, rows: R[]): ComponentProps<'tr'>
 
     /** 数据的主键名，默认为`id` */
@@ -151,6 +153,9 @@ export function useDataGridContext<R extends RowType>(): IDataGridContext<R> {
 }
 
 export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
+    slots,
+    slotProps,
+
     columns,
     rows,
     rowProps,
@@ -397,9 +402,11 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
                                     <tbody>
                                     <DataGridContext value={
                                         useMemo(() => ({
+                                            slots, slotProps,
                                             rowProps, primaryKey, childrenKey, clickRowToSelect, indent, renderExpandIcon,
                                             expandedSet, flattedColumns, toggleExpanded
                                         }), [
+                                            slots, slotProps,
                                             rowProps, primaryKey, childrenKey, clickRowToSelect, indent, renderExpandIcon,
                                             expandedSet, flattedColumns
                                         ])

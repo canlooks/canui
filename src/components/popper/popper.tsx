@@ -610,9 +610,10 @@ export function Popper({
             const click = () => {
                 setOpenForce(false)
             }
-            anchorRef.current!.addEventListener('click', click)
+            const anchorEl = anchorRef.current!
+            anchorEl.addEventListener('click', click)
             return () => {
-                anchorRef.current!.removeEventListener('click', click)
+                anchorEl.removeEventListener('click', click)
             }
         }
     }, [clickToClose])

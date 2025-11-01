@@ -1,6 +1,5 @@
 import {css} from '@emotion/react'
 import {defineInnerClasses, defineCss} from '../../utils'
-import {classes as modalClasses} from '../modal/modal.style'
 
 export const classes = defineInnerClasses('image-preview', [
     'button',
@@ -66,10 +65,6 @@ export const style = defineCss(({spacing, easing, breakpoints}) => css`
         &:last-of-type {
             margin-left: ${spacing[4]}px;
         }
-    }
-
-    .${modalClasses.modal} {
-        padding: 0;
     }
 
     .${classes.galleryContainer} {
