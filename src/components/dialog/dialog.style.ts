@@ -26,6 +26,7 @@ export const style = defineCss(({background, borderRadius, boxShadow, spacing, c
     }
 
     .${modalClasses.childrenWrap} {
+        max-width: 100%;
         padding: 40px;
     }
 
@@ -33,7 +34,7 @@ export const style = defineCss(({background, borderRadius, boxShadow, spacing, c
         .${modalClasses.childrenWrap} {
             height: 100%;
         }
-        
+
         .${classes.card} {
             max-height: 100%;
         }
@@ -42,9 +43,10 @@ export const style = defineCss(({background, borderRadius, boxShadow, spacing, c
     &[data-scroll-behavior=body] {
         .${modalClasses.modal} {
             height: auto;
+            min-height: 100%;
         }
 
-        .${overlayBaseClasses.childrenWrap} {
+        .enter-done .${overlayBaseClasses.childrenWrap} {
             overflow: hidden auto;
         }
     }
