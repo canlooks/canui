@@ -50,7 +50,7 @@ export function OverlayBase({
         }
         return forceRender === true || prev
     }, [open, forceRender])
-    
+
     const containerEl = useContainer(container, effectContainer)
 
     useEffect(() => {
@@ -97,11 +97,8 @@ export function OverlayBase({
                         onExited
                     }
                 )}
-            >
-                <div className={classes.childrenWrap}>
-                    {props.children}
-                </div>
-            </Fade>
+            />
+            {props.children}
         </div>,
         containerEl.current
     )

@@ -43,9 +43,7 @@ export function Modal({
                     ...modalProps?.style
                 }}
             >
-                <div className={classes.childrenWrap} onClick={e => e.stopPropagation()}>
-                    {props.children}
-                </div>
+                {props.children}
             </Grow>
         </OverlayBase>
     )

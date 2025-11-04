@@ -1,9 +1,8 @@
 import {css} from '@emotion/react'
 import {defineInnerClasses, defineCss} from '../../utils'
-import {classes as modalClasses} from '../modal/modal.style'
-import {classes as overlayBaseClasses} from '../overlayBase/overlayBase.style'
 
 export const classes = defineInnerClasses('dialog', [
+    'container',
     'card',
     'icon',
     'content',
@@ -18,6 +17,16 @@ export const classes = defineInnerClasses('dialog', [
 ])
 
 export const style = defineCss(({background, borderRadius, boxShadow, spacing, colors, divider}) => css`
+    .${classes.container} {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        overflow: hidden;
+    }
+    
     .${classes.card} {
         display: flex;
         background-color: ${background.content};
@@ -25,29 +34,24 @@ export const style = defineCss(({background, borderRadius, boxShadow, spacing, c
         box-shadow: ${boxShadow[0]};
     }
 
-    .${modalClasses.childrenWrap} {
-        max-width: 100%;
-        padding: 40px;
-    }
-
     &[data-scroll-behavior=card] {
-        .${modalClasses.childrenWrap} {
-            height: 100%;
-        }
-
         .${classes.card} {
             max-height: 100%;
         }
     }
 
     &[data-scroll-behavior=body] {
-        .${modalClasses.modal} {
-            height: auto;
-            min-height: 100%;
-        }
-
-        .enter-done .${overlayBaseClasses.childrenWrap} {
+        .${classes.container} {
             overflow: hidden auto;
+            scrollbar-width: none;
+            
+            &[data-scrollable=true] {
+                align-items: flex-start;
+            }
+        }
+        
+        .enter-done .${classes.container} {
+            scrollbar-width: auto;
         }
     }
 

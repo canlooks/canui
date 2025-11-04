@@ -27,10 +27,7 @@ export const ErrorBoundary = memo(({
             return error.stack
         }
         const errorType = typeof error
-        if (errorType === 'string'
-            || errorType === 'number'
-            || errorType === 'boolean'
-        ) {
+        if (['string', 'number', 'boolean'].includes(errorType)) {
             return error.toString()
         }
     }

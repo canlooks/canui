@@ -339,7 +339,7 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
                 props.paginatable !== false
                     ? {
                         page: innerPage.current,
-                        pageSize: innerPageSize.current,
+                        pageSize: innerPageSize.current
                     }
                     : void 0,
                 innerFilterRef.current!.getFormValue(),
@@ -437,90 +437,90 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
                 )}
             >
                 {renderFilterableFn()}
-
-                {(creatable || toolbarLeft || toolbarRight || reloadable || resizable || columnConfigurable) &&
-                    <div className={classes.toolbar}>
-                        <div className={classes.toolbarLeft}>
-                            {creatable &&
-                                <Button
-                                    prefix={<Icon icon={faPlus}/>}
-                                    {...createButtonProps}
-                                    onClick={createHandler}
-                                >
-                                    {createName}{dataName}
-                                </Button>
-                            }
-                            {toolbarLeft}
-                        </div>
-                        <div className={classes.toolbarRight}>
-                            {!!toolbarRight &&
-                                <>
-                                    {toolbarRight}
-                                    <Divider className={classes.divider} orientation="vertical"/>
-                                </>
-                            }
-                            {reloadable &&
-                                <Tooltip title="刷新">
-                                    <Button
-                                        shape="circular"
-                                        variant="text"
-                                        color="text.secondary"
-                                        prefix={<Icon icon={faRotateRight}/>}
-                                        loading={innerLoading.current}
-                                        onClick={reloadHandler}
-                                    />
-                                </Tooltip>
-                            }
-                            {resizable &&
-                                <CurdResizable
-                                    innerSize={innerSize.current}
-                                    setInnerSize={setInnerSize}
-                                />
-                            }
-                            {columnConfigurable &&
-                                <CurdColumnConfig
-                                    columns={orderedColumns}
-                                    innerVisible={innerVisible.current}
-                                    setInnerVisible={setInnerVisible}
-                                    setInnerOrder={setInnerOrder}
-                                />
-                            }
-                        </div>
-                    </div>
-                }
-
-                <div className={classes.card}>
-                    <DataGrid
-                        {...dataGridProps}
-                        columns={actualColumns}
-                        tableProps={{
-                            ...props.tableProps,
-                            ...resizable && {size: innerSize.current}
-                        }}
-
-                        loading={innerLoading.current}
-                        rows={innerRows.current}
-
-                        paginatable={!loadRows && props.paginatable}
-                        renderPagination={loadRows && props.paginatable !== false
-                            ? () =>
-                                <Pagination
-                                    {...props.paginationProps}
-                                    total={innerTotal.current}
-                                    page={innerPage.current}
-                                    onPageChange={setInnerPage}
-                                    pageSize={innerPageSize.current}
-                                    onPageSizeChange={setInnerPageSize}
-                                />
-                            : props.renderPagination
-                        }
-
-                        orderColumn={innerOrderColumn.current}
-                        orderType={innerOrderType.current}
-                        onOrderChange={orderChangeHandler}
-                    />
-                </div>
             </Form>
+
+            {(creatable || toolbarLeft || toolbarRight || reloadable || resizable || columnConfigurable) &&
+                <div className={classes.toolbar}>
+                    <div className={classes.toolbarLeft}>
+                        {creatable &&
+                            <Button
+                                prefix={<Icon icon={faPlus}/>}
+                                {...createButtonProps}
+                                onClick={createHandler}
+                            >
+                                {createName}{dataName}
+                            </Button>
+                        }
+                        {toolbarLeft}
+                    </div>
+                    <div className={classes.toolbarRight}>
+                        {!!toolbarRight &&
+                            <>
+                                {toolbarRight}
+                                <Divider className={classes.divider} orientation="vertical"/>
+                            </>
+                        }
+                        {reloadable &&
+                            <Tooltip title="刷新">
+                                <Button
+                                    shape="circular"
+                                    variant="text"
+                                    color="text.secondary"
+                                    prefix={<Icon icon={faRotateRight}/>}
+                                    loading={innerLoading.current}
+                                    onClick={reloadHandler}
+                                />
+                            </Tooltip>
+                        }
+                        {resizable &&
+                            <CurdResizable
+                                innerSize={innerSize.current}
+                                setInnerSize={setInnerSize}
+                            />
+                        }
+                        {columnConfigurable &&
+                            <CurdColumnConfig
+                                columns={orderedColumns}
+                                innerVisible={innerVisible.current}
+                                setInnerVisible={setInnerVisible}
+                                setInnerOrder={setInnerOrder}
+                            />
+                        }
+                    </div>
+                </div>
+            }
+
+            <div className={classes.card}>
+                <DataGrid
+                    {...dataGridProps}
+                    columns={actualColumns}
+                    tableProps={{
+                        ...props.tableProps,
+                        ...resizable && {size: innerSize.current}
+                    }}
+
+                    loading={innerLoading.current}
+                    rows={innerRows.current}
+
+                    paginatable={!loadRows && props.paginatable}
+                    renderPagination={loadRows && props.paginatable !== false
+                        ? () =>
+                            <Pagination
+                                {...props.paginationProps}
+                                total={innerTotal.current}
+                                page={innerPage.current}
+                                onPageChange={setInnerPage}
+                                pageSize={innerPageSize.current}
+                                onPageSizeChange={setInnerPageSize}
+                            />
+                        : props.renderPagination
+                    }
+
+                    orderColumn={innerOrderColumn.current}
+                    orderType={innerOrderType.current}
+                    onOrderChange={orderChangeHandler}
+                />
+            </div>
 
             {(creatable || updatable) &&
                 <CurdDialog

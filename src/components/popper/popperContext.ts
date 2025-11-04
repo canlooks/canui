@@ -1,4 +1,4 @@
-import {createContext, SetStateAction, useContext, useRef, RefObject, useEffect} from 'react'
+import {createContext, SetStateAction, useContext, useRef, RefObject, useEffect, useMemo, useCallback} from 'react'
 
 export const PopperContext = createContext({
     autoClose: false,
@@ -18,21 +18,25 @@ export function usePopperContext() {
  * 当弹框打开时，滚动至已选项
  * @returns {RefObject} ref
  */
-export function useScrollToTarget<T extends HTMLElement>(scrollerRef: RefObject<Element | null>): RefObject<T | null> {
+export function useScrollToTarget<T extends HTMLElement>(scrollerRef: RefObject<HTMLElement | null>): RefObject<T | null> {
     const ref = useRef<T>(null)
 
     const {beforeOpenCallbacks} = usePopperContext()
 
-    useEffect(() => {
-        const beforeOpen = () => {
-            if (ref.current && scrollerRef.current && scrollerRef.current.scrollHeight > scrollerRef.current.clientHeight) {
-                scrollerRef.current.scrollTop = ref.current.offsetTop + ref.current.clientHeight / 2 - scrollerRef.current.clientHeight / 2
-            }
+    const beforeOpen = useCallback(() => {
+        const targetEl = ref.current
+        const scrollerEl = scrollerRef.current
+        if (targetEl && scrollerEl && scrollerEl.scrollHeight > scrollerEl.clientHeight) {
+            scrollerEl.scrollTop = targetEl.offsetTop + targetEl.clientHeight / 2 - scrollerEl.clientHeight / 2
         }
+    }, [])
+
+    useMemo(() => {
         beforeOpenCallbacks.add(beforeOpen)
-        return () => {
-            beforeOpenCallbacks.delete(beforeOpen)
-        }
+    }, [])
+
+    useEffect(() => () => {
+        beforeOpenCallbacks.delete(beforeOpen)
     }, [])
 
     return ref

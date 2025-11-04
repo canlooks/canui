@@ -93,8 +93,13 @@ export function Dialog({
     // 绑定ESC键
     const overlayRef = useEscapeClosable({escapeClosable, close}, onCancel)
 
+    const containerRef = useRef<HTMLDivElement>(null)
+
     // 点击遮罩层
     const onMaskClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target !== containerRef.current) {
+            return
+        }
         props.onMaskClick?.(e)
         if (maskClosable) {
             onCancel?.(e)
@@ -125,7 +130,7 @@ export function Dialog({
 
     /**
      * ---------------------------------------------------------------------
-     * 长内容滚动
+     * 长内容滚动 - card模式
      */
 
     const bodyRef = useRef<HTMLDivElement>(null)
@@ -140,6 +145,9 @@ export function Dialog({
     }
 
     useEffect(() => {
+        if (scrollBehavior !== 'card') {
+            return
+        }
         if (innerOpen.current) {
             const resizeObserver = new ResizeObserver(onScroll)
             resizeObserver.observe(bodyRef.current!)
@@ -148,7 +156,28 @@ export function Dialog({
                 resizeObserver.disconnect()
             }
         }
-    }, [innerOpen.current])
+    }, [innerOpen.current, scrollBehavior])
+
+    /**
+     * ---------------------------------------------------------------------
+     * 长内容滚动 - card模式
+     */
+
+    const cardRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (scrollBehavior === 'body' && innerOpen.current) {
+            const containerEl = containerRef.current!
+            const resizeObserver = new ResizeObserver(() => {
+                containerEl.dataset.scrollable = (containerEl.scrollHeight > containerEl.clientHeight).toString()
+            })
+            resizeObserver.observe(containerEl)
+            resizeObserver.observe(cardRef.current!)
+            return () => {
+                resizeObserver.disconnect()
+            }
+        }
+    }, [innerOpen.current, scrollBehavior])
 
     /**
      * ---------------------------------------------------------------------
@@ -190,56 +219,62 @@ export function Dialog({
             css={style}
             className={clsx(classes.root, props.className)}
             open={innerOpen.current}
-            onMaskClick={onMaskClick}
             data-scroll-behavior={scrollBehavior}
             data-draggable={draggable}
         >
-            <Draggable container={() => overlayRef.current}>
-                {(targetProps, handleProps) =>
-                    <div
-                        className={classes.card}
-                        {...targetProps}
-                        style={{width, minWidth, maxWidth, ...targetProps.style}}
-                    >
-                        {!!icon &&
-                            <div className={classes.icon}>{icon}</div>
-                        }
-                        <div className={classes.content}>
-                            {!!(title || showClose) &&
-                                <div className={classes.titleRow} {...handleProps}>
-                                    <div className={classes.title}>{title}</div>
-                                    {showClose &&
-                                        <Button
-                                            shape="circular"
-                                            variant="text"
-                                            color="text.secondary"
-                                            {...closeProps}
-                                            className={clsx(classes.close, closeProps?.className)}
-                                            onClick={closeHandler}
-                                        >
-                                            <Icon icon={faXmark}/>
-                                        </Button>
+            <div ref={containerRef} className={classes.container} onClick={onMaskClick}>
+                <Draggable container={() => overlayRef.current}>
+                    {(targetProps, handleProps) =>
+                        <div
+                            ref={cardRef}
+                            className={classes.card}
+                            {...targetProps}
+                            style={{width, minWidth, maxWidth, ...targetProps.style}}
+                        >
+                            {!!icon &&
+                                <div className={classes.icon}>{icon}</div>
+                            }
+                            <div className={classes.content}>
+                                {!!(title || showClose) &&
+                                    <div className={classes.titleRow} {...handleProps}>
+                                        <div className={classes.title}>{title}</div>
+                                        {showClose &&
+                                            <Button
+                                                shape="circular"
+                                                variant="text"
+                                                color="text.secondary"
+                                                {...closeProps}
+                                                className={clsx(classes.close, closeProps?.className)}
+                                                onClick={closeHandler}
+                                            >
+                                                <Icon icon={faXmark}/>
+                                            </Button>
+                                        }
+                                    </div>
+                                }
+                                <div
+                                    ref={bodyRef}
+                                    className={classes.body}
+                                    onScroll={scrollBehavior === 'card' ? onScroll : void 0}
+                                >
+                                    {!!prefix &&
+                                        <div className={classes.prefix}>{prefix}</div>
+                                    }
+                                    <div ref={bodyWrapRef} className={classes.bodyWrap}>
+                                        {props.children}
+                                    </div>
+                                    {!!suffix &&
+                                        <div className={classes.suffix}>{suffix}</div>
                                     }
                                 </div>
-                            }
-                            <div ref={bodyRef} className={classes.body} onScroll={onScroll}>
-                                {!!prefix &&
-                                    <div className={classes.prefix}>{prefix}</div>
-                                }
-                                <div ref={bodyWrapRef} className={classes.bodyWrap}>
-                                    {props.children}
-                                </div>
-                                {!!suffix &&
-                                    <div className={classes.suffix}>{suffix}</div>
+                                {(typeof footer === 'undefined' || !!footer) &&
+                                    <div className={classes.footer}>{renderFooter()}</div>
                                 }
                             </div>
-                            {(typeof footer === 'undefined' || !!footer) &&
-                                <div className={classes.footer}>{renderFooter()}</div>
-                            }
                         </div>
-                    </div>
-                }
-            </Draggable>
+                    }
+                </Draggable>
+            </div>
         </Modal>
     )
 }

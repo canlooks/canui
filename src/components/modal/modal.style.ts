@@ -3,7 +3,6 @@ import {defineInnerClasses} from '../../utils'
 
 export const classes = defineInnerClasses('modal', [
     'modal',
-    'childrenWrap'
 ])
 
 export const style = css`
@@ -13,5 +12,10 @@ export const style = css`
         display: flex;
         align-items: center;
         justify-content: center;
+        pointer-events: none;
+
+        > * {
+            pointer-events: all;
+        }
     }
 `

@@ -138,6 +138,7 @@ export const style = defineCss(({spacing, mode, gray, text, colors, easing}) => 
     }
 
     .${classes.empty} {
+        height: auto;
         position: sticky;
         left: 0;
     }

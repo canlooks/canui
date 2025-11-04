@@ -87,7 +87,7 @@ export const style = defineCss(({spacing, text, background, borderRadius}) => cs
         min-height: 0;
         border-radius: ${borderRadius}px;
 
-        .${loadingClasses.container} {
+        .${loadingClasses.root} {
             height: 100%;
         }
     }

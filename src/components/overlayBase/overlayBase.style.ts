@@ -5,7 +5,6 @@ import {zIndex} from '../theme'
 
 export const classes = defineInnerClasses('overlay-base', [
     'mask',
-    'childrenWrap'
 ])
 
 export const style = defineCss(theme => {
@@ -28,11 +27,6 @@ export const style = defineCss(theme => {
 
             &:not([data-open=true]) {
                 pointer-events: none;
-            }
-            
-            .${classes.childrenWrap} {
-                height: 100%;
-                position: relative;
             }
         `
     ]

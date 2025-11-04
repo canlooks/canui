@@ -43,14 +43,14 @@ export function useFormContext<V extends FormValue>(): FormContext<V> {
     return useContext(FormContext)
 }
 
-type FormValueContextType<V extends FormValue> = {
+type FormValueContext<V extends FormValue> = {
     formValue?: V
     setFieldValue?(field: FieldPath, value: any, silent?: boolean): void
 }
 
-const FormValueContext = createContext<FormValueContextType<any>>({})
+const FormValueContext = createContext<FormValueContext<any>>({})
 
-export function useFormValueContext<V extends FormValue>(): FormValueContextType<V> {
+export function useFormValueContext<V extends FormValue>(): FormValueContext<V> {
     return useContext(FormValueContext)
 }
 

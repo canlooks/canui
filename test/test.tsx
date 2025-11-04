@@ -2,35 +2,19 @@ import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
 import {App, Button, Curd, DataGrid, Dialog, FormItem, Icon, Segmented, Select, SerialInput, Table, TableContainer, TouchRipple} from '../src'
 import {DateTimePicker} from '../src/components/dateTimePicker'
-import React from 'react'
+import React, {useState} from 'react'
 import {RC, useReactive} from '@canlooks/reactive/react'
 import {Input} from '../src'
 import {faPassport} from '@fortawesome/free-solid-svg-icons'
 import {PowerTable} from './powerTable/powerTable'
+import {Dayjs} from 'dayjs'
 
 const Root = RC(() => {
-    const [open, setOpen] = React.useState<boolean>(false)
+    const [value, setValue] = useState<Dayjs | null>(null)
 
     return (
         <>
-            <button onClick={() => setOpen(true)}>button</button>
-            <Dialog open={open} onClose={() => setOpen(false)} scrollBehavior="body">
-                <h1>123</h1>
-                <h1>123</h1>
-                {/*<h1>123</h1>*/}
-                {/*<h1>123</h1>*/}
-                {/*<h1>123</h1>*/}
-                {/*<h1>123</h1>*/}
-                {/*<h1>123</h1>*/}
-                {/*<h1>123</h1>*/}
-                {/*<h1>123</h1>*/}
-                {/*<h1>123</h1>*/}
-                {/*<h1>123</h1>*/}
-                {/*<h1>123</h1>*/}
-                {/*<h1>123</h1>*/}
-                {/*<h1>123</h1>*/}
-                {/*<h1>123</h1>*/}
-            </Dialog>
+            <DateTimePicker format="YYYY年MM月DD日 HH时" value={value} onChange={setValue}/>
         </>
     )
 })

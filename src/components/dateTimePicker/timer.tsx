@@ -62,10 +62,7 @@ function TimerItem({
         if (min && min.isSame(value, 'date') && min.get(type) > num) {
             return true
         }
-        if (max && max.isSame(value, 'date') && max.get(type) < num) {
-            return true
-        }
-        return false
+        return !!(max && max.isSame(value, 'date') && max.get(type) < num)
     }
 
     const scrollerRef = useRef<HTMLDivElement>(null)

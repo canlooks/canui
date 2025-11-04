@@ -27,7 +27,6 @@ export function useStyle({size}: { size: string }) {
                 z-index: 0;
                 overflow: auto;
                 scrollbar-width: none;
-                -ms-overflow-style: none;
 
                 &::-webkit-scrollbar {
                     display: none;

@@ -46,6 +46,7 @@ function InnerFormItem<I>({
         checked,
         value,
         onChange(e: any) {
+            (props.children as any).props?.onChange?.(e)
             onChange?.(e)
             context.onChange?.()
         }
