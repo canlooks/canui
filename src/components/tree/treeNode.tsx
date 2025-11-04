@@ -65,6 +65,11 @@ export const TreeNode = memo(({
         overingTimer
     } = useTreeDndContext()
 
+    const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        props.onClick?.(e)
+        !showCheckbox && clickHandler()
+    }
+
     const dragHandleProps = useDraggable({
         disabled: !sortable,
         onDragStart(e) {
@@ -86,7 +91,8 @@ export const TreeNode = memo(({
                     placement: isOffsetSatisfied ? 'child' : placement.current
                 })
             }
-        }
+        },
+        onClick
     })
 
     const nodeRef = useRef<HTMLDivElement>(null)
@@ -156,6 +162,7 @@ export const TreeNode = memo(({
                 data-disabled={disabled}
                 data-dragging={dragging === value}
                 {...!showDragHandle && dragHandleProps}
+                onClick={showDragHandle ? onClick : props.onClick}
             >
                 {renderedIndents}
 
@@ -235,7 +242,7 @@ export const TreeNode = memo(({
                     }
                 </div>
             </div>
-            
+
             {hasChildren &&
                 <Collapse className={classes.levelBlock} in={currentExpanded}>
                     {Children.map(props.children, child => {

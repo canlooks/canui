@@ -38,6 +38,8 @@ export const PanelDates = memo(({
     max,
     disabledDates,
     showToday,
+    todayButtonText = '回今天',
+    todayButtonProps,
     _defaultNull
 }: PanelProps) => {
     const today = dayjs()
@@ -151,9 +153,13 @@ export const PanelDates = memo(({
                 <div className={classes.foot}>
                     <Button
                         variant="text"
-                        onClick={() => setValue(dayjs())}
+                        {...todayButtonProps}
+                        onClick={e => {
+                            todayButtonProps?.onClick?.(e)
+                            setValue(dayjs())
+                        }}
                     >
-                        回今天
+                        {todayButtonText}
                     </Button>
                 </div>
             }

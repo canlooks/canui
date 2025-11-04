@@ -2,11 +2,12 @@ import {Size} from '../../types'
 import dayjs, {Dayjs} from 'dayjs'
 import {clsx, useControlled} from '../../utils'
 import {PanelDates} from './panelDates'
-import {Dispatch, SetStateAction, useState} from 'react'
+import {Dispatch, ReactNode, SetStateAction, useState} from 'react'
 import {classes, style} from './calendar.style'
 import {Flex, FlexProps} from '../flex'
 import {PanelYear} from './panelYear'
 import {PanelMonth} from './panelMonth'
+import {ButtonProps} from '../button'
 
 export type ViewLevel = 'date' | 'month' | 'year'
 
@@ -16,6 +17,8 @@ type SharedProps = {
     disabledDates?: (date: Dayjs) => boolean
     /** 是否显示`回今天`按钮，默认为`true` */
     showToday?: boolean
+    todayButtonText?: ReactNode
+    todayButtonProps?: ButtonProps
     /** @private */
     _defaultNull?: boolean
 }
@@ -41,6 +44,8 @@ export interface PanelProps extends SharedProps {
 export const Calendar = ({
     viewLevel = 'date',
     showToday = true,
+    todayButtonText = '回今天',
+    todayButtonProps,
     size = 'medium',
     defaultValue = null,
     min,
@@ -75,6 +80,8 @@ export const Calendar = ({
             }
         },
         showToday,
+        todayButtonText,
+        todayButtonProps,
         _defaultNull
     }
 

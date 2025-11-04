@@ -1,7 +1,8 @@
-import {createContext, Dispatch, memo, ReactNode, RefObject, SetStateAction, useContext, useRef, useState} from 'react'
+import {createContext, Dispatch, memo, ReactNode, RefObject, SetStateAction, useContext, useEffect, useRef, useState} from 'react'
 import {Id} from '../../types'
 import {useSyncState} from '../../utils'
 import {SortPlacement, TreeBaseProps} from './tree'
+import {classes} from './tree.style'
 
 type TreeDndContextItem<T> = [T | undefined, Dispatch<SetStateAction<T | undefined>>]
 
@@ -41,6 +42,15 @@ export const TreeDnd = memo(({
     const overing = useState<Id | undefined>(void 0)
     const placement = useSyncState<SortPlacement | undefined>(void 0)
 
+    useEffect(() => {
+        if (dragging[0]) {
+            document.documentElement.style.cursor = 'grabbing'
+        }
+        return () => {
+            document.documentElement.style.cursor = ''
+        }
+    }, [dragging[0]])
+
     const overingTimer = useRef<any>(void 0)
 
     return (
@@ -49,7 +59,9 @@ export const TreeDnd = memo(({
             isOffsetSatisfied, dragging, overing, placement,
             overingTimer
         }}>
-            {children}
+            <div className={classes.container} data-dragging={!!dragging[0]}>
+                {children}
+            </div>
         </TreeDndContext>
     )
 })

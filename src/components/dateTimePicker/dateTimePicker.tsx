@@ -116,6 +116,7 @@ export const DateTimePicker = memo(({
                                     min={min}
                                     max={max}
                                     disabledDates={disabledDates}
+                                    todayButtonText={showTimer ? '现在' : void 0}
                                 />
                             }
                             {showTimer &&
@@ -124,7 +125,7 @@ export const DateTimePicker = memo(({
                                         showHours={format.includes('H')}
                                         showMinutes={format.includes('m')}
                                         showSeconds={format.includes('s')}
-                                        value={innerValue}
+                                        value={dateValue.current}
                                         onChange={setDateValue}
                                     />
                                 </DateTimePickerContext>

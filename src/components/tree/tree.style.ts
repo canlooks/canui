@@ -5,6 +5,7 @@ import Color from 'color'
 export const classes = defineInnerClasses('tree', [
     'levelBlock',
     'search',
+    'container',
     'node',
     'contentWrap',
     'indent',
@@ -31,6 +32,12 @@ export const style = defineCss(({spacing, mode, borderRadius, text, easing, gray
     return css`
         .${classes.search} {
             margin-bottom: ${spacing[3]}px;
+        }
+        
+        .${classes.container}[data-dragging=true] {
+            &, * {
+                cursor: grabbing;
+            }
         }
 
         .${classes.node} {
@@ -225,10 +232,6 @@ export const style = defineCss(({spacing, mode, borderRadius, text, easing, gray
 
         &[data-sortable=true] {
             .${classes.node} {
-                &:not(:has(.${classes.dragHandle})) {
-                    cursor: grab;
-                }
-
                 &[data-dragging=true] {
                     &, &:active {
                         background-color: ${selectedBg};
