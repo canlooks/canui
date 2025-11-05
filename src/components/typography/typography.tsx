@@ -1,4 +1,4 @@
-import React, {CSSProperties, ComponentType, ReactNode, memo, useLayoutEffect, useRef, useState, ElementType} from 'react'
+import React, {CSSProperties, ComponentType, ReactNode, memo, useRef, useState, ElementType} from 'react'
 import {ColorPropsValue, OverridableProps} from '../../types'
 import {clsx, cloneRef, useUnmounted} from '../../utils'
 import {useStyle, classes, editStyle} from './typography.style'
@@ -102,13 +102,6 @@ export const Typography = memo(({
      */
 
     const [expanded, setExpanded] = useState(false)
-
-    useLayoutEffect(() => {
-        if (textRef.current && ellipsisRows > 1) {
-            const {lineHeight} = getComputedStyle(textRef.current)
-            textRef.current.style.height = parseFloat(lineHeight) * ellipsisRows + 'px'
-        }
-    })
 
     const style = useStyle({color: color || 'text.primary'})
 

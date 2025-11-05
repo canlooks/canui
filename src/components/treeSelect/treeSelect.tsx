@@ -11,6 +11,7 @@ import {Id, SelectableSingleProps} from '../../types'
 import {useSelection} from '../selectionContext'
 import {Icon} from '../icon'
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons/faChevronDown'
+import {Placeholder} from '../placeholder'
 
 interface TreeSelectBaseProps<N extends NodeType<V>, V extends Id = Id> extends TreeBaseProps<N, V> {
     /** <select />内部由<input />实现 */
@@ -160,21 +161,24 @@ export const TreeSelect = memo(<N extends NodeType<V>, V extends Id = Id>({
             disabled={props.disabled || props.readOnly}
             sizeAdaptable={sizeAdaptable}
             content={
-                <Tree
-                    {...props}
-                    nodes={options}
-                    value={innerValue}
-                    onChange={setInnerValue}
-                />
-            }
+                options?.length
+                    ? <Tree
+                        primaryKey="value"
+                        {...props}
+                        nodes={options}
+                        value={innerValue}
+                        onChange={setInnerValue}
+                    />
+                    : <Placeholder/>
+                }
             {...popperProps}
-            popperRef={popperRef}
-            onPointerDown={e => {
+                popperRef={popperRef}
+                onPointerDown={e => {
                 popperProps?.onPointerDown?.(e)
                 e.preventDefault()
             }}
-        >
-            <InputBase<'input'>
+                >
+                <InputBase<'input'>
                 clearable={!!props.multiple}
                 css={style}
                 className={clsx(classes.root, props.className)}
@@ -185,31 +189,31 @@ export const TreeSelect = memo(<N extends NodeType<V>, V extends Id = Id>({
                 autoFocus={autoFocus}
                 disabled={props.disabled}
                 readOnly={props.readOnly}
-            >
-                {inputBaseProps =>
-                    <div className={classes.contentWrap}>
-                        {isNoValue(innerValue)
-                            ? <div className={classes.placeholder}>{placeholder}</div>
-                            : <div className={classes.backfill}>
-                                {renderBackfillFn()}
-                            </div>
-                        }
-                        <input
-                            size={1}
-                            {...mergeComponentProps(inputBaseProps, inputProps)}
-                            data-hidden="true"
-                        />
-                        <div className={classes.arrow} data-open={open}>
-                            {loading
-                                ? <LoadingIndicator/>
-                                : <Icon icon={faChevronDown}/>
-                            }
-                        </div>
-                    </div>
+                >
+            {inputBaseProps =>
+                <div className={classes.contentWrap}>
+            {isNoValue(innerValue)
+                ? <div className={classes.placeholder}>{placeholder}</div>
+                : <div className={classes.backfill}>
+                    {renderBackfillFn()}
+                </div>
+            }
+            <input
+                size={1}
+                {...mergeComponentProps(inputBaseProps, inputProps)}
+                data-hidden="true"
+            />
+            <div className={classes.arrow} data-open={open}>
+                {loading
+                    ? <LoadingIndicator/>
+                    : <Icon icon={faChevronDown}/>
                 }
-            </InputBase>
-        </Popper>
-    )
+            </div>
+        </div>
+}
+</InputBase>
+</Popper>
+)
 }) as any as {
     <N extends NodeType<V>, V extends Id = Id>(props: TreeSelectProps<N, V>): ReactElement
     Option: typeof TreeNode

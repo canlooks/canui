@@ -124,10 +124,15 @@ export const style = defineCss(theme => {
                         flex: 1;
                         font-weight: bold;
                         font-size: ${15 / 14}em;
+                        margin-top: 2px;
 
                         & + .${classes.content} {
                             margin-top: 4px;
                         }
+                    }
+
+                    .${classes.content} {
+                        margin-top: 2px;
                     }
                 }
 

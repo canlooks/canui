@@ -1,4 +1,4 @@
-import {ReactNode, useEffect, useRef} from 'react'
+import React, {ReactNode, useEffect, useRef} from 'react'
 import {classes, useStyle} from './drawer.style'
 import {clsx, useControlled} from '../../utils'
 import {OverlayBase, OverlayBaseProps} from '../overlayBase'
@@ -24,6 +24,11 @@ export interface DrawerProps extends Omit<OverlayBaseProps, 'title'> {
     onClose?(reason: DrawerCloseReason): void
 
     slideProps?: TransitionBaseProps<HTMLDivElement>
+
+    onScrollToTop?(): void
+    /** 距离底部`toBottomThreshold`像素即提前触发{@link onScrollToBottom}，默认为`5` */
+    toBottomThreshold?: number
+    onScrollToBottom?(): void
 }
 
 export type DrawerCloseReason = 'escape' | 'closed' | 'maskClicked'
@@ -47,6 +52,9 @@ export function Drawer({
     open,
     onClose,
     slideProps,
+    onScrollToTop,
+    toBottomThreshold = 5,
+    onScrollToBottom,
     ...props
 }: DrawerProps) {
     const [innerOpen, setInnerOpen] = useControlled(defaultOpen, open)
@@ -75,6 +83,11 @@ export function Drawer({
     const onScroll = () => {
         const el = bodyRef.current!
         el.dataset.bordered = (el.scrollHeight > el.clientHeight && el.scrollTop > 0).toString()
+        if (el.scrollTop === 0) {
+            onScrollToTop?.()
+        } else if (el.scrollTop >= el.scrollHeight - el.clientHeight - toBottomThreshold) {
+            onScrollToBottom?.()
+        }
     }
 
     useEffect(() => {
