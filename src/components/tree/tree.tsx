@@ -2,7 +2,7 @@ import {Children, ReactElement, ReactNode, createContext, isValidElement, memo, 
 import {DivProps, Id, SelectableProps} from '../../types'
 import {OptionType, SelectionContext, SelectionContextBaseProps, SelectionContextProps} from '../selectionContext'
 import {Input, InputProps} from '../input'
-import {classes, style} from './tree.style'
+import {classes, useStyle} from './tree.style'
 import {cloneRef, clsx, useTreeSearch} from '../../utils'
 import {Highlight} from '../highlight'
 import {TreeNode, TreeNodeProps} from './treeNode'
@@ -14,12 +14,12 @@ export interface NodeType<V extends Id = Id> extends Partial<Omit<TreeNodeProps,
     children?: NodeType<V>[]
 }
 
-export type SortPlacement = 'before' | 'after'
+export type SortPlacement = 'before' | 'after' | 'child'
 
 export type SortInfo<V extends Id = Id> = {
     source: V
     destination: V
-    placement: SortPlacement | 'child'
+    placement: SortPlacement
 }
 
 export interface TreeBaseProps<N extends NodeType<V>, V extends Id = Id> extends Omit<SelectionContextBaseProps<N, V>, 'options'>,
@@ -161,10 +161,11 @@ export const Tree = memo(<N extends NodeType<V>, V extends Id = Id>({
         <div
             {...props}
             ref={cloneRef(containerRef, props.ref)}
-            css={style}
+            css={useStyle({indent})}
             className={clsx(classes.root, classes.levelBlock, props.className)}
             data-show-line={showLine}
             data-sortable={sortable}
+            // onDragOver={e => e.preventDefault()}
         >
             {searchable &&
                 <Input

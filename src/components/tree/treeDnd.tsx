@@ -1,21 +1,17 @@
-import {createContext, Dispatch, memo, ReactNode, RefObject, SetStateAction, useContext, useEffect, useRef, useState} from 'react'
+import {createContext, Dispatch, memo, ReactNode, RefObject, SetStateAction, useContext, useRef, useState} from 'react'
 import {Id} from '../../types'
-import {useSyncState} from '../../utils'
 import {SortPlacement, TreeBaseProps} from './tree'
-import {classes} from './tree.style'
+import {treeDndClasses} from './treeDnd.style'
 
 type TreeDndContextItem<T> = [T | undefined, Dispatch<SetStateAction<T | undefined>>]
 
 type ITreeDndContext = {
     sortable: boolean
     showDragHandle: boolean
-    containerRef: RefObject<HTMLDivElement | null>
-    isDeeperSatisfied: [boolean, Dispatch<SetStateAction<boolean>>]
     dragging: TreeDndContextItem<Id>
-    overing: TreeDndContextItem<Id>
-    placement: [RefObject<SortPlacement | undefined>, Dispatch<SetStateAction<SortPlacement | undefined>>]
+    overing: RefObject<Id | undefined>
+    placement: RefObject<SortPlacement | undefined>
     onSort: TreeBaseProps<any>['onSort']
-    overingTimer: RefObject<any>
 }
 
 export const TreeDndContext = createContext({} as ITreeDndContext)
@@ -37,31 +33,16 @@ export const TreeDnd = memo(({
     containerRef: RefObject<HTMLDivElement | null>
     children: ReactNode
 }) => {
-    const isDeeperSatisfied = useState(false)
     const dragging = useState<Id | undefined>(void 0)
-    const overing = useState<Id | undefined>(void 0)
-    const placement = useSyncState<SortPlacement | undefined>(void 0)
-
-    useEffect(() => {
-        if (dragging[0]) {
-            document.documentElement.style.cursor = 'grabbing'
-        }
-        return () => {
-            document.documentElement.style.cursor = ''
-        }
-    }, [dragging[0]])
-
-    const overingTimer = useRef<any>(void 0)
+    const overing = useRef<Id | undefined>(void 0)
+    const placement = useRef<SortPlacement | undefined>(void 0)
 
     return (
         <TreeDndContext value={{
-            sortable, showDragHandle, onSort, containerRef,
-            isDeeperSatisfied, dragging, overing, placement,
-            overingTimer
+            sortable, showDragHandle, onSort,
+            dragging, overing, placement
         }}>
-            <div className={classes.container} data-dragging={!!dragging[0]}>
-                {children}
-            </div>
+            <div className={treeDndClasses.levelBlock}>{children}</div>
         </TreeDndContext>
     )
 })
