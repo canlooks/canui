@@ -10,7 +10,7 @@ type ITreeDndContext = {
     sortable: boolean
     showDragHandle: boolean
     containerRef: RefObject<HTMLDivElement | null>
-    isOffsetSatisfied: [boolean, Dispatch<SetStateAction<boolean>>]
+    isDeeperSatisfied: [boolean, Dispatch<SetStateAction<boolean>>]
     dragging: TreeDndContextItem<Id>
     overing: TreeDndContextItem<Id>
     placement: [RefObject<SortPlacement | undefined>, Dispatch<SetStateAction<SortPlacement | undefined>>]
@@ -37,7 +37,7 @@ export const TreeDnd = memo(({
     containerRef: RefObject<HTMLDivElement | null>
     children: ReactNode
 }) => {
-    const isOffsetSatisfied = useState(false)
+    const isDeeperSatisfied = useState(false)
     const dragging = useState<Id | undefined>(void 0)
     const overing = useState<Id | undefined>(void 0)
     const placement = useSyncState<SortPlacement | undefined>(void 0)
@@ -56,7 +56,7 @@ export const TreeDnd = memo(({
     return (
         <TreeDndContext value={{
             sortable, showDragHandle, onSort, containerRef,
-            isOffsetSatisfied, dragging, overing, placement,
+            isDeeperSatisfied, dragging, overing, placement,
             overingTimer
         }}>
             <div className={classes.container} data-dragging={!!dragging[0]}>

@@ -33,7 +33,7 @@ export const style = defineCss(({spacing, mode, borderRadius, text, easing, gray
         .${classes.search} {
             margin-bottom: ${spacing[3]}px;
         }
-        
+
         .${classes.container}[data-dragging=true] {
             &, * {
                 cursor: grabbing;
@@ -117,7 +117,7 @@ export const style = defineCss(({spacing, mode, borderRadius, text, easing, gray
 
             .${classes.label} {
                 flex: 1;
-                padding: 5px 0;
+                padding: 6px 0;
 
             }
 
@@ -130,88 +130,6 @@ export const style = defineCss(({spacing, mode, borderRadius, text, easing, gray
                 color: ${text.disabled};
                 margin-left: ${spacing[2]}px;
             }
-
-            .${classes.dragMask} {
-                position: absolute;
-                inset: 0;
-
-                > div {
-                    width: 100%;
-                    height: 50%;
-                    position: absolute;
-                    left: 0;
-
-                    &:before, &:after {
-                        content: '';
-                        display: none;
-                        position: absolute;
-                        pointer-events: none;
-                    }
-
-                    &:before {
-                        width: 8px;
-                        height: 8px;
-                        border: 2px solid ${colors.primary.main};
-                        border-radius: 50%;
-                        left: 0;
-                    }
-
-                    &:after {
-                        width: 100%;
-                        height: 2px;
-                        background: ${colors.primary.main};
-                        left: 8px;
-                    }
-
-                    &.${classes.dragMaskPrev} {
-                        top: 0;
-
-                        &:before {
-                            top: -4px;
-                        }
-
-                        &:after {
-                            top: -1px;
-                        }
-                    }
-
-                    &.${classes.dragMaskNext} {
-                        bottom: 0;
-
-                        &:before {
-                            bottom: -4px;
-                        }
-
-                        &:after {
-                            bottom: -1px;
-                        }
-                    }
-
-                    &[data-offset=true] {
-                        &:before {
-                            width: 10px;
-                            border-top: 0;
-                            border-right: 0;
-                            border-bottom: 2px dashed ${colors.primary.main};
-                            border-left: 2px dashed ${colors.primary.main};
-                            border-radius: 0;
-                            left: 24px;
-                            bottom: -1px;
-                        }
-
-                        &:after {
-                            width: calc(100% - 36px);
-                            left: 36px;
-                        }
-                    }
-
-                    &[data-overing=true] {
-                        &:before, &:after {
-                            display: block;
-                        }
-                    }
-                }
-            }
         }
 
         &[data-show-line=true] {
@@ -221,26 +139,6 @@ export const style = defineCss(({spacing, mode, borderRadius, text, easing, gray
                 height: 100%;
                 margin-left: 14px;
                 background-color: ${divider};
-            }
-        }
-
-        &, .${classes.levelBlock} {
-            &[data-active=true] {
-                outline: 1px dashed ${colors.primary.main};
-            }
-        }
-
-        &[data-sortable=true] {
-            .${classes.node} {
-                &[data-dragging=true] {
-                    &, &:active {
-                        background-color: ${selectedBg};
-                    }
-                }
-
-                &:has(+ .${classes.levelBlock}[data-active=true]) {
-                    outline: 1px solid ${colors.primary.main};
-                }
             }
         }
     `

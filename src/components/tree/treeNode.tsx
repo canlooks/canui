@@ -20,6 +20,8 @@ export interface TreeNodeProps extends Omit<DivProps, 'prefix'> {
     disabled?: boolean
     /** @private 内部使用，表明该节点的层级 */
     _level?: number
+    /** @private 内部使用，是否为该层级最后一个节点 */
+    _isLast?: boolean
 }
 
 export const TreeNode = memo(({
@@ -29,6 +31,7 @@ export const TreeNode = memo(({
     suffix,
     disabled,
     _level = 0,
+    _isLast,
     ...props
 }: TreeNodeProps) => {
     const {
@@ -58,87 +61,14 @@ export const TreeNode = memo(({
 
     const {
         sortable, showDragHandle, onSort, containerRef,
-        isOffsetSatisfied: [isOffsetSatisfied, setIsOffsetSatisfied],
+        isDeeperSatisfied: [isDeeperSatisfied, setIsDeeperSatisfied],
         dragging: [dragging, setDragging],
         overing: [overing, setOvering],
         placement: [placement, setPlacement],
         overingTimer
     } = useTreeDndContext()
 
-    const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        props.onClick?.(e)
-        !showCheckbox && clickHandler()
-    }
-
-    const dragHandleProps = useDraggable({
-        disabled: !sortable,
-        onDragStart(e) {
-            setDragging(value)
-            setOvering(void 0)
-            currentExpanded && toggleExpanded(value)
-        },
-        onDrag({diff: [diffX]}: DragInfo) {
-            setIsOffsetSatisfied(diffX > indent * 2)
-        },
-        onDragEnd() {
-            inactiveParentBlock()
-            leaveMask()
-            setDragging(void 0)
-            if (typeof overing !== 'undefined' && placement.current) {
-                onSort?.({
-                    source: dragging!,
-                    destination: overing,
-                    placement: isOffsetSatisfied ? 'child' : placement.current
-                })
-            }
-        },
-        onClick
-    })
-
     const nodeRef = useRef<HTMLDivElement>(null)
-
-    const activeParentBlock = (target: HTMLDivElement) => {
-        return findPredecessor(target, parent => {
-            const ret = parent.classList.contains(classes.levelBlock)
-            if (ret) {
-                parent.dataset.active = 'true'
-                return true
-            }
-        })
-    }
-
-    const inactiveParentBlock = () => {
-        const fn = (el: HTMLElement) => {
-            el.dataset.active = 'false'
-        }
-        fn(containerRef.current!)
-        containerRef.current!.querySelectorAll<HTMLElement>('.' + classes.levelBlock).forEach(fn)
-    }
-
-    const overingMask = (e: React.PointerEvent<HTMLDivElement>) => {
-        if (hasChildren && !expandedSet.has(value)) {
-            overingTimer.current ||= setTimeout(() => {
-                toggleExpanded(value)
-                placement.current === 'after' && inactiveParentBlock()
-            }, 800)
-        }
-    }
-
-    const leaveMask = () => {
-        clearTimeout(overingTimer.current)
-        overingTimer.current = void 0
-    }
-
-    const onPointerEnter = (e: React.PointerEvent<HTMLDivElement>, placement: SortPlacement) => {
-        setOvering(value)
-        setPlacement(placement)
-        activeParentBlock(e.currentTarget)
-    }
-
-    const onPointerLeave = () => {
-        setOvering(void 0)
-        inactiveParentBlock()
-    }
 
     /**
      * ---------------------------------------------------------------------
@@ -161,8 +91,8 @@ export const TreeNode = memo(({
                 data-read-only={readOnly}
                 data-disabled={disabled}
                 data-dragging={dragging === value}
-                {...!showDragHandle && dragHandleProps}
-                onClick={showDragHandle ? onClick : props.onClick}
+                // {...!showDragHandle && dragHandleProps}
+                // onClick={showDragHandle ? onClick : props.onClick}
             >
                 {renderedIndents}
 
@@ -192,7 +122,7 @@ export const TreeNode = memo(({
                     {sortable && showDragHandle &&
                         <div
                             className={classes.dragHandle}
-                            {...dragHandleProps}
+                            // {...dragHandleProps}
                             onClick={e => e.stopPropagation()}
                         >
                             <Icon icon={faGripVertical}/>
@@ -215,30 +145,6 @@ export const TreeNode = memo(({
                     <div className={classes.label}>{label}</div>
                     {!!suffix &&
                         <div className={classes.suffix}>{suffix}</div>
-                    }
-
-                    {typeof dragging !== 'undefined' && dragging !== value &&
-                        <div
-                            className={classes.dragMask}
-                            onPointerOver={overingMask}
-                            onPointerLeave={leaveMask}
-                        >
-                            <div
-                                className={classes.dragMaskPrev}
-                                data-overing={overing === value && placement.current === 'before'}
-                                onPointerEnter={e => onPointerEnter(e, 'before')}
-                                onPointerLeave={onPointerLeave}
-                            />
-                            {(!hasChildren || !expandedSet.has(value)) &&
-                                <div
-                                    className={classes.dragMaskNext}
-                                    data-offset={!hasChildren && isOffsetSatisfied}
-                                    data-overing={overing === value && placement.current === 'after'}
-                                    onPointerEnter={e => onPointerEnter(e, 'after')}
-                                    onPointerLeave={onPointerLeave}
-                                />
-                            }
-                        </div>
                     }
                 </div>
             </div>
