@@ -79,7 +79,7 @@ export function useStyle({indent}: {
                         bottom: -1px;
                     }
                     
-                    & + .${treeDndClasses.sibling} {
+                    & ~ * {
                         &:after {
                             content: '';
                             width: 100%;

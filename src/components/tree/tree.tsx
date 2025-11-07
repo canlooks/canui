@@ -196,8 +196,8 @@ export const Tree = memo(<N extends NodeType<V>, V extends Id = Id>({
                             if (!filteredTreeData?.length) {
                                 return null
                             }
-                            const fn = (arr?: N[], parentId?: V) => {
-                                return arr?.map(({_parentId, ...nodeProps}, i) => {
+                            const fn = (arr?: N[]) => {
+                                return arr?.map(({_isLast, _parentId, ...nodeProps}) => {
                                     const currentId = nodeProps[primaryKey as any]
                                     const label = nodeProps[labelKey as any]
                                     const children = nodeProps[childrenKey as any]
@@ -215,9 +215,8 @@ export const Tree = memo(<N extends NodeType<V>, V extends Id = Id>({
                                                 ? <Highlight keywords={deferredSearchValue.split(' ')}>{label}</Highlight>
                                                 : label
                                             }
-                                            _isLast={i === arr.length - 1}
                                         >
-                                            {fn(children, currentId)}
+                                            {fn(children)}
                                         </TreeNode>
                                     )
                                 })

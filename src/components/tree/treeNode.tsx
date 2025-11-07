@@ -104,16 +104,23 @@ export const TreeNode = memo(({
     }
 
     const activeBlock = (el: HTMLDivElement, _placement: SortPlacement | 'parent', upLevel = 0) => {
-        el.dataset.active = 'true'
-
         if (_placement === 'parent') {
-            overing.current = nodesMap.get(id!)!._parentId
+            let i = upLevel
+            let parentId: any = id
+            do {
+                const currentNode = nodesMap.get(parentId)!
+                if (!currentNode._isLast) {
+                    return
+                }
+                parentId = currentNode._parentId
+            } while (--i && parentId)
+            overing.current = parentId
             placement.current = 'after'
         } else {
             overing.current = id
             placement.current = _placement
         }
-
+        el.dataset.active = 'true'
         _placement !== 'child' && findPredecessor(el, parent => {
             if (parent.classList.contains(treeDndClasses.levelBlock) && !upLevel--) {
                 parent.dataset.active = 'true'
@@ -149,8 +156,6 @@ export const TreeNode = memo(({
             <div key={i} className={classes.indent}/>
         )
     }, [_level])
-
-    const {_isLast} = nodesMap.get(id)!
 
     return (
         <>
@@ -225,7 +230,7 @@ export const TreeNode = memo(({
                             <div
                                 key={i}
                                 className={treeDndClasses.predecessor}
-                                {..._isLast && _level && i && {
+                                {...i && {
                                     onPointerEnter: e => pointerEnterPredecessor(e, _level + 1 - i),
                                     onPointerLeave: pointerLeavePredecessor
                                 }}
