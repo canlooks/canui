@@ -64,6 +64,7 @@ const Root = RC(() => {
     const [nodes, setNodes] = useState(defaultNodes)
 
     const onSort = (info: SortInfo) => {
+        console.log(info)
         const newNodes = onTreeNodeSort(info, structuredClone(nodes))
         setNodes(newNodes)
     }
@@ -72,6 +73,7 @@ const Root = RC(() => {
         <>
             <Tree
                 sortable
+                showDragHandle={false}
                 onSort={onSort}
                 nodes={nodes}
             />

@@ -66,9 +66,9 @@ export function onTreeNodeSort<N extends NodeType<V>, V extends Id = Id>(info: S
     }
 
     const source = find(treeNodes, info.source)!
+    source.siblings.splice(source.targetIndex, 1)
     const destination = find(treeNodes, info.destination)!
 
-    source.siblings.splice(source.targetIndex, 1)
     switch (info.placement) {
         case 'before':
             destination.siblings.splice(destination.targetIndex, 0, source.target)

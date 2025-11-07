@@ -1,7 +1,7 @@
 import React, {Children, ReactNode, cloneElement, isValidElement, memo, useRef, useMemo} from 'react'
 import {DivProps, Id} from '../../types'
 import {classes} from './tree.style'
-import {cloneRef, clsx, DragEndInfo, DragInfo, findPredecessor, useDraggable} from '../../utils'
+import {cloneRef, clsx, findPredecessor, useDraggable} from '../../utils'
 import {Collapse} from '../transitionBase'
 import {Button} from '../button'
 import {Checkbox} from '../checkbox'
@@ -13,26 +13,23 @@ import {faGripVertical} from '@fortawesome/free-solid-svg-icons'
 import {useTreeDndContext} from './treeDnd'
 import {treeDndClasses} from './treeDnd.style'
 
-export interface TreeNodeProps extends Omit<DivProps, 'prefix'> {
-    value: Id
+export interface TreeNodeProps extends Omit<DivProps, 'id' | 'prefix'> {
+    id: Id
     label?: ReactNode
     prefix?: ReactNode
     suffix?: ReactNode
     disabled?: boolean
-    /** @private 内部使用，表明该节点的层级 */
+    /** @private 表明该节点的层级 */
     _level?: number
-    /** @private 内部使用，是否为该层级最后一个节点 */
-    _isLast?: boolean
 }
 
 export const TreeNode = memo(({
-    value,
+    id,
     label,
     prefix,
     suffix,
     disabled,
     _level = 0,
-    _isLast,
     ...props
 }: TreeNodeProps) => {
     const {
@@ -43,14 +40,14 @@ export const TreeNode = memo(({
 
     disabled ??= context.disabled
 
-    const {selectionStatus, toggleSelected} = useSelectionContext()
+    const {optionsMap: nodesMap, selectionStatus, toggleSelected} = useSelectionContext()
 
-    const currentExpanded = expandedSet.has(value)
-    const status = selectionStatus.get(value)
+    const currentExpanded = expandedSet.has(id)
+    const status = selectionStatus.get(id)
 
     const clickHandler = () => {
-        !readOnly && !disabled && toggleSelected(value)
-        clickLabelToExpand && toggleExpanded(value)
+        !readOnly && !disabled && toggleSelected(id)
+        clickLabelToExpand && toggleExpanded(id)
     }
 
     const hasChildren = !!props.children && (!Array.isArray(props.children) || props.children.length > 0)
@@ -66,7 +63,7 @@ export const TreeNode = memo(({
         overing, placement
     } = useTreeDndContext()
 
-    const isDraggingNode = dragging === value
+    const isDraggingNode = dragging === id
 
     const nodeRef = useRef<HTMLDivElement>(null)
 
@@ -74,29 +71,51 @@ export const TreeNode = memo(({
         disabled: !sortable,
         onDragStart() {
             overing.current = void 0
-            setDragging(value)
-            currentExpanded && toggleExpanded(value)
+            setDragging(id)
+            currentExpanded && toggleExpanded(id)
         },
-
-        onDragEnd(info: DragEndInfo) {
+        onDragEnd() {
+            overing.current && placement.current && onSort?.({
+                source: dragging!,
+                destination: overing.current!,
+                placement: placement.current!
+            })
             setDragging(void 0)
             inactiveBlock()
         }
     })
 
     const pointerEnterMaskArea = (e: React.PointerEvent<HTMLDivElement>, _placement: SortPlacement) => {
-        placement.current = _placement
-        activeBlock(e.currentTarget, _placement)
+        if (!isDraggingNode) {
+            activeBlock(e.currentTarget, _placement)
+        }
     }
 
     const pointerLeaveMaskArea = (e: React.PointerEvent<HTMLDivElement>) => {
+        !isDraggingNode && inactiveBlock(e.currentTarget)
+    }
+
+    const pointerEnterPredecessor = (e: React.PointerEvent<HTMLDivElement>, upLevel: number) => {
+        activeBlock(e.currentTarget, 'parent', upLevel)
+    }
+
+    const pointerLeavePredecessor = (e: React.PointerEvent<HTMLDivElement>) => {
         inactiveBlock(e.currentTarget)
     }
 
-    const activeBlock = (el: HTMLDivElement, _placement: SortPlacement) => {
+    const activeBlock = (el: HTMLDivElement, _placement: SortPlacement | 'parent', upLevel = 0) => {
         el.dataset.active = 'true'
+
+        if (_placement === 'parent') {
+            overing.current = nodesMap.get(id!)!._parentId
+            placement.current = 'after'
+        } else {
+            overing.current = id
+            placement.current = _placement
+        }
+
         _placement !== 'child' && findPredecessor(el, parent => {
-            if (parent.classList.contains(treeDndClasses.levelBlock)) {
+            if (parent.classList.contains(treeDndClasses.levelBlock) && !upLevel--) {
                 parent.dataset.active = 'true'
                 const parentNode = parent.previousElementSibling as HTMLDivElement | null
                 if (parentNode && parentNode.classList.contains(classes.node)) {
@@ -105,7 +124,6 @@ export const TreeNode = memo(({
                 return true
             }
         })
-        overing.current = value
     }
 
     const inactiveBlock = (el?: HTMLDivElement) => {
@@ -132,6 +150,8 @@ export const TreeNode = memo(({
         )
     }, [_level])
 
+    const {_isLast} = nodesMap.get(id)!
+
     return (
         <>
             <div
@@ -141,10 +161,9 @@ export const TreeNode = memo(({
                 data-selected={status === 2}
                 data-read-only={readOnly}
                 data-disabled={disabled}
-                data-dragging={dragging === value}
+                data-dragging={isDraggingNode}
                 onClick={clickHandler}
-                // {...!showDragHandle && dragHandleProps}
-                // onClick={showDragHandle ? onClick : props.onClick}
+                {...!showDragHandle && dragHandleProps}
             >
                 {renderedIndents}
 
@@ -154,12 +173,12 @@ export const TreeNode = memo(({
                     color="text.secondary"
                     onClick={e => {
                         e.stopPropagation()
-                        toggleExpanded(value)
+                        toggleExpanded(id)
                     }}
                     onPointerDown={e => e.stopPropagation()}
                 >
                     {renderExpandIcon
-                        ? renderExpandIcon(value, currentExpanded, [...expandedSet])
+                        ? renderExpandIcon(id, currentExpanded, [...expandedSet])
                         : hasChildren &&
                         <Icon
                             icon={faChevronRight}
@@ -200,10 +219,17 @@ export const TreeNode = memo(({
                     }
                 </div>
 
-                {typeof dragging !== 'undefined' && !isDraggingNode &&
+                {typeof dragging !== 'undefined' &&
                     <div className={treeDndClasses.mask}>
                         {Array(_level + 1).fill(void 0).map((_, i) =>
-                            <div key={i} className={treeDndClasses.predecessor}/>
+                            <div
+                                key={i}
+                                className={treeDndClasses.predecessor}
+                                {..._isLast && _level && i && {
+                                    onPointerEnter: e => pointerEnterPredecessor(e, _level + 1 - i),
+                                    onPointerLeave: pointerLeavePredecessor
+                                }}
+                            />
                         )}
                         <div className={treeDndClasses.sibling}>
                             <div

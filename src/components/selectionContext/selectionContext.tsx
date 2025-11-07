@@ -6,6 +6,8 @@ export interface OptionType<V extends Id = Id> extends Obj {
     children?: OptionType<V>[]
     /** @private */
     _parentId?: V
+    /** @private */
+    _isLast?: boolean
 }
 
 export type SelectionContextBaseProps<O extends OptionType<V>, V extends Id = Id> = {

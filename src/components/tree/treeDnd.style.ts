@@ -1,6 +1,7 @@
 import {defineInnerClasses, useCss} from '../../utils'
 import {css} from '@emotion/react'
 import {classes} from './tree.style'
+import Color from 'color'
 
 export const treeDndClasses = defineInnerClasses('tree-dnd', [
     'levelBlock',
@@ -16,9 +17,13 @@ export const treeDndClasses = defineInnerClasses('tree-dnd', [
 export function useStyle({indent}: {
     indent: number
 }) {
-    return useCss(({spacing, gray, colors}) => css`
+    return useCss(({mode, spacing, gray, colors}) => css`
         .${classes.node} {
             position: relative;
+            
+            &[data-dragging=true] {
+                background-color: ${Color(colors.primary.main).alpha(mode === 'light' ? .13 : .23).string()} !important;
+            }
             
             &[data-active=true] {
                 outline: 2px solid ${colors.primary.main};
@@ -45,10 +50,46 @@ export function useStyle({indent}: {
 
             .${treeDndClasses.predecessor} {
                 width: ${indent}px;
+                position: relative;
                 
                 &:has(+ .${treeDndClasses.sibling}) {
                     width: 29px;
-                    background: rgba(128, 0, 0, .5);
+                }
+                
+                &[data-active=true] {
+                    &:before, &:after {
+                        content: '';
+                        position: absolute;
+                    }
+
+                    &:before {
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 50%;
+                        border: 2px solid ${colors.primary.main};
+                        left: 0;
+                        bottom: -4px;
+                    }
+
+                    &:after {
+                        width: calc(100% - 8px);
+                        height: 2px;
+                        background: ${colors.primary.main};
+                        left: 8px;
+                        bottom: -1px;
+                    }
+                    
+                    & + .${treeDndClasses.sibling} {
+                        &:after {
+                            content: '';
+                            width: 100%;
+                            height: 2px;
+                            background: ${colors.primary.main};
+                            position: absolute;
+                            left: 0;
+                            bottom: -1px;
+                        }
+                    }
                 }
             }
             

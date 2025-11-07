@@ -37,8 +37,9 @@ export function useSelection<O extends OptionType<V>, V extends Id = Id>(props: 
         const map = new Map<V, O>()
         const fn = (arr?: O[], parentId?: V) => {
             // 有时arr可能不为数组，需要判断，如DataGrid组件的row.children
-            Array.isArray(arr) && arr.forEach(item => {
+            Array.isArray(arr) && arr.forEach((item, i) => {
                 item._parentId = parentId
+                item._isLast = i === arr.length - 1
                 const id = item[props.primaryKey!]
                 !isUnset(id) && map.set(id, item)
                 fn(item[props.childrenKey!], id)

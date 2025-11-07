@@ -142,7 +142,8 @@ export const OptionsBase = memo(<O extends MenuOptionType<V>, V extends Id = Id>
                 params.opt?.onPointerEnter?.(e)
                 setVerticalIndex(-1)
             },
-            children: null
+            children: null,
+            scrollHere: void 0
         })
         if (options) {
             return (filteredOptions as O[]).map((opt, index) => {

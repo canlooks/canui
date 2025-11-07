@@ -24,13 +24,11 @@ export const TreeDnd = memo(({
     sortable,
     showDragHandle,
     onSort,
-    containerRef,
     children
 }: {
     sortable: boolean
     showDragHandle: boolean
     onSort: TreeBaseProps<any>['onSort']
-    containerRef: RefObject<HTMLDivElement | null>
     children: ReactNode
 }) => {
     const dragging = useState<Id | undefined>(void 0)

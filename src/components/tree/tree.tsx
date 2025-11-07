@@ -1,9 +1,9 @@
-import {Children, ReactElement, ReactNode, createContext, isValidElement, memo, useContext, useMemo, useRef} from 'react'
+import {Children, ReactElement, ReactNode, createContext, isValidElement, memo, useContext, useMemo} from 'react'
 import {DivProps, Id, SelectableProps} from '../../types'
 import {OptionType, SelectionContext, SelectionContextBaseProps, SelectionContextProps} from '../selectionContext'
 import {Input, InputProps} from '../input'
 import {classes, useStyle} from './tree.style'
-import {cloneRef, clsx, useTreeSearch} from '../../utils'
+import {clsx, useTreeSearch} from '../../utils'
 import {Highlight} from '../highlight'
 import {TreeNode, TreeNodeProps} from './treeNode'
 import {Icon} from '../icon'
@@ -112,13 +112,6 @@ export const Tree = memo(<N extends NodeType<V>, V extends Id = Id>({
     onToggle,
     ...props
 }: TreeProps<N, V>) => {
-    const selectionContextProps = {
-        options: nodes, primaryKey, childrenKey, relation, integration,
-        multiple, defaultValue, value, onChange, disabled
-    } as SelectionContextProps<N, V>
-
-    const containerRef = useRef<HTMLDivElement>(null)
-
     /**
      * --------------------------------------------------------------
      * 统一处理nodes与children
@@ -160,12 +153,9 @@ export const Tree = memo(<N extends NodeType<V>, V extends Id = Id>({
     return (
         <div
             {...props}
-            ref={cloneRef(containerRef, props.ref)}
             css={useStyle({indent})}
-            className={clsx(classes.root, classes.levelBlock, props.className)}
+            className={clsx(classes.root, props.className)}
             data-show-line={showLine}
-            data-sortable={sortable}
-            // onDragOver={e => e.preventDefault()}
         >
             {searchable &&
                 <Input
@@ -180,7 +170,12 @@ export const Tree = memo(<N extends NodeType<V>, V extends Id = Id>({
                     }}
                 />
             }
-            <SelectionContext {...selectionContextProps}>
+            <SelectionContext
+                {...{
+                    options: actualTreeNodes, primaryKey, childrenKey, relation, integration,
+                    multiple, defaultValue, value, onChange, disabled
+                } as SelectionContextProps<N, V>}
+            >
                 <TreeContext
                     value={
                         useMemo(() => ({
@@ -196,15 +191,14 @@ export const Tree = memo(<N extends NodeType<V>, V extends Id = Id>({
                         sortable={sortable}
                         showDragHandle={showDragHandle}
                         onSort={onSort}
-                        containerRef={containerRef}
                     >
                         {useMemo(() => {
                             if (!filteredTreeData?.length) {
                                 return null
                             }
-                            const fn = (arr?: N[]) => {
+                            const fn = (arr?: N[], parentId?: V) => {
                                 return arr?.map(({_parentId, ...nodeProps}, i) => {
-                                    const currentValue = nodeProps[primaryKey as any]
+                                    const currentId = nodeProps[primaryKey as any]
                                     const label = nodeProps[labelKey as any]
                                     const children = nodeProps[childrenKey as any]
 
@@ -215,21 +209,21 @@ export const Tree = memo(<N extends NodeType<V>, V extends Id = Id>({
                                     return (
                                         <TreeNode
                                             {...nodeProps}
-                                            key={currentValue}
-                                            value={currentValue}
+                                            key={currentId}
+                                            id={currentId}
                                             label={typeof label === 'string' && deferredSearchValue
                                                 ? <Highlight keywords={deferredSearchValue.split(' ')}>{label}</Highlight>
                                                 : label
                                             }
                                             _isLast={i === arr.length - 1}
                                         >
-                                            {fn(children)}
+                                            {fn(children, currentId)}
                                         </TreeNode>
                                     )
                                 })
                             }
                             return fn(filteredTreeData)
-                        }, [filteredTreeData])}
+                        }, [filteredTreeData, primaryKey, labelKey, childrenKey, deferredSearchValue])}
                     </TreeDnd>
                 </TreeContext>
             </SelectionContext>

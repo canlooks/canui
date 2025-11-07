@@ -29,6 +29,10 @@ export interface MenuItemProps extends Omit<DivProps, 'prefix'> {
     suffix?: ReactNode
     /** 当label不为string时，该字段会取代label用来搜索 */
     searchToken?: string
+    /**
+     * 若指定为`true`，则弹框打开时会自动滚动到该选项，默认为`false`
+     */
+    scrollHere?: boolean
 
     /** @private 内部使用，缩进的层级 */
     _level?: number
