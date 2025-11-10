@@ -422,7 +422,7 @@ export function filterProperties<T extends Record<string, any>>(obj: T, undefine
 
 type ExtendableProps<T> = (T extends ElementType ? ComponentProps<T> : T) & Obj
 
-export function mergeComponentProps<T>(...props: (Partial<ExtendableProps<T>> | undefined)[]): ExtendableProps<T>
+export function mergeComponentProps<T>(...props: (Partial<ExtendableProps<T>> | null | false | undefined)[]): ExtendableProps<T>
 export function mergeComponentProps(...props: any[]) {
     const {length} = props
     if (length <= 1) {

@@ -3,7 +3,7 @@ import {css, Global} from '@emotion/react'
 import {App, Button, Curd, DataGrid, Dialog, Drawer, FormItem, Icon, onTreeNodeSort, Segmented, Select, SerialInput, SortInfo, Table, TableContainer, TouchRipple, Tree, TreeSelect, Typography} from '../src'
 import {DateTimePicker} from '../src/components/dateTimePicker'
 import React, {useState} from 'react'
-import {RC, useReactive} from '@canlooks/reactive/react'
+import {RC, useLoading, useReactive} from '@canlooks/reactive/react'
 import {Input} from '../src'
 import {faPassport} from '@fortawesome/free-solid-svg-icons'
 import {PowerTable} from './powerTable/powerTable'
@@ -61,21 +61,15 @@ const defaultNodes = [
 ]
 
 const Root = RC(() => {
-    const [nodes, setNodes] = useState(defaultNodes)
-
-    const onSort = (info: SortInfo) => {
-        console.log(info)
-        const newNodes = onTreeNodeSort(info, structuredClone(nodes))
-        setNodes(newNodes)
-    }
+    const onReload = useLoading(async () => {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+    })
 
     return (
         <>
-            <Tree
-                sortable
-                showDragHandle={false}
-                onSort={onSort}
-                nodes={nodes}
+            <Curd
+                loading={onReload.loading}
+                onReload={onReload.load}
             />
         </>
     )

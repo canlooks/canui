@@ -58,6 +58,7 @@ export const MenuItem = memo(({
     label,
     suffix,
     searchToken,
+    scrollHere,
 
     _level = 0,
     indent,

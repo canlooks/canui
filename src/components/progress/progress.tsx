@@ -51,6 +51,8 @@ export const Progress = memo(({
 
     const {colors: {success, error}} = useTheme()
 
+    value = Math.max(0, Math.min(value, 100))
+
     const isSucceed = status === 'success' || (status !== 'error' && value === 100 && variant !== 'gauge')
 
     const renderInfoFn = () => {
@@ -158,7 +160,7 @@ export const Progress = memo(({
                             strokeDasharray={strokeDasharray}
                             strokeDashoffset={variant === 'circular'
                                 ? strokeDasharray * (1 - value / 100)
-                                : strokeDasharray * (1 - Math.max(0, Math.min(100, value)) / 100 * (1 - gapDegree / 360))
+                                : strokeDasharray * (1 - value / 100 * (1 - gapDegree / 360))
                             }
                         />
                     </svg>

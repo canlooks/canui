@@ -487,40 +487,44 @@ export function Popper({
     const hoverable = triggersSet.has('hover')
     const enterTimeout = useRef<any>(void 0)
     const leaveTimeout = useRef<any>(void 0)
-    const hoverStack = useRef(0)
+    const isOvering = useRef(false)
 
-    const pointerEnter = () => {
-        if (hoverStack.current++) {
-            return
-        }
+    const pointerEnterFn = useCallback(() => {
         clearTimeout(leaveTimeout.current)
         mouseEnterDelay
             ? enterTimeout.current = setTimeout(() => setInnerOpen(true), mouseEnterDelay)
             : setInnerOpen(true)
-    }
-    const pointerLeave = () => {
-        if (--hoverStack.current) {
-            return
-        }
+    }, [mouseEnterDelay])
+
+    const pointerLeaveFn = useCallback(() => {
         clearTimeout(enterTimeout.current)
         mouseLeaveDelay
             ? leaveTimeout.current = setTimeout(() => setInnerOpen(false), mouseLeaveDelay)
             : setInnerOpen(false)
-    }
+    }, [mouseLeaveDelay])
 
-    // 绑定锚点元素
     useEffect(() => {
         if (!hoverable) {
             return
         }
+        const pointerOver = (e: PointerEvent) => {
+            if (!isOvering.current && e.target === anchorRef.current) {
+                isOvering.current = true
+                pointerEnterFn()
+            }
+        }
+        const pointerLeave = () => {
+            isOvering.current = false
+            pointerLeaveFn()
+        }
         const anchorEl = anchorRef.current!
-        anchorEl.addEventListener('pointerenter', pointerEnter)
+        anchorEl.addEventListener('pointerover', pointerOver)
         anchorEl.addEventListener('pointerleave', pointerLeave)
         return () => {
-            anchorEl.removeEventListener('pointerenter', pointerEnter)
+            anchorEl.removeEventListener('pointerover', pointerOver)
             anchorEl.removeEventListener('pointerleave', pointerLeave)
         }
-    }, [hoverable])
+    }, [])
 
     // 绑定弹框元素，鼠标移入弹框也要保持弹框打开
     useEffect(() => {
@@ -528,13 +532,13 @@ export function Popper({
             return
         }
         const popperEl = innerPopperRef.current!
-        popperEl.addEventListener('pointerenter', pointerEnter)
-        popperEl.addEventListener('pointerleave', pointerLeave)
+        popperEl.addEventListener('pointerenter', pointerEnterFn)
+        popperEl.addEventListener('pointerleave', pointerLeaveFn)
         return () => {
-            popperEl.removeEventListener('pointerenter', pointerEnter)
-            popperEl.removeEventListener('pointerleave', pointerLeave)
+            popperEl.removeEventListener('pointerenter', pointerEnterFn)
+            popperEl.removeEventListener('pointerleave', pointerLeaveFn)
         }
-    }, [innerOpen.current])
+    }, [innerOpen.current, mouseLeaveDelay])
 
     /**
      * focus相关
@@ -669,7 +673,9 @@ export function Popper({
     return (
         <>
             {isValidElement(children)
-                ? cloneElement(children as any, {ref: childRef})
+                ? cloneElement(children as any, {
+                    ref: childRef
+                })
                 : children
             }
             {renderedOnce.current && createPortal(
