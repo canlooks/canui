@@ -7,33 +7,35 @@ export const classes = defineInnerClasses('avatar-group', [
 ])
 
 export const style = defineCss(({mode, easing}) => css`
-    display: flex;
-    justify-content: flex-start;
-    
-    .${classes.wrap} {
+    @layer reset {
         display: flex;
-        flex-direction: row-reverse;
-    }
-    
-    &[data-hoverable=true] {
+        justify-content: flex-start;
+
         .${classes.wrap} {
-            cursor: pointer;
-    
-            &:hover {
-                .${avatarClasses.root} {
-                    margin: 0;
+            display: flex;
+            flex-direction: row-reverse;
+        }
+
+        &[data-hoverable=true] {
+            .${classes.wrap} {
+                cursor: pointer;
+
+                &:hover {
+                    .${avatarClasses.root} {
+                        margin: 0;
+                    }
                 }
             }
         }
-    }
-    
-    .${avatarClasses.root} {
-        position: relative;
-        border: 1px solid ${mode === 'light' ? '#ffffff' : '#999999'};
-    
-        &:not(:last-of-type) {
-            transition: margin .25s ${easing.easeOut};
-            margin-left: -6px;
+
+        .${avatarClasses.root} {
+            position: relative;
+            border: 1px solid ${mode === 'light' ? '#ffffff' : '#999999'};
+
+            &:not(:last-of-type) {
+                transition: margin .25s ${easing.easeOut};
+                margin-left: -6px;
+            }
         }
     }
 `)

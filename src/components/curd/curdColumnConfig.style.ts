@@ -9,26 +9,28 @@ export const classes = defineInnerClasses('curd-column-config', [
 ])
 
 export const style = defineCss(({spacing}) => css`
-    .${classes.content} {
-        min-width: 160px;
+    @layer reset {
+        .${classes.content} {
+            min-width: 160px;
 
-        .${classes.title} {
-            font-weight: bold;
-            padding: ${spacing[3]}px;
-        }
-
-        .${classes.item} {
-            cursor: move;
-
-            &[data-dragging=true] {
-                position: relative;
-                z-index: 1;
+            .${classes.title} {
+                font-weight: bold;
+                padding: ${spacing[3]}px;
             }
-        }
 
-        .${classes.checkbox} {
-            display: flex;
-            margin-right: ${spacing[1]}px;
+            .${classes.item} {
+                cursor: move;
+
+                &[data-dragging=true] {
+                    position: relative;
+                    z-index: 1;
+                }
+            }
+
+            .${classes.checkbox} {
+                display: flex;
+                margin-right: ${spacing[1]}px;
+            }
         }
     }
 `)

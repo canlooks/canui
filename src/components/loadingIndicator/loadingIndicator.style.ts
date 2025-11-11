@@ -13,14 +13,16 @@ export function useStyle({color, borderWidth}: Required<Pick<LoadingIndicatorPro
     return useCss(({mode}) => {
         const borderColor = mode === 'light' ? Color(colorValue).alpha(.6).string() : colorValue
         return css`
-            .${classes.indicator} {
-                width: 100%;
-                height: 100%;
-                aspect-ratio: 1;
-                border-radius: 50%;
-                border: ${borderWidth}px solid;
-                border-color: ${borderColor} transparent;
-                animation: ${spinning} 1.25s infinite;
+            @layer reset {
+                .${classes.indicator} {
+                    width: 100%;
+                    height: 100%;
+                    aspect-ratio: 1;
+                    border-radius: 50%;
+                    border: ${borderWidth}px solid;
+                    border-color: ${borderColor} transparent;
+                    animation: ${spinning} 1.25s infinite;
+                }
             }
         `
     }, [colorValue, borderWidth])

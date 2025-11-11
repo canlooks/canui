@@ -5,5 +5,7 @@ import {menuListPadding} from '../menuItem/menuItem.style'
 export const classes = defineInnerClasses('menu')
 
 export const style = css`
-    padding: ${menuListPadding}px;
+    @layer reset {
+        padding: ${menuListPadding}px;
+    }
 `

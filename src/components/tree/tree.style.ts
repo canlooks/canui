@@ -29,106 +29,110 @@ export function useStyle({indent}: {
             const selectedActive = c.alpha(mode === 'light' ? .13 : .23).string()
 
             return css`
-                .${classes.search} {
-                    margin-bottom: ${spacing[3]}px;
-                }
-
-                .${classes.node} {
-                    display: flex;
-                    align-items: center;
-                    padding-right: ${spacing[2]}px;
-                    border-radius: ${borderRadius}px;
-                    transition: background-color .25s ${easing.easeOut};
-                    touch-action: none;
-                    -webkit-tap-highlight-color: transparent;
-
-                    &[data-disabled=true] {
-                        color: ${text.disabled};
-                        cursor: not-allowed;
+                @layer reset {
+                    .${classes.search} {
+                        margin-bottom: ${spacing[3]}px;
                     }
 
-                    &:not([data-read-only=true]) {
-                        cursor: pointer;
-                    }
-
-                    .${classes.indent} {
-                        width: ${indent}px;
-                        align-self: stretch;
-                        display: flex;
-                    }
-
-                    .${classes.expand} {
-                        width: 29px;
-                        align-self: stretch;
-                        align-items: center;
-                        justify-content: center;
-
-                        .${classes.icon} {
-                            transition: rotate .25s ${easing.easeOut};
-                        }
-                    }
-
-                    .${classes.contentWrap} {
-                        flex: 1;
-                        display: flex;
-                        align-items: center;
-                        position: relative;
-                    }
-
-                    .${classes.checkbox} {
-                        margin-right: ${spacing[3]}px;
-                    }
-
-                    .${classes.label} {
-                        flex: 1;
-                        padding: 6px 0;
-
-                    }
-
-                    .${classes.prefix} {
-                        color: ${text.secondary};
-                        margin-right: ${spacing[2]}px;
-                    }
-
-                    .${classes.suffix} {
-                        color: ${text.disabled};
-                        margin-left: ${spacing[2]}px;
-                    }
-                }
-                
-                &:not(:has([data-dragging=true])) { {
                     .${classes.node} {
-                        &[data-selected=true] {
-                            background-color: ${selectedBg};
+                        display: flex;
+                        align-items: center;
+                        padding-right: ${spacing[2]}px;
+                        border-radius: ${borderRadius}px;
+                        transition: background-color .25s ${easing.easeOut};
+                        touch-action: none;
+                        -webkit-tap-highlight-color: transparent;
 
-                            &:hover {
-                                background-color: ${selectedHover};
-                            }
+                        &[data-disabled=true] {
+                            color: ${text.disabled};
+                            cursor: not-allowed;
+                        }
 
-                            &:active {
-                                transition: background-color 0s;
-                                background-color: ${selectedActive};
+                        &:not([data-read-only=true]) {
+                            cursor: pointer;
+                        }
+
+                        .${classes.indent} {
+                            width: ${indent}px;
+                            align-self: stretch;
+                            display: flex;
+                        }
+
+                        .${classes.expand} {
+                            width: 29px;
+                            align-self: stretch;
+                            align-items: center;
+                            justify-content: center;
+
+                            .${classes.icon} {
+                                transition: rotate .25s ${easing.easeOut};
                             }
                         }
 
-                        &:not([data-disabled=true]):not([data-selected=true]):hover {
-                            background-color: ${hover};
+                        .${classes.contentWrap} {
+                            flex: 1;
+                            display: flex;
+                            align-items: center;
+                            position: relative;
                         }
 
-                        &:not([data-disabled=true]):not([data-selected=true]):active {
-                            transition: background-color 0s;
-                            background-color: ${active};
+                        .${classes.checkbox} {
+                            margin-right: ${spacing[3]}px;
+                        }
+
+                        .${classes.label} {
+                            flex: 1;
+                            padding: 6px 0;
+
+                        }
+
+                        .${classes.prefix} {
+                            color: ${text.secondary};
+                            margin-right: ${spacing[2]}px;
+                        }
+
+                        .${classes.suffix} {
+                            color: ${text.disabled};
+                            margin-left: ${spacing[2]}px;
                         }
                     }
-                }}
 
-                &[data-show-line=true] {
-                    .${classes.indent}:after {
-                        content: '';
-                        width: 1px;
-                        height: 100%;
-                        margin-left: 14px;
-                        background-color: ${divider};
+                    &:not(:has([data-dragging=true])) {
+                    {
+                        .${classes.node} {
+                            &[data-selected=true] {
+                                background-color: ${selectedBg};
+
+                                &:hover {
+                                    background-color: ${selectedHover};
+                                }
+
+                                &:active {
+                                    transition: background-color 0s;
+                                    background-color: ${selectedActive};
+                                }
+                            }
+
+                            &:not([data-disabled=true]):not([data-selected=true]):hover {
+                                background-color: ${hover};
+                            }
+
+                            &:not([data-disabled=true]):not([data-selected=true]):active {
+                                transition: background-color 0s;
+                                background-color: ${active};
+                            }
+                        }
+                    }
+                    }
+
+                    &[data-show-line=true] {
+                        .${classes.indent}::after {
+                            content: '';
+                            width: 1px;
+                            height: 100%;
+                            margin-left: 14px;
+                            background-color: ${divider};
+                        }
                     }
                 }
             `

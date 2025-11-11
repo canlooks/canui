@@ -33,119 +33,121 @@ export function useStyle({color}: Required<Pick<MenuItemProps, 'color'>>) {
         const disabledOrActive = gray(mode === 'light' ? .1 : .17)
 
         return css`
-            display: flex;
-            align-items: center;
-            gap: ${spacing[3]}px;
-            border-radius: ${borderRadius}px;
-            cursor: pointer;
-            color: ${text.primary};
-            padding: ${paddingHorizontal.medium}px 12px;
-            position: relative;
-            -webkit-tap-highlight-color: transparent;
-            
-            &[data-size=small] {
-                gap: ${spacing[2]}px;
-                padding: ${paddingHorizontal.small}px 6px;
-            }
-        
-            &[data-size=large] {
-                gap: ${spacing[4]}px;
-                padding: ${paddingHorizontal.large}px 15px;
-            }
-        
-            transition: background-color .25s ${easing.easeOut};
-        
-            &:hover, &[data-focused=true] {
-                background-color: ${focusedBg};
-            }
+            @layer reset {
+                display: flex;
+                align-items: center;
+                gap: ${spacing[3]}px;
+                border-radius: ${borderRadius}px;
+                cursor: pointer;
+                color: ${text.primary};
+                padding: ${paddingHorizontal.medium}px 12px;
+                position: relative;
+                -webkit-tap-highlight-color: transparent;
 
-            &[data-emphasized=true] {
-                color: ${colorValue};
-            }
-        
-            &:active {
-                transition: background-color 0s;
-                background-color: ${disabledOrActive};
-            }
-        
-            &[data-selected=true] {
-                background-color: ${selectedBg};
+                &[data-size=small] {
+                    gap: ${spacing[2]}px;
+                    padding: ${paddingHorizontal.small}px 6px;
+                }
+
+                &[data-size=large] {
+                    gap: ${spacing[4]}px;
+                    padding: ${paddingHorizontal.large}px 15px;
+                }
+
+                transition: background-color .25s ${easing.easeOut};
 
                 &:hover, &[data-focused=true] {
-                    background-color: ${selectedAndFocused};
+                    background-color: ${focusedBg};
                 }
 
-                .${classes.content} {
-                    font-weight: bold;
+                &[data-emphasized=true] {
                     color: ${colorValue};
                 }
-                
+
                 &:active {
-                    background-color: ${selectedActive};
+                    transition: background-color 0s;
+                    background-color: ${disabledOrActive};
                 }
-            }
 
-            &[data-disabled=true] {
-                cursor: not-allowed;
-                color: ${text.disabled};
-                background-color: ${disabledOrActive};
-            }
+                &[data-selected=true] {
+                    background-color: ${selectedBg};
 
-            .${classes.checkbox} {
-                display: flex;
-            }
+                    &:hover, &[data-focused=true] {
+                        background-color: ${selectedAndFocused};
+                    }
 
-            .${classes.content} {
-                flex: 1;
-            }
+                    .${classes.content} {
+                        font-weight: bold;
+                        color: ${colorValue};
+                    }
 
-            &[data-ellipsis=true] {
+                    &:active {
+                        background-color: ${selectedActive};
+                    }
+                }
+
+                &[data-disabled=true] {
+                    cursor: not-allowed;
+                    color: ${text.disabled};
+                    background-color: ${disabledOrActive};
+                }
+
+                .${classes.checkbox} {
+                    display: flex;
+                }
+
                 .${classes.content} {
+                    flex: 1;
+                }
+
+                &[data-ellipsis=true] {
+                    .${classes.content} {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                }
+
+                .${classes.suffix} {
+                    max-width: 70%;
                     white-space: nowrap;
-                    overflow: hidden;
                     text-overflow: ellipsis;
+                    overflow: hidden;
                 }
-            }
 
-            .${classes.suffix} {
-                max-width: 70%;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                overflow: hidden;
-            }
-
-            .${classes.prefix} {
-                color: ${text.secondary};
-            }
-
-            &[data-emphasized=true],
-            &[data-selected=true] {
                 .${classes.prefix} {
-                    color: ${colorValue};
-                }
-            }
-
-            &:has(+ .${classes.children} .${classes.root}[data-selected=true]) {
-                .${classes.content} {
-                    color: ${colorValue};
+                    color: ${text.secondary};
                 }
 
-                .${classes.prefix},
+                &[data-emphasized=true],
+                &[data-selected=true] {
+                    .${classes.prefix} {
+                        color: ${colorValue};
+                    }
+                }
+
+                &:has(+ .${classes.children} .${classes.root}[data-selected=true]) {
+                    .${classes.content} {
+                        color: ${colorValue};
+                    }
+
+                    .${classes.prefix},
+                    .${classes.arrow} {
+                        color: ${colorValue};
+                    }
+                }
+
+                .${classes.suffix} {
+                    color: ${text.disabled};
+                }
+
                 .${classes.arrow} {
-                    color: ${colorValue};
-                }
-            }
-            
-            .${classes.suffix} {
-                color: ${text.disabled};
-            }
+                    color: ${text.placeholder};
+                    transition: transform .25s ${easing.easeOut};
 
-            .${classes.arrow} {
-                color: ${text.placeholder};
-                transition: transform .25s ${easing.easeOut};
-        
-                &[data-open=true] {
-                    transform: rotate(180deg);
+                    &[data-open=true] {
+                        transform: rotate(180deg);
+                    }
                 }
             }
         `
@@ -155,8 +157,10 @@ export function useStyle({color}: Required<Pick<MenuItemProps, 'color'>>) {
 export const menuListPadding = 4
 
 export const childrenStyle = defineCss(({background}) => css`
-    .${classes.childrenWrap} {
-        padding: ${menuListPadding}px;
-        background-color: ${background.fixed};
+    @layer reset {
+        .${classes.childrenWrap} {
+            padding: ${menuListPadding}px;
+            background-color: ${background.fixed};
+        }
     }
 `)

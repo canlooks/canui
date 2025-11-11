@@ -9,48 +9,50 @@ export const classes = defineInnerClasses('action-sheet', [
 ])
 
 export const style = defineCss(({spacing, background, boxShadow, borderRadius, text, divider}) => css`
-    .${classes.sheet} {
-        position: absolute;
-        padding: ${spacing[8]}px;
-    }
-
-    &[data-placement=top] {
+    @layer reset {
         .${classes.sheet} {
-            transform-origin: top;
-            inset: 0 0 auto;
+            position: absolute;
+            padding: ${spacing[8]}px;
         }
-    }
-    
-    &[data-placement=bottom] {
-        .${classes.sheet} {
-            transform-origin: bottom;
-            inset: auto 0 0;
+
+        &[data-placement=top] {
+            .${classes.sheet} {
+                transform-origin: top;
+                inset: 0 0 auto;
+            }
         }
-    }
 
-    .${classes.card} {
-        text-align: center;
-        background-color: ${background.content};
-        box-shadow: ${boxShadow[1]};
-        border-radius: ${borderRadius}px;
-        overflow: hidden;
-
-        &:not(:last-of-type) {
-            margin-bottom: ${spacing[8]}px;
+        &[data-placement=bottom] {
+            .${classes.sheet} {
+                transform-origin: bottom;
+                inset: auto 0 0;
+            }
         }
-    }
 
-    .${classes.title} {
-        line-height: 3;
-        color: ${text.secondary};
-        font-size: ${13 / 14}em;
-    }
+        .${classes.card} {
+            text-align: center;
+            background-color: ${background.content};
+            box-shadow: ${boxShadow[1]};
+            border-radius: ${borderRadius}px;
+            overflow: hidden;
 
-    .${classes.action} {
-        border-radius: 0;
+            &:not(:last-of-type) {
+                margin-bottom: ${spacing[8]}px;
+            }
+        }
 
-        &:not(:last-of-type) {
-            border-bottom: 1px solid ${divider};
+        .${classes.title} {
+            line-height: 3;
+            color: ${text.secondary};
+            font-size: ${13 / 14}em;
+        }
+
+        .${classes.action} {
+            border-radius: 0;
+
+            &:not(:last-of-type) {
+                border-bottom: 1px solid ${divider};
+            }
         }
     }
 `)

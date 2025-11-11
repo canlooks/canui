@@ -5,11 +5,13 @@ import {classes as dateTimePickerClasses} from '../dateTimePicker/dateTimePicker
 export const classes = defineInnerClasses('date-time-rage-picker')
 
 export const style = defineCss(({spacing}) => css`
-    display: flex;
-    align-items: center;
-    gap: ${spacing[1]}px;
+    @layer reset {
+        display: flex;
+        align-items: center;
+        gap: ${spacing[1]}px;
 
-    .${dateTimePickerClasses.root} {
-        flex: 1;
+        .${dateTimePickerClasses.root} {
+            flex: 1;
+        }
     }
 `)

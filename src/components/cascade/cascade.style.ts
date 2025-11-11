@@ -17,49 +17,51 @@ export const classes = defineInnerClasses('cascade', [
 ])
 
 export const style = defineCss(({spacing, text, easing}) => css`
-    cursor: pointer;
-    position: relative;
+    @layer reset {
+        cursor: pointer;
+        position: relative;
 
-    .${classes.contentWrap} {
-        display: flex;
-        align-items: center;
-        gap: ${spacing[1]}px;
-    }
-
-    .${classes.placeholder} {
-        flex: 1;
-        color: ${text.placeholder};
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-
-    .${classes.arrow} {
-        color: ${text.placeholder};
-        transition: transform .25s ${easing.easeOut};
-
-        &[data-open=true] {
-            transform: rotate(180deg);
-        }
-    }
-
-    .${classes.backfill} {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-wrap: wrap;
-        gap: ${spacing[1]}px;
-
-        .${tagClasses.root} {
-            min-width: 0;
+        .${classes.contentWrap} {
+            display: flex;
+            align-items: center;
+            gap: ${spacing[1]}px;
         }
 
-        .${tagClasses.content},
-        .${classes.backfillWrap} {
+        .${classes.placeholder} {
+            flex: 1;
+            color: ${text.placeholder};
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
-            direction: rtl;
+        }
+
+        .${classes.arrow} {
+            color: ${text.placeholder};
+            transition: transform .25s ${easing.easeOut};
+
+            &[data-open=true] {
+                transform: rotate(180deg);
+            }
+        }
+
+        .${classes.backfill} {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: ${spacing[1]}px;
+
+            .${tagClasses.root} {
+                min-width: 0;
+            }
+
+            .${tagClasses.content},
+            .${classes.backfillWrap} {
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                direction: rtl;
+            }
         }
     }
 `)
@@ -67,29 +69,31 @@ export const style = defineCss(({spacing, text, easing}) => css`
 export const cascadePopperStyle = defineCss(theme => [
     popperStyleCallback(theme),
     css`
-        .${classes.searchInput} {
-            margin-bottom: ${menuListPadding}px;
-        }
-        
-        .${classes.panelContainer} {
-            display: flex;
-            gap: ${menuListPadding}px;
-        }
-        
-        .${classes.panel} {
-            min-width: 120px;
-            overflow: hidden;
-            max-height: ${32 * 8 + 8}px;
-            position: relative;
-
-            &:hover {
-                overflow: hidden auto;
+        @layer reset {
+            .${classes.searchInput} {
+                margin-bottom: ${menuListPadding}px;
             }
 
-        }
+            .${classes.panelContainer} {
+                display: flex;
+                gap: ${menuListPadding}px;
+            }
 
-        .${classes.searchResult} {
-            min-width: 360px;
+            .${classes.panel} {
+                min-width: 120px;
+                overflow: hidden;
+                max-height: ${32 * 8 + 8}px;
+                position: relative;
+
+                &:hover {
+                    overflow: hidden auto;
+                }
+
+            }
+
+            .${classes.searchResult} {
+                min-width: 360px;
+            }
         }
     `
 ])

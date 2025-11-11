@@ -12,15 +12,17 @@ export function useStyle({variant}: Pick<BackdropProps, 'variant'>) {
             : Color(background.content).alpha(.8).string()
 
         return css`
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            background-color: ${bgColor};
-            display: flex;
-            flex-direction: column;
-            gap: ${spacing[3]}px;
-            align-items: center;
-            justify-content: center;
+            @layer reset {
+                position: absolute;
+                inset: 0;
+                z-index: 1;
+                background-color: ${bgColor};
+                display: flex;
+                flex-direction: column;
+                gap: ${spacing[3]}px;
+                align-items: center;
+                justify-content: center;
+            }
         `
     }, [variant])
 }

@@ -102,7 +102,7 @@ export const style = defineCss(({background, text, colors, divider}) => [
                 .${classes.tabs} {
                     height: calc(100% + 1px);
 
-                    &:after {
+                    &::after {
                         display: none;
                     }
                 }

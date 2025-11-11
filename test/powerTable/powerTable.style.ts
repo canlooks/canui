@@ -15,7 +15,7 @@ export const style = defineCss(({gray}) => css`
         position: relative;
 
         &[data-no-data=true] {
-            &:after {
+            &::after {
                 content: '';
                 position: absolute;
                 inset: 20%;

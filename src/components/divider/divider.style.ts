@@ -9,27 +9,29 @@ export const classes = defineInnerClasses('divider', [
 ])
 
 export const style = defineCss(({spacing, divider}) => css`
-    gap: ${spacing[4]}px;
-    align-items: center;
-
-    .${classes.line} {
-        background-color: ${divider};
-    }
-
-    &[data-orientation=horizontal] {
-        display: flex;
+    @layer reset {
+        gap: ${spacing[4]}px;
+        align-items: center;
 
         .${classes.line} {
-            height: 1px;
+            background-color: ${divider};
         }
-    }
 
-    &[data-orientation=vertical] {
-        display: inline-flex;
-        flex-direction: column;
+        &[data-orientation=horizontal] {
+            display: flex;
 
-        .${classes.line} {
-            width: 1px;
+            .${classes.line} {
+                height: 1px;
+            }
+        }
+
+        &[data-orientation=vertical] {
+            display: inline-flex;
+            flex-direction: column;
+
+            .${classes.line} {
+                width: 1px;
+            }
         }
     }
 `)

@@ -8,19 +8,21 @@ export const classes = defineInnerClasses('status', [
 ])
 
 export const style = defineCss(({spacing, easing}) => css`
-    display: inline-flex;
-    align-items: center;
-    gap: ${spacing[2]}px;
+    @layer reset {
+        display: inline-flex;
+        align-items: center;
+        gap: ${spacing[2]}px;
 
-    .${classes.dot} {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-    }
+        .${classes.dot} {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
 
-    &[data-animation=true] {
-        .${classes.icon} {
-            animation: ${statusAnim} .8s ${easing.easeInOut} infinite;
+        &[data-animation=true] {
+            .${classes.icon} {
+                animation: ${statusAnim} .8s ${easing.easeInOut} infinite;
+            }
         }
     }
 `)

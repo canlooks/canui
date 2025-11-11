@@ -9,28 +9,30 @@ export const classes = defineInnerClasses('loading-mask', [
 ])
 
 export const style = defineCss(({spacing, text}) => css`
-    .${classes.indicator} {
-        display: flex;
-        gap: ${spacing[2]}px;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+    @layer reset {
+        .${classes.indicator} {
+            display: flex;
+            gap: ${spacing[2]}px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
 
-        .${classes.text} {
-            color: ${text.secondary};
+            .${classes.text} {
+                color: ${text.secondary};
+            }
         }
-    }
 
-    .${classes.progress} {
-        width: calc(100% - 24px);
-        max-width: 300px;
+        .${classes.progress} {
+            width: calc(100% - 24px);
+            max-width: 300px;
 
-        .${progressClasses.track} {
-            height: 4px;
+            .${progressClasses.track} {
+                height: 4px;
+            }
         }
-    }
 
-    &[data-show-progress=true] .${classes.indicator} {
-        flex-direction: row;
+        &[data-show-progress=true] .${classes.indicator} {
+            flex-direction: row;
+        }
     }
 `)

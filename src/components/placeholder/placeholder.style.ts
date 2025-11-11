@@ -9,33 +9,35 @@ export const classes = defineInnerClasses('placeholder', [
 ])
 
 export const style = defineCss(({spacing, text}) => css`
-    width: 100%;
-    height: 100%;
-    flex: 1;
-    padding: ${spacing[8]}px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    
-    .${classes.image} {
-        height: 60px;
-        object-fit: cover;
-    }
+    @layer reset {
+        width: 100%;
+        height: 100%;
+        flex: 1;
+        padding: ${spacing[8]}px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
 
-    .${classes.title} {
-        font-size: 1.7em;
-        margin-top: ${spacing[8]}px;
-        font-weight: bold;
-        white-space: nowrap;
-    }
-    
-    .${classes.description} {
-        margin-top: ${spacing[4]}px;
-        color: ${text.placeholder};
-    }
+        .${classes.image} {
+            height: 60px;
+            object-fit: cover;
+        }
 
-    .${classes.extra} {
-        margin-top: ${spacing[8]}px;
+        .${classes.title} {
+            font-size: 1.7em;
+            margin-top: ${spacing[8]}px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .${classes.description} {
+            margin-top: ${spacing[4]}px;
+            color: ${text.placeholder};
+        }
+
+        .${classes.extra} {
+            margin-top: ${spacing[8]}px;
+        }
     }
 `)

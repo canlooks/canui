@@ -12,43 +12,45 @@ export const classes = defineInnerClasses('pagination', [
 ])
 
 export const style = defineCss(({spacing}) => css`
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-    gap: ${spacing[3]}px;
-
-    .${classes.pager} {
+    @layer reset {
         display: flex;
-    }
-
-    .${classes.button} {
-        padding-left: 3px;
-        padding-right: 3px;
-
-        &[data-size=small] {
-            min-width: 24px;
-        }
-
-        &[data-size=medium] {
-            min-width: 32px;
-        }
-
-        &[data-size=large] {
-            min-width: 40px;
-        }
-    }
-
-    .${classes.jumper} {
-        display: flex;
+        flex-wrap: wrap;
         align-items: center;
+        justify-content: flex-end;
         gap: ${spacing[3]}px;
-        
-        .${classes.input} {
-            width: 45px;
 
-            .${inputClasses.input} {
-                text-align: center;
+        .${classes.pager} {
+            display: flex;
+        }
+
+        .${classes.button} {
+            padding-left: 3px;
+            padding-right: 3px;
+
+            &[data-size=small] {
+                min-width: 24px;
+            }
+
+            &[data-size=medium] {
+                min-width: 32px;
+            }
+
+            &[data-size=large] {
+                min-width: 40px;
+            }
+        }
+
+        .${classes.jumper} {
+            display: flex;
+            align-items: center;
+            gap: ${spacing[3]}px;
+
+            .${classes.input} {
+                width: 45px;
+
+                .${inputClasses.input} {
+                    text-align: center;
+                }
             }
         }
     }

@@ -8,13 +8,15 @@ export const classes = defineInnerClasses('selected-list', [
 ])
 
 export const style = defineCss(({spacing}) => css`
-    .${classes.optionWrap} {
-        margin-bottom: ${spacing[3]}px;
-    }
+    @layer reset {
+        .${classes.optionWrap} {
+            margin-bottom: ${spacing[3]}px;
+        }
 
-    .${alertClasses.title}, .${alertClasses.description} {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
+        .${alertClasses.title}, .${alertClasses.description} {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
     }
 `)

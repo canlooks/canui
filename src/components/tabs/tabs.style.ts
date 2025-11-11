@@ -22,12 +22,12 @@ export const indicatorWidth = 2
 export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'variant'>>) {
     const colorValue = useColor(color)
 
-    return useCss(({divider, text, easing, background, spacing, borderRadius, gray, colors}) => {
+    return useCss(({divider, text, easing, background, spacing, borderRadius, gray}) => {
         const commonStyle = css`
             display: flex;
             position: relative;
             overflow: hidden;
-            
+
             .${classes.scroll} {
                 flex: 1;
                 display: flex;
@@ -38,7 +38,7 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
                 &::-webkit-scrollbar {
                     display: none;
                 }
-    
+
                 .${classes.scrollWrap} {
                     flex: 1;
                     display: flex;
@@ -115,7 +115,7 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
                 }
             }
 
-            &:after {
+            &::after {
                 content: '';
                 background-color: ${divider};
                 position: absolute;
@@ -151,18 +151,18 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
 
             &[data-position=top],
             &[data-position=bottom] {
-                &:after {
+                &::after {
                     height: 1px;
                 }
 
                 &[data-position=top] {
-                    &:after {
+                    &::after {
                         inset: auto 0 0 0;
                     }
                 }
 
                 &[data-position=bottom] {
-                    &:after {
+                    &::after {
                         inset: 0 0 auto 0;
                     }
                 }
@@ -174,18 +174,18 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
                     flex-direction: column;
                 }
 
-                &:after {
+                &::after {
                     width: 1px;
                 }
 
                 &[data-position=left] {
-                    &:after {
+                    &::after {
                         inset: 0 0 0 auto;
                     }
                 }
 
                 &[data-position=right] {
-                    &:after {
+                    &::after {
                         inset: 0 auto 0 0;
                     }
                 }
@@ -194,18 +194,18 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
             &:not([data-read-only=true]):not([data-disabled=true]) {
                 .${classes.tab}:not([data-disabled=true]) {
                     cursor: pointer;
-                    
+
                     &:not([data-active=true]):hover {
                         color: ${gray(.65)};
                     }
-                
+
                     &:not([data-active=true]):active {
                         transition: color 0s;
                         color: ${text.primary};
                     }
                 }
             }
-    
+
             &[data-disabled=true] {
                 .${classes.tab} {
                     cursor: not-allowed;
@@ -215,187 +215,189 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
 
         return variant === 'line'
             ? css`
-                ${commonStyle}
+                    @layer reset {
+                        ${commonStyle}
+                        .${classes.scrollWrap} {
+                            gap: 0 ${spacing[10]}px;
+                        }
 
-                .${classes.scrollWrap} {
-                    gap: 0 ${spacing[10]}px;
-                }
-
-                .${classes.tab} {
-                    transition: color .25s ${easing.easeOut};
-                }
-
-                &[data-position=top],
-                &[data-position=bottom] {
-                    .${classes.tab} {
-                        padding: 10px 0;
-                    }
-
-                    &[data-size=small] {
                         .${classes.tab} {
-                            padding: 6px 0;
+                            transition: color .25s ${easing.easeOut};
+                        }
+
+                        &[data-position=top],
+                        &[data-position=bottom] {
+                            .${classes.tab} {
+                                padding: 10px 0;
+                            }
+
+                            &[data-size=small] {
+                                .${classes.tab} {
+                                    padding: 6px 0;
+                                }
+                            }
+
+                            &[data-size=large] {
+                                .${classes.tab} {
+                                    padding: 14px 0;
+                                }
+                            }
+                        }
+
+                        &[data-position=top] {
+                            .${classes.tab} {
+                                border-bottom: ${indicatorWidth}px solid transparent;
+                            }
+                        }
+
+                        &[data-position=bottom] {
+                            .${classes.tab} {
+                                border-top: ${indicatorWidth}px solid transparent;
+                            }
+                        }
+
+                        &[data-position=left],
+                        &[data-position=right] {
+                            .${classes.tab} {
+                                padding: 10px 18px;
+                            }
+
+                            &[data-size=small] {
+                                .${classes.tab} {
+                                    padding: 6px 18px;
+                                }
+                            }
+
+                            &[data-size=large] {
+                                .${classes.tab} {
+                                    padding: 14px 18px;
+                                }
+                            }
+                        }
+
+                        &[data-position=left] {
+                            .${classes.tab} {
+                                border-right: ${indicatorWidth}px solid transparent;
+                            }
+                        }
+
+                        &[data-position=right] {
+                            .${classes.tab} {
+                                border-left: ${indicatorWidth}px solid transparent;
+                            }
+                        }
+
+                        .${classes.indicator} {
+                            position: absolute;
+                            z-index: 1;
+                            transition-property: width, height, left, top;
+                            transition-duration: .3s;
+                            transition-timing-function: ${easing.bounce};
+                        }
+
+                        &:not([data-animating=true]) {
+                            .${classes.indicator} {
+                                display: none;
+                            }
                         }
                     }
-            
-                    &[data-size=large] {
-                        .${classes.tab} {
-                            padding: 14px 0;
-                        }
-                    }
-                }
-
-                &[data-position=top] {
-                    .${classes.tab} {
-                        border-bottom: ${indicatorWidth}px solid transparent;
-                    }
-                }
-
-                &[data-position=bottom] {
-                    .${classes.tab} {
-                        border-top: ${indicatorWidth}px solid transparent;
-                    }
-                }
-
-                &[data-position=left],
-                &[data-position=right] {
-                    .${classes.tab} {
-                        padding: 10px 18px;
-                    }
-
-                    &[data-size=small] {
-                        .${classes.tab} {
-                            padding: 6px 18px;
-                        }
-                    }
-            
-                    &[data-size=large] {
-                        .${classes.tab} {
-                            padding: 14px 18px;
-                        }
-                    }
-                }
-
-                &[data-position=left] {
-                    .${classes.tab} {
-                        border-right: ${indicatorWidth}px solid transparent;
-                    }
-                }
-
-                &[data-position=right] {
-                    .${classes.tab} {
-                        border-left: ${indicatorWidth}px solid transparent;
-                    }
-                }
-
-                .${classes.indicator} {
-                    position: absolute;
-                    z-index: 1;
-                    transition-property: width, height, left, top;
-                    transition-duration: .3s;
-                    transition-timing-function: ${easing.bounce};
-                }
-
-                &:not([data-animating=true]) {
-                    .${classes.indicator} {
-                        display: none;
-                    }
-                }
             `
             // variant === 'card'
             : css`
-                ${commonStyle}
+                    @layer reset {
+                        ${commonStyle}
+                        .${classes.scrollWrap} {
+                            gap: ${spacing[1]}px;
+                        }
 
-                .${classes.scrollWrap} {
-                    gap: ${spacing[1]}px;
-                }
-
-                .${classes.tab} {
-                    border: 1px solid ${gray(.1)};
-                    background-color: ${background.body};
-                    transition: color .25s ${easing.easeOut}, background-color .25s ${easing.easeOut};
-
-                    &[data-active=true] {
-                        background-color: ${background.content};
-                    }
-                }
-
-                &[data-position=top],
-                &[data-position=bottom] {
-                    .${classes.tab} {
-                        padding: 10px 15px;
-                    }
-
-                    &[data-size=small] {
                         .${classes.tab} {
-                            padding: 6px 15px;
+                            border: 1px solid ${gray(.1)};
+                            background-color: ${background.body};
+                            transition: color .25s ${easing.easeOut}, background-color .25s ${easing.easeOut};
+
+                            &[data-active=true] {
+                                background-color: ${background.content};
+                            }
+                        }
+
+                        &[data-position=top],
+                        &[data-position=bottom] {
+                            .${classes.tab} {
+                                padding: 10px 15px;
+                            }
+
+                            &[data-size=small] {
+                                .${classes.tab} {
+                                    padding: 6px 15px;
+                                }
+                            }
+
+                            &[data-size=large] {
+                                .${classes.tab} {
+                                    padding: 14px 15px;
+                                }
+                            }
+                        }
+
+                        &[data-position=top] {
+                            .${classes.tab} {
+                                border-radius: ${borderRadius}px ${borderRadius}px 0 0;
+
+                                &[data-active=true] {
+                                    border-bottom-color: ${background.content};
+                                }
+                            }
+                        }
+
+                        &[data-position=bottom] {
+                            .${classes.tab} {
+                                border-radius: 0 0 ${borderRadius}px ${borderRadius}px;
+
+                                &[data-active=true] {
+                                    border-top-color: ${background.content};
+                                }
+                            }
+                        }
+
+                        &[data-position=left],
+                        &[data-position=right] {
+                            .${classes.tab} {
+                                padding: 9px 18px;
+                            }
+
+                            &[data-size=small] {
+                                .${classes.tab} {
+                                    padding: 5px 18px;
+                                }
+                            }
+
+                            &[data-size=large] {
+                                .${classes.tab} {
+                                    padding: 13px 18px;
+                                }
+                            }
+                        }
+
+                        &[data-position=left] {
+                            .${classes.tab} {
+                                border-radius: ${borderRadius}px 0 0 ${borderRadius}px;
+
+                                &[data-active=true] {
+                                    border-right-color: ${background.content};
+                                }
+                            }
+                        }
+
+                        &[data-position=right] {
+                            .${classes.tab} {
+                                border-radius: 0 ${borderRadius}px ${borderRadius}px 0;
+
+                                &[data-active=true] {
+                                    border-left-color: ${background.content};
+                                }
+                            }
                         }
                     }
-            
-                    &[data-size=large] {
-                        .${classes.tab} {
-                            padding: 14px 15px;
-                        }
-                    }
-                }
-
-                &[data-position=top] {
-                    .${classes.tab} {
-                        border-radius: ${borderRadius}px ${borderRadius}px 0 0;
-
-                        &[data-active=true] {
-                            border-bottom-color: ${background.content};
-                        }
-                    }
-                }
-
-                &[data-position=bottom] {
-                    .${classes.tab} {
-                        border-radius: 0 0 ${borderRadius}px ${borderRadius}px;
-
-                        &[data-active=true] {
-                            border-top-color: ${background.content};
-                        }
-                    }
-                }
-
-                &[data-position=left],
-                &[data-position=right] {
-                    .${classes.tab} {
-                        padding: 9px 18px;
-                    }
-
-                    &[data-size=small] {
-                        .${classes.tab} {
-                            padding: 5px 18px;
-                        }
-                    }
-            
-                    &[data-size=large] {
-                        .${classes.tab} {
-                            padding: 13px 18px;
-                        }
-                    }
-                }
-
-                &[data-position=left] {
-                    .${classes.tab} {
-                        border-radius: ${borderRadius}px 0 0 ${borderRadius}px;
-
-                        &[data-active=true] {
-                            border-right-color: ${background.content};
-                        }
-                    }
-                }
-
-                &[data-position=right] {
-                    .${classes.tab} {
-                        border-radius: 0 ${borderRadius}px ${borderRadius}px 0;
-
-                        &[data-active=true] {
-                            border-left-color: ${background.content};
-                        }
-                    }
-                }
             `
     }, [colorValue, variant])
 }

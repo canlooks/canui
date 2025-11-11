@@ -6,15 +6,17 @@ export const classes = defineInnerClasses('pinchable', [
 ])
 
 export const style = defineCss(({easing}) => css`
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @layer reset {
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-    &, .${classes.content} {
-        touch-action: none;
-    }
+        &, .${classes.content} {
+            touch-action: none;
+        }
 
-    .${classes.content}[data-transition=true] {
-        transition: all .25s ${easing.easeOut};
+        .${classes.content}[data-transition=true] {
+            transition: all .25s ${easing.easeOut};
+        }
     }
 `)

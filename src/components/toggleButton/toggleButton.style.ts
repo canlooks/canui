@@ -5,12 +5,14 @@ import {classes as buttonClasses} from '../button/button.style'
 export const classes = defineInnerClasses('buttonGroup')
 
 export const style = defineCss(({divider}) => css`
-    .${buttonClasses.root}[data-variant=outlined] {
-        border-color: ${divider};
+    @layer reset {
+        .${buttonClasses.root}[data-variant=outlined] {
+            border-color: ${divider};
 
-        &:not(:disabled):not([data-read-only=true]):not([data-loading=true]) {
-            &:hover {
-                color: inherit;
+            &:not(:disabled):not([data-read-only=true]):not([data-loading=true]) {
+                &:hover {
+                    color: inherit;
+                }
             }
         }
     }

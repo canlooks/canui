@@ -11,22 +11,24 @@ export const style = defineCss(theme => {
     return [
         appStyleCallback(theme),
         css`
-            position: fixed;
-            inset: 0;
-            z-index: ${zIndex.overlay};
-
-            &[data-custom-container=true] {
-                position: absolute;
-            }
-
-            .${classes.mask} {
-                background-color: rgba(0, 0, 0, .5);
-                position: absolute;
+            @layer reset {
+                position: fixed;
                 inset: 0;
-            }
+                z-index: ${zIndex.overlay};
 
-            &:not([data-open=true]) {
-                pointer-events: none;
+                &[data-custom-container=true] {
+                    position: absolute;
+                }
+
+                .${classes.mask} {
+                    background-color: rgba(0, 0, 0, .5);
+                    position: absolute;
+                    inset: 0;
+                }
+
+                &:not([data-open=true]) {
+                    pointer-events: none;
+                }
             }
         `
     ]

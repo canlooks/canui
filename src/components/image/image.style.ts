@@ -13,51 +13,53 @@ export const style = defineCss(({background, easing, spacing}) => {
     const maskBg = Color(background.content).alpha(.9).string()
 
     return css`
-        display: inline-flex;
-        position: relative;
-        overflow: hidden;
+        @layer reset {
+            display: inline-flex;
+            position: relative;
+            overflow: hidden;
 
-        .${classes.img} {
-            width: inherit;
-            height: inherit;
-        }
-
-        &[data-error=true] {
             .${classes.img} {
-                opacity: 0;
+                width: inherit;
+                height: inherit;
             }
-        }
 
-        .${classes.skeleton} {
-            height: 100%;
-            position: absolute;
-            inset: 0;
-        }
-        
-        .${classes.mask} {
-            background-color: ${maskBg};
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity .25s ${easing.easeOut};
+            &[data-error=true] {
+                .${classes.img} {
+                    opacity: 0;
+                }
+            }
 
-            .${classes.previewButton} {
+            .${classes.skeleton} {
+                height: 100%;
+                position: absolute;
+                inset: 0;
+            }
+
+            .${classes.mask} {
+                background-color: ${maskBg};
                 position: absolute;
                 inset: 0;
                 display: flex;
-                gap: ${spacing[2]}px;
                 align-items: center;
                 justify-content: center;
-                cursor: pointer;
-            }
-        }
+                opacity: 0;
+                transition: opacity .25s ${easing.easeOut};
 
-        &:hover {
-            .${classes.mask} {
-                opacity: 1;
+                .${classes.previewButton} {
+                    position: absolute;
+                    inset: 0;
+                    display: flex;
+                    gap: ${spacing[2]}px;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                }
+            }
+
+            &:hover {
+                .${classes.mask} {
+                    opacity: 1;
+                }
             }
         }
     `

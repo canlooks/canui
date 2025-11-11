@@ -6,7 +6,9 @@ export const classes = defineInnerClasses('serial-input', [
 ])
 
 export const style = defineCss(() => css`
-    .${classes.inputItem} input {
-        text-align: center;
+    @layer reset {
+        .${classes.inputItem} input {
+            text-align: center;
+        }
     }
 `)

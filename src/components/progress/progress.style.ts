@@ -19,134 +19,134 @@ export function useStyle({color, variant}: Required<Pick<ProgressProps, 'color' 
 
         return variant === 'linear'
             ? css`
-                display: flex;
-                gap: ${spacing[3]}px;
-                align-items: center;
+                    @layer reset {
+                        display: flex;
+                        gap: ${spacing[3]}px;
+                        align-items: center;
 
-                .${classes.track} {
-                    flex: 1;
-                    background-color: ${gray(.1)};
-                    border-radius: 1000em;
-                    overflow: hidden;
-                    position: relative;
+                        .${classes.track} {
+                            flex: 1;
+                            background-color: ${gray(.1)};
+                            border-radius: 1000em;
+                            overflow: hidden;
+                            position: relative;
 
-                    &:before, .${classes.bar} {
-                        background-color: ${colorValue};
-                        border-radius: inherit;
-                        transition: width .25s ${easing.easeOut};
-                        position: absolute;
-                        inset: 0 auto 0 0;
-                    }
-    
-                    &:before {
-                        content: '';
-                    }
-                }
+                            &::before, .${classes.bar} {
+                                background-color: ${colorValue};
+                                border-radius: inherit;
+                                transition: width .25s ${easing.easeOut};
+                                position: absolute;
+                                inset: 0 auto 0 0;
+                            }
 
-                &[data-indeterminate=true] {
-                    .${classes.track} {
-                        background-color: ${indeterminateBg};
-                        
-                        &:before {
-                            animation: ${indeterminateAnim2} 2.25s ${easing.linear} infinite 1.1s;
+                            &::before {
+                                content: '';
+                            }
                         }
-                        
-                        .${classes.bar} {
-                            animation: ${indeterminateAnim1} 2.25s ${easing.linear} infinite;
+
+                        &[data-indeterminate=true] {
+                            .${classes.track} {
+                                background-color: ${indeterminateBg};
+
+                                &::before {
+                                    animation: ${indeterminateAnim2} 2.25s ${easing.linear} infinite 1.1s;
+                                }
+
+                                .${classes.bar} {
+                                    animation: ${indeterminateAnim1} 2.25s ${easing.linear} infinite;
+                                }
+                            }
+                        }
+
+                        .${classes.info} {
+                            line-height: 1;
+
+                            .${classes.icon} {
+                                animation: ${iconAnim} .25s ${easing.swing}
+                            }
+                        }
+
+                        &[data-success=true] {
+                            .${classes.bar} {
+                                background-color: ${colors.success.main};
+                            }
+                        }
+
+                        &[data-error=true] {
+                            .${classes.bar} {
+                                background-color: ${colors.error.main};
+                            }
+                        }
+
+                        &[data-processing=true] {
+                            .${classes.bar} {
+                                &::after {
+                                    content: '';
+                                    background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, .5));
+                                    border-radius: inherit;
+                                    position: absolute;
+                                    inset: 0;
+                                    animation: ${processingAnim} 2s infinite ${easing.easeOut};
+                                }
+                            }
                         }
                     }
-                }
-
-                .${classes.info} {
-                    line-height: 1;
-
-                    .${classes.icon} {
-                        animation: ${iconAnim} .25s ${easing.swing}
-                    }
-                }
-
-                &[data-success=true] {
-                    .${classes.bar} {
-                        background-color: ${colors.success.main};
-                    }
-                }
-
-                &[data-error=true] {
-                    .${classes.bar} {
-                        background-color: ${colors.error.main};
-                    }
-                }
-
-                &[data-processing=true] {
-                    .${classes.bar} {
-                        &:after {
-                            content: '';
-                            background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, .5));
-                            border-radius: inherit;
-                            position: absolute;
-                            inset: 0;
-                            animation: ${processingAnim} 2s infinite ${easing.easeOut};
-                        }
-                    }
-                }
             `
             // variant === 'circular' || variant === 'gauge'
             : css`
-                display: inline-flex;
-                position: relative;
+                    @layer reset {
+                        display: inline-flex;
+                        position: relative;
 
-                .${classes.svg} {
-                    transform: rotate(-90deg);
-                }
+                        .${classes.svg} {
+                            transform: rotate(-90deg);
+                        }
 
-                .${classes.track} {
-                    stroke: ${gray(.1)};
-                    fill: transparent;
-                }
+                        .${classes.track} {
+                            stroke: ${gray(.1)};
+                            fill: transparent;
+                        }
 
-                .${classes.bar} {
-                    stroke: ${colorValue};
-                    fill: transparent;
-                    transition: stroke-dashoffset .25s ${easing.easeOut};
-                }
+                        .${classes.bar} {
+                            stroke: ${colorValue};
+                            fill: transparent;
+                            transition: stroke-dashoffset .25s ${easing.easeOut};
+                        }
 
-                &[data-success=true] {
-                    .${classes.bar} {
-                        stroke: ${colors.success.main};
+                        &[data-success=true] {
+                            .${classes.bar} {
+                                stroke: ${colors.success.main};
+                            }
+                        }
+
+                        &[data-error=true] {
+                            .${classes.bar} {
+                                stroke: ${colors.error.main};
+                            }
+                        }
+
+                        .${classes.info} {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            position: absolute;
+                            inset: 0;
+
+                            .${classes.icon} {
+                                animation: ${iconAnim} .25s ${easing.swing}
+                            }
+                        }
+
+                        &[data-indeterminate=true] {
+                            .${classes.svg} {
+                                animation: ${indeterminateAnim3} 1.6s ${easing.linear} infinite;
+                            }
+
+                            .${classes.track} {
+                                stroke: none;
+                            }
+                        }
                     }
-                }
-
-                &[data-error=true] {
-                    .${classes.bar} {
-                        stroke: ${colors.error.main};
-                    }
-                }
-
-                .${classes.info} {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    position: absolute;
-                    inset: 0;
-
-                    .${classes.icon} {
-                        animation: ${iconAnim} .25s ${easing.swing}
-                    }
-                }
-
-                &[data-indeterminate=true] {
-                    .${classes.svg} {
-                        animation: ${indeterminateAnim3} 1.6s ${easing.linear} infinite;
-                    }
-
-                    .${classes.track} {
-                        stroke: none;
-                    }
-                }
-
-                &[data-variant=gauge] {
-                    
-                }
             `
     }, [colorValue, variant])
 }

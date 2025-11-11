@@ -18,36 +18,37 @@ export const commonNativeInputStyle = css`
 `
 
 export const style = css`
-    position: relative;
+    @layer reset {
+        position: relative;
 
-    .${classes.input} {
-        ${commonNativeInputStyle}
-    
-        &::-webkit-search-cancel-button {
-            display: none;
-        }
-    
-        &::-ms-clear,
-        &::-webkit-search-cancel-button {
-            display: none;
-        }
-    
-        &::-webkit-inner-spin-button,
-        &::-webkit-outer-spin-button {
-            width: 12px;
-        }
-    }
-
-    &[data-adaptable=true] {
         .${classes.input} {
-            height: 100%;
-            position: absolute;
-            inset: 0;
-        }
-    }
+            ${commonNativeInputStyle}
+            &::-webkit-search-cancel-button {
+                display: none;
+            }
 
-    .${classes.adaptable} {
-        opacity: 0;
-        pointer-events: none;
+            &::-ms-clear,
+            &::-webkit-search-cancel-button {
+                display: none;
+            }
+
+            &::-webkit-inner-spin-button,
+            &::-webkit-outer-spin-button {
+                width: 12px;
+            }
+        }
+
+        &[data-adaptable=true] {
+            .${classes.input} {
+                height: 100%;
+                position: absolute;
+                inset: 0;
+            }
+        }
+
+        .${classes.adaptable} {
+            opacity: 0;
+            pointer-events: none;
+        }
     }
 `

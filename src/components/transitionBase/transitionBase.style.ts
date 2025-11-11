@@ -8,58 +8,62 @@ export function useTransitionBaseStyle({timeout}: Required<Pick<TransitionBasePr
     const timeoutIsNumber = typeof timeout === 'number'
 
     return useCss(() => css`
-        ${timeoutIsNumber ? `transition-duration: ${timeout}ms;` : ''}
+        @layer reset {
+            ${timeoutIsNumber ? `transition-duration: ${timeout}ms;` : ''}
+            &.appear-active {
+                ${!timeoutIsNumber ? `transition-duration: ${timeout.appear}ms;` : ''}
+            }
 
-        &.appear-active {
-            ${!timeoutIsNumber ? `transition-duration: ${timeout.appear}ms;` : ''}
-        }
+            &.enter-active {
+                ${!timeoutIsNumber ? `transition-duration: ${timeout.enter}ms;` : ''}
+            }
 
-        &.enter-active {
-            ${!timeoutIsNumber ? `transition-duration: ${timeout.enter}ms;` : ''}
-        }
-
-        &.exit-active {
-            ${!timeoutIsNumber ? `transition-duration: ${timeout.exit}ms;` : ''}
+            &.exit-active {
+                ${!timeoutIsNumber ? `transition-duration: ${timeout.exit}ms;` : ''}
+            }
         }
     `, [timeout])
 }
 
 export const fadeStyle = defineCss(({easing}) => css`
-    transition-property: opacity;
-    transition-timing-function: ${easing.easeOut};
+    @layer reset {
+        transition-property: opacity;
+        transition-timing-function: ${easing.easeOut};
 
-    &,
-    &.appear,
-    &.enter {
-        opacity: 0;
-    }
+        &,
+        &.appear,
+        &.enter {
+            opacity: 0;
+        }
 
-    &.appear-active,
-    &.enter-active,
-    &.enter-done,
-    &.exit {
-        opacity: 1;
-    }
+        &.appear-active,
+        &.enter-active,
+        &.enter-done,
+        &.exit {
+            opacity: 1;
+        }
 
-    &.exit-active,
-    &.exit-done {
-        opacity: 0;
+        &.exit-active,
+        &.exit-done {
+            opacity: 0;
+        }
     }
 `)
 
 export const sweepingStyle = defineCss(({easing}) => css`
-    //overflow: hidden;
-    transition-property: opacity, width, height;
+    @layer reset {
+        transition-property: opacity, width, height;
 
-    &.appear-active,
-    &.enter-active,
-    &.enter-done {
-        transition-timing-function: ${easing.easeOut}, ${easing.bounce}, ${easing.bounce};
-    }
+        &.appear-active,
+        &.enter-active,
+        &.enter-done {
+            transition-timing-function: ${easing.easeOut}, ${easing.bounce}, ${easing.bounce};
+        }
 
-    &.exit-active,
-    &.exit-done {
-        transition-timing-function: ${easing.easeOut};
+        &.exit-active,
+        &.exit-done {
+            transition-timing-function: ${easing.easeOut};
+        }
     }
 `)
 
@@ -72,34 +76,35 @@ export function useGrowAndCollapseStyle({orientation, _mode}: Required<Pick<Tran
                 : 'scaleX'
 
         return css`
-            transition-property: opacity, transform;
-            ${_mode === 'collapse' ? `transform-origin: ${orientation === 'vertical' ? 'top' : 'left'};` : ''}
-            
-            &,
-            &.appear,
-            &.enter {
-                transform: ${transformMethod}(0);
-            }
-        
-            &.appear-active,
-            &.enter-active,
-            &.enter-done,
-            &.exit {
-                transform: scale(1);
-            }
-        
-            &.exit-active,
-            &.exit-done {
-                transform: ${transformMethod}(0);
-            }
-        
-            &.appear-active,
-            &.enter-active {
-                transition-timing-function: ${easing.easeOut}, ${easing.bounce};
-            }
-        
-            &.exit-active {
-                transition-timing-function: ${easing.easeOut};
+            @layer reset {
+                transition-property: opacity, transform;
+                ${_mode === 'collapse' ? `transform-origin: ${orientation === 'vertical' ? 'top' : 'left'};` : ''}
+                &,
+                &.appear,
+                &.enter {
+                    transform: ${transformMethod}(0);
+                }
+
+                &.appear-active,
+                &.enter-active,
+                &.enter-done,
+                &.exit {
+                    transform: scale(1);
+                }
+
+                &.exit-active,
+                &.exit-done {
+                    transform: ${transformMethod}(0);
+                }
+
+                &.appear-active,
+                &.enter-active {
+                    transition-timing-function: ${easing.easeOut}, ${easing.bounce};
+                }
+
+                &.exit-active {
+                    transition-timing-function: ${easing.easeOut};
+                }
             }
         `
     }, [orientation, _mode])
@@ -114,36 +119,38 @@ export function useSlideStyle({direction, offset}: Required<Pick<TransitionBaseP
         }
 
         return css`
-            transition-property: opacity, transform;
-            
-            &,
-            &.appear,
-            &.enter {
-                pointer-events: none;
-                transform: ${transformMethod}(${offsetValue});
-            }
-        
-            &.appear-active,
-            &.enter-active,
-            &.enter-done,
-            &.exit {
-                pointer-events: inherit;
-                transform: translate(0);
-            }
-        
-            &.exit-active,
-            &.exit-done {
-                pointer-events: none;
-                transform: ${transformMethod}(${offsetValue});
-            }
-        
-            &.appear-active,
-            &.enter-active {
-                transition-timing-function: ${easing.easeOut}, ${easing.bounce};
-            }
-        
-            &.exit-active {
-                transition-timing-function: ${easing.easeOut};
+            @layer reset {
+                transition-property: opacity, transform;
+
+                &,
+                &.appear,
+                &.enter {
+                    pointer-events: none;
+                    transform: ${transformMethod}(${offsetValue});
+                }
+
+                &.appear-active,
+                &.enter-active,
+                &.enter-done,
+                &.exit {
+                    pointer-events: inherit;
+                    transform: translate(0);
+                }
+
+                &.exit-active,
+                &.exit-done {
+                    pointer-events: none;
+                    transform: ${transformMethod}(${offsetValue});
+                }
+
+                &.appear-active,
+                &.enter-active {
+                    transition-timing-function: ${easing.easeOut}, ${easing.bounce};
+                }
+
+                &.exit-active {
+                    transition-timing-function: ${easing.easeOut};
+                }
             }
         `
     }, [direction, offset])

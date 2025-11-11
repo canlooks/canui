@@ -12,30 +12,32 @@ export const classes = defineInnerClasses('date-time-picker', [
 ])
 
 export const style = defineCss(({text, spacing}) => css`
-    cursor: pointer;
-    
-    .${classes.container} {
-        display: flex;
-        align-items: center;
+    @layer reset {
+        cursor: pointer;
 
-        .${classes.placeholder} {
-            flex: 1;
-            color: ${text.placeholder};
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
-        }
-
-        .${classes.backfill} {
-            flex: 1;
-            min-width: 0;
+        .${classes.container} {
             display: flex;
-            flex-wrap: wrap;
-            gap: ${spacing[1]}px;
-        }
-        
-        .${classes.dateTimeIcon} {
-            color: ${text.secondary};
+            align-items: center;
+
+            .${classes.placeholder} {
+                flex: 1;
+                color: ${text.placeholder};
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+
+            .${classes.backfill} {
+                flex: 1;
+                min-width: 0;
+                display: flex;
+                flex-wrap: wrap;
+                gap: ${spacing[1]}px;
+            }
+
+            .${classes.dateTimeIcon} {
+                color: ${text.secondary};
+            }
         }
     }
 `)
@@ -43,11 +45,13 @@ export const style = defineCss(({text, spacing}) => css`
 export const datePickerPopperStyle = defineCss(theme => [
     popperStyleCallback(theme),
     css`
-        flex-direction: row;
-        padding: 0;
-        
-        .${calendarClasses.root} + .${timerClasses.root} {
-            border-left: 1px solid ${theme.divider};
+        @layer reset {
+            flex-direction: row;
+            padding: 0;
+
+            .${calendarClasses.root} + .${timerClasses.root} {
+                border-left: 1px solid ${theme.divider};
+            }
         }
     `
 ])

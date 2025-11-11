@@ -131,6 +131,9 @@ export const defaultFontFamily = `-apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji', 'Microsoft YaHei UI', sans-serif`
 
+export const defaultMonospaceFontFamily = `'Consolas', 'SF Mono', 'Cascadia Code', 'Menlo',
+    'DejaVu Sans Mono', 'Ubuntu Mono', monospace`
+
 /**
  * ---------------------------------------------------------------------
  * 默认的明亮主题配置

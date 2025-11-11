@@ -8,14 +8,16 @@ export const classes = defineInnerClasses('bubble', [
 ])
 
 export const style = defineCss(({background, boxShadow, borderRadius}) => css`
-    z-index: ${zIndex.popper};
+    @layer reset {
+        z-index: ${zIndex.popper};
 
-    .${classes.content} {
-        background-color: ${background.content};
-        box-shadow: ${boxShadow[0]};
-        border-radius: ${borderRadius}px;
-        padding: 4px;
+        .${classes.content} {
+            background-color: ${background.content};
+            box-shadow: ${boxShadow[0]};
+            border-radius: ${borderRadius}px;
+            padding: 4px;
+        }
+
+        ${popperArrowStyle(background.content)}
     }
-
-    ${popperArrowStyle(background.content)}
 `)

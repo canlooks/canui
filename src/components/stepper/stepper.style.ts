@@ -4,9 +4,11 @@ import {defineInnerClasses, defineCss} from '../../utils'
 export const classes = defineInnerClasses('stepper')
 
 export const style = defineCss(() => css`
-    display: flex;
+    @layer reset {
+        display: flex;
 
-    &[data-orientation=vertical] {
-        flex-direction: column;
+        &[data-orientation=vertical] {
+            flex-direction: column;
+        }
     }
 `)

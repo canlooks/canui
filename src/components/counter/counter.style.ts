@@ -8,29 +8,31 @@ export const classes = defineInnerClasses('counter', [
 ])
 
 export const style = defineCss(({divider}) => css`
-    display: inline-flex;
+    @layer reset {
+        display: inline-flex;
 
-    .${buttonClasses.root} {
-        z-index: 1;
+        .${buttonClasses.root} {
+            z-index: 1;
 
-        &[data-variant=outlined], &[data-variant=dashed] {
-            border-color: ${divider};
-        }
-    }
-
-    .${classes.input} {
-        input {
-            text-align: center;
-            
-            &::-webkit-inner-spin-button,
-            &::-webkit-outer-spin-button {
-                display: none;
+            &[data-variant=outlined], &[data-variant=dashed] {
+                border-color: ${divider};
             }
         }
 
-        .${inputClasses.adaptable} {
-            display: flex;
-            min-width: 60px;
+        .${classes.input} {
+            input {
+                text-align: center;
+
+                &::-webkit-inner-spin-button,
+                &::-webkit-outer-spin-button {
+                    display: none;
+                }
+            }
+
+            .${inputClasses.adaptable} {
+                display: flex;
+                min-width: 60px;
+            }
         }
     }
 `)

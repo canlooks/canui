@@ -12,35 +12,37 @@ export const classes = defineInnerClasses('picker-dialog', [
 ])
 
 export const style = defineCss(({spacing}) => css`
-    .${classes.selectedArea} {
-        width: 320px;
-        max-height: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: ${spacing[3]}px;
+    @layer reset {
+        .${classes.selectedArea} {
+            width: 320px;
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: ${spacing[3]}px;
 
-        .${classes.count} {
-            b {
-                margin: 0 ${spacing[2]}px;
+            .${classes.count} {
+                b {
+                    margin: 0 ${spacing[2]}px;
+                }
+
+                .${dividerClasses.content} {
+                    display: flex;
+                    gap: 12px;
+                }
             }
 
-            .${dividerClasses.content} {
-                display: flex;
-                gap: 12px;
-            }
-        }
+            .${classes.list} {
+                flex: 1;
+                overflow: hidden auto;
 
-        .${classes.list} {
-            flex: 1;
-            overflow: hidden auto;
-            
-            .${alertClasses.description} {
-                margin-top: 0;
+                .${alertClasses.description} {
+                    margin-top: 0;
+                }
             }
-        }
 
-        .${classes.confirm} {
-            margin-top: ${spacing[4]}px;
+            .${classes.confirm} {
+                margin-top: ${spacing[4]}px;
+            }
         }
     }
 `)

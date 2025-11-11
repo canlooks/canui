@@ -6,15 +6,17 @@ export const classes = defineInnerClasses('options-base', [
 ])
 
 export const style = css`
-    .${classes.optionsList} {
-        width: 100%;
-        height: 100%;
-        flex: 1;
-        overflow: hidden;
-        max-height: ${32 * 8}px;
+    @layer reset {
+        .${classes.optionsList} {
+            width: 100%;
+            height: 100%;
+            flex: 1;
+            overflow: hidden;
+            max-height: ${32 * 8}px;
 
-        &:hover {
-            overflow: hidden auto;
+            &:hover {
+                overflow: hidden auto;
+            }
         }
     }
 `

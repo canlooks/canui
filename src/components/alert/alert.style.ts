@@ -23,62 +23,64 @@ export function useStyle({color}: {color: ColorPropsValue}) {
         const filledBg = mode === 'light' ? colorValue : c.alpha(.8).string()
 
         return css`
-            display: flex;
-            align-items: center;
-            gap: ${spacing[3]}px;
-            padding: ${spacing[4]}px ${spacing[5]}px;
-            border-radius: ${borderRadius}px;
-
-            .${classes.icon} {
-                display: block;
-                color: ${colorValue};
-            }
-
-            &[data-variant=standard],
-            &[data-variant=outlined] {
-                background-color: ${bg};
-            }
-
-            &[data-variant=outlined] {
-                border: 1px solid ${border};
-            }
-
-            &[data-variant=filled] {
-                background-color: ${filledBg};
-                color: #ffffff;
+            @layer reset {
+                display: flex;
+                align-items: center;
+                gap: ${spacing[3]}px;
+                padding: ${spacing[4]}px ${spacing[5]}px;
+                border-radius: ${borderRadius}px;
 
                 .${classes.icon} {
+                    display: block;
+                    color: ${colorValue};
+                }
+
+                &[data-variant=standard],
+                &[data-variant=outlined] {
+                    background-color: ${bg};
+                }
+
+                &[data-variant=outlined] {
+                    border: 1px solid ${border};
+                }
+
+                &[data-variant=filled] {
+                    background-color: ${filledBg};
                     color: #ffffff;
+
+                    .${classes.icon} {
+                        color: #ffffff;
+                    }
                 }
-            }
 
-            &:has(.${classes.title}) {
-                .${classes.icon} {
-                    display: flex;
-                    font-size: ${20 / 14}em;
+                &:has(.${classes.title}) {
+                    .${classes.icon} {
+                        display: flex;
+                        font-size: ${20 / 14}em;
+                    }
                 }
-            }
 
-            .${classes.content} {
-                flex: 1;
-                min-width: 0;
-            }
-
-            .${classes.title} {
-                font-weight: bold;
-                font-size: ${15 / 14}em;
-
-                & + .${classes.description} {
-                    margin-top: ${spacing[3]}px;
+                .${classes.content} {
+                    flex: 1;
+                    min-width: 0;
                 }
-            }
 
-            &:not([data-variant=filled]) .${classes.description} {
-                color: ${text.secondary};
-            }
+                .${classes.title} {
+                    font-weight: bold;
+                    font-size: ${15 / 14}em;
 
-            .${classes.close} {
-                align-self: flex-start;
+                    & + .${classes.description} {
+                        margin-top: ${spacing[3]}px;
+                    }
+                }
+
+                &:not([data-variant=filled]) .${classes.description} {
+                    color: ${text.secondary};
+                }
+
+                .${classes.close} {
+                    align-self: flex-start;
+                }
             }
         `
     }, [colorValue])

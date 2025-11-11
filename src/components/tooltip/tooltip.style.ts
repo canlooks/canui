@@ -14,18 +14,20 @@ export function useStyle({color}: {color: ColorPropsValue}) {
     colorValue = Color(colorValue).alpha(.7).string()
 
     return useCss(({spacing, borderRadius, boxShadow}) => css`
-        pointer-events: none;
-        z-index: ${zIndex.tooltip};
+        @layer reset {
+            pointer-events: none;
+            z-index: ${zIndex.tooltip};
 
-        .${classes.title} {
-            font-size: ${13 / 14}em;
-            padding: ${spacing[2]}px ${spacing[3]}px;
-            background-color: ${colorValue};
-            color: #ffffff;
-            border-radius: ${borderRadius}px;
-            box-shadow: ${boxShadow[0]};
+            .${classes.title} {
+                font-size: ${13 / 14}em;
+                padding: ${spacing[2]}px ${spacing[3]}px;
+                background-color: ${colorValue};
+                color: #ffffff;
+                border-radius: ${borderRadius}px;
+                box-shadow: ${boxShadow[0]};
+            }
+
+            ${popperArrowStyle(colorValue)}
         }
-
-        ${popperArrowStyle(colorValue)}
     `, [colorValue])
 }

@@ -7,24 +7,26 @@ export const classes = defineInnerClasses('loading', [
 ])
 
 export const style = css`
-    position: relative;
-    z-index: 0;
-    
-    &[data-fill=true] {
-        width: 100%;
-        height: 100%;
-        flex: 1;
-    }
-
-    .${classes.container} {
-        width: 100%;
-        height: 100%;
+    @layer reset {
         position: relative;
         z-index: 0;
-    }
+
+        &[data-fill=true] {
+            width: 100%;
+            height: 100%;
+            flex: 1;
+        }
+
+        .${classes.container} {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 0;
+        }
 
 
-    .${classes.mask} {
-        z-index: 1;
+        .${classes.mask} {
+            z-index: 1;
+        }
     }
 `

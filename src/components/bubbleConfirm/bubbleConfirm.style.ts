@@ -13,48 +13,50 @@ export const classes = defineInnerClasses('bubble-confirm', [
 ])
 
 export const style = defineCss(({boxShadow, borderRadius, background, spacing, colors, text}) => css`
-    min-width: 180px;
-    max-width: 340px;
-    z-index: ${zIndex.bubbleConfirm};
+    @layer reset {
+        min-width: 180px;
+        max-width: 340px;
+        z-index: ${zIndex.bubbleConfirm};
 
-    .${classes.bubble} {
-        border-radius: ${borderRadius}px;
-        box-shadow: ${boxShadow[0]};
-        background-color: ${background.content};
-        display: flex;
-        gap: ${spacing[4]}px;
-        padding: ${spacing[5]}px;
-
-        .${classes.icon} {
-            color: ${colors.warning.main};
-            font-size: 1.2em;
-        }
-
-        .${classes.info} {
-            flex: 1;
-            min-width: 0;
+        .${classes.bubble} {
+            border-radius: ${borderRadius}px;
+            box-shadow: ${boxShadow[0]};
+            background-color: ${background.content};
             display: flex;
-            flex-direction: column;
-            gap: ${spacing[3]}px;
+            gap: ${spacing[4]}px;
+            padding: ${spacing[5]}px;
 
-            .${classes.title} {
-                font-weight: bold;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                overflow: hidden;
+            .${classes.icon} {
+                color: ${colors.warning.main};
+                font-size: 1.2em;
             }
 
-            .${classes.content} {
-                color: ${text.secondary};
-            }
-
-            .${classes.footer} {
+            .${classes.info} {
+                flex: 1;
+                min-width: 0;
                 display: flex;
-                justify-content: flex-end;
-                gap: ${spacing[2]}px;
+                flex-direction: column;
+                gap: ${spacing[3]}px;
+
+                .${classes.title} {
+                    font-weight: bold;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                .${classes.content} {
+                    color: ${text.secondary};
+                }
+
+                .${classes.footer} {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: ${spacing[2]}px;
+                }
             }
         }
-    }
 
-    ${popperArrowStyle(background.content)}
+        ${popperArrowStyle(background.content)}
+    }
 `)
