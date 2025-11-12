@@ -15,6 +15,8 @@ export interface ItemType extends Omit<CheckboxBaseProps, '_type'>, Obj {
 export interface CheckboxBaseGroupCommonProps<I extends ItemType> extends Omit<FlexProps, 'defaultValue' | 'onChange'> {
     size?: CheckboxBaseProps['size']
     color?: CheckboxBaseProps['color']
+    options?: I[]
+    /** @alias {@link options} */
     items?: I[]
     primaryKey?: keyof I
 }
@@ -33,7 +35,8 @@ export function useCheckboxBaseGroupContext() {
 export const CheckboxBaseGroup = (<I extends ItemType, V extends Id = Id>({
     size,
     color,
-    items,
+    options,
+    items = options,
     primaryKey = 'value',
 
     multiple,

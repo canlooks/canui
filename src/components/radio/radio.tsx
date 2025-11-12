@@ -19,3 +19,5 @@ export interface RadioGroupProps<I extends ItemType, V extends Id = Id> extends 
 export const RadioGroup = (<I extends ItemType, V extends Id = Id>(props: RadioGroupProps<I, V>) => {
     return <CheckboxBaseGroup {...props}/>
 }) as <I extends ItemType, V extends Id = Id>(props: RadioGroupProps<I, V>) => ReactElement
+
+Radio.Group = RadioGroup

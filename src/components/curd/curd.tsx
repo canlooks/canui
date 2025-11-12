@@ -45,6 +45,9 @@ export type LoadRowsReturn<R extends RowType = RowType> = {
 type EachRowType<R extends RowType, T> = T | ((row: R) => T)
 
 export type CurdRef<R extends RowType = RowType, F extends FormValue = FormValue> = {
+    reload(): Promise<void>
+    setPage(page: number): void
+    setPageSize(size: number): void
     openCreateDialog(defaultValue?: F): Promise<F> | undefined
     selectSingle(): Promise<R> | undefined
     selectMultiple(selected?: Id[]): Promise<Id[]> | undefined
@@ -183,6 +186,15 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
      */
 
     useImperativeHandle(ref, () => ({
+        reload() {
+            return innerLoadRows()
+        },
+        setPage(page: number) {
+            setInnerPage(page)
+        },
+        setPageSize(size: number) {
+            setInnerPageSize(size)
+        },
         openCreateDialog(defaultValue?: F) {
             return curdDialogRef.current?.open(void 0, defaultValue)
         },
