@@ -37,7 +37,21 @@ export interface ColumnType<R extends RowType = RowType> extends Omit<ComponentP
     /**
      * @enum true 不会弹出气泡框，需配合{@link DataGridBaseProps.onFilterClick}实现筛选逻辑
      * @enum FilterOptionsProps 传递至`OptionsBase`组件
+     * @example FilterOptionsProps
+     * {
+     *     filter: {
+     *         options: [
+     *             {value: '1', label: '选项1‘}
+     *         ]
+     *     }
+     * }
      * @enum FilterControlProps 自定义渲染气泡内容
+     * @example FilterControlProps
+     * {
+     *     filter: {
+     *         control: <Input/>
+     *     }
+     * }
      */
     filter?: boolean | FilterOptionsProps | FilterControlProps
 

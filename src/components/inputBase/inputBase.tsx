@@ -9,8 +9,8 @@ import {Icon} from '../icon'
 import {faCircleXmark} from '@fortawesome/free-solid-svg-icons/faCircleXmark'
 
 export interface InputBaseRef extends HTMLDivElement {
-    select?: HTMLInputElement['select']
-    setSelectionRange?: HTMLInputElement['setSelectionRange']
+    select: HTMLInputElement['select']
+    setSelectionRange: HTMLInputElement['setSelectionRange']
 }
 
 export interface InputBaseProps<T extends 'input' | 'textarea'> extends Omit<DivProps, 'ref' | 'prefix' | 'onChange' | 'children'> {

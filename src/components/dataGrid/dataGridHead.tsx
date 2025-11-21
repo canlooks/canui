@@ -12,6 +12,8 @@ import {Button} from '../button'
 import {faFilter} from '@fortawesome/free-solid-svg-icons/faFilter'
 import {Bubble} from '../bubble'
 import {FilterBubbleContent} from './filterBubbleContent'
+import {useFormValueContext} from '../form'
+import {isUnset} from '../../utils'
 
 interface DataGridHeadProps<R extends RowType, V extends Id = Id> extends Required<Pick<DataGridProps<R, V>,
     | 'primaryKey' | 'orderType' | 'onOrderChange'
@@ -57,6 +59,8 @@ export const DataGridHead = memo(<R extends RowType, V extends Id = Id>({
             ? setValue(rows?.flatMap(r => r[primaryKey!] ?? []) || [])
             : setValue([])
     }
+
+    const {formValue} = useFormValueContext()
 
     const renderedHead = useRenderHead(Column => {
         const columnDefinitions = columnResizable ? flattedColumns : completedColumns
@@ -125,12 +129,13 @@ export const DataGridHead = memo(<R extends RowType, V extends Id = Id>({
                     const sortable = sorter && !children?.length
                     const isOrderingColumn = orderColumn === _key
                     const currentOrderType = isOrderingColumn ? orderType : 'descend'
+                    const isFilteredColumn = !isUnset(formValue?.[_key!])
 
                     const filterButton = (
                         <Button
                             className={classes.filterButton}
                             variant="plain"
-                            color="text.placeholder"
+                            color={isFilteredColumn ? 'primary' : 'text.placeholder'}
                             onClick={e => {
                                 e.stopPropagation()
                                 onFilterClick?.(_key!, e)

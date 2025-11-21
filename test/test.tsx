@@ -1,24 +1,29 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Button, Radio} from '../src'
+import {App, Button, Curd, CurdColumn, Dialog, Input, Radio, SerialInput} from '../src'
 import React, {useRef} from 'react'
-import {RC} from '@canlooks/reactive/react'
+import {RC, useReactive} from '@canlooks/reactive/react'
 
-const Root = RC(() => {
-    const ref = useRef<any>(null)
-
-    return (
-        <>
-            <Radio.Group options={[
+const columns: CurdColumn[] = [
+    {
+        title: '姓名',
+        filterInline: {
+            options: [
                 {
                     value: '1',
-                    label: '同意'
-                },
-                {
-                    value: '2',
-                    label: '拒绝'
+                    label: '选项1'
                 }
-            ]}/>
+            ]
+        }
+    }
+]
+
+const Root = RC(() => {
+    return (
+        <>
+            <Curd
+                columns={columns}
+            />
         </>
     )
 })

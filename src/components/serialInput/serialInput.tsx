@@ -73,14 +73,29 @@ export const SerialInput = memo(({
                                     } else if (index === count - 1) {
                                         onFinish?.(newValue)
                                     }
-                                } else if (0 < index && prevLength === 1 && curr.length === 0) {
-                                    // 聚焦前一个输入框
-                                    inputRefs.current[index - 1].focus()
                                 }
                             },
-                            onKeyDown: ({key}) => {
-                                if (key === 'Backspace' && innerValue.current[index].length === 0 && 0 < index) {
-                                    inputRefs.current[index - 1].focus()
+                            onKeyDown: (e) => {
+                                switch (e.key) {
+                                    case 'Backspace':
+                                        if (innerValue.current[index].length === 0 && index > 0) {
+                                            const prevInput = inputRefs.current[index - 1]
+                                            prevInput.focus()
+                                            const selectionIndex = innerValue.current[index - 1].length
+                                            prevInput.setSelectionRange(selectionIndex, selectionIndex)
+                                        }
+                                        break
+                                    case 'ArrowRight':
+                                        if (index < count - 1) {
+                                            e.preventDefault()
+                                            inputRefs.current[index + 1].focus()
+                                        }
+                                        break
+                                    case 'ArrowLeft':
+                                        if (index > 0) {
+                                            e.preventDefault()
+                                            inputRefs.current[index - 1].focus()
+                                        }
                                 }
                             }
                         }

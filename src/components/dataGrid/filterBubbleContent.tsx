@@ -8,7 +8,7 @@ import {memo, useEffect} from 'react'
 import {FormItem, FormItemChildren, useFormContext, useFormValueContext} from '../form'
 
 type FilterSharedProps = {
-    /** 是否显示`重置`与`确定`按钮，默认为`true` */
+    /** 是否显示`重置`按钮，默认为`true` */
     showButton?: boolean
 }
 
@@ -52,7 +52,7 @@ export const FilterBubbleContent = memo(({
             {columnFilterProps.showButton !== false
                 ? <Flex
                     gap={6}
-                    justifyContent="flex-end"
+                    justifyContent="center"
                     marginTop={6}
                 >
                     <Button
@@ -63,9 +63,6 @@ export const FilterBubbleContent = memo(({
                         }}
                     >
                         重置
-                    </Button>
-                    <Button onClick={() => setOpen(false)}>
-                        确定
                     </Button>
                 </Flex>
                 : <TriggerFilterOnChange/>
