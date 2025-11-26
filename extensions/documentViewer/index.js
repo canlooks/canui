@@ -1,5 +1,4 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-// @ts-nocheck
-tslib_1.__exportStar(require("../dist/cjs/extensions/textFormatter"), exports);
+tslib_1.__exportStar(require("../../dist/cjs/extensions/documentViewer"), exports);

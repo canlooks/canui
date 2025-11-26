@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "module": "CommonJS",
+//    "module": "CommonJS",
     "resolveJsonModule": true,
     "noUnusedLocals": false,
     "emitDecoratorMetadata": true,
@@ -13,5 +13,8 @@
   },
   "include": [
     "**/*"
-  ]
+  ],
+  "ts-node": {
+    "esm": true
+  }
 }
