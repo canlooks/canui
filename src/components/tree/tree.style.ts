@@ -22,8 +22,8 @@ export function useStyle({indent}: {
     return [
         useCss(({spacing, mode, borderRadius, text, easing, gray, divider, colors}) => {
             const c = Color(colors.primary.main)
-            const hover = gray(mode === 'light' ? .05 : .2)
-            const active = gray(mode === 'light' ? .1 : .12)
+            const hover = gray(mode === 'light' ? .05 : .18)
+            const active = gray(mode === 'light' ? .1 : .22)
             const selectedBg = c.alpha(mode === 'light' ? .1 : .2).string()
             const selectedHover = c.alpha(mode === 'light' ? .07 : .17).string()
             const selectedActive = c.alpha(mode === 'light' ? .13 : .23).string()
@@ -98,7 +98,6 @@ export function useStyle({indent}: {
                     }
 
                     &:not(:has([data-dragging=true])) {
-                    {
                         .${classes.node} {
                             &[data-selected=true] {
                                 background-color: ${selectedBg};
@@ -122,7 +121,6 @@ export function useStyle({indent}: {
                                 background-color: ${active};
                             }
                         }
-                    }
                     }
 
                     &[data-show-line=true] {

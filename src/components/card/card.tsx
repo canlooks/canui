@@ -8,7 +8,7 @@ export interface CardProps extends FlexProps {
     flexable?: boolean
     /** 是否显示边框，默认为`false` */
     bordered?: boolean
-    /** @ 支持0-5，明亮主题表示阴影的程度，默认为`0`; 暗黑主题表示背景色，默认为`2` */
+    /** 支持0-5，明亮主题表示阴影的程度, 暗黑主题表示背景色，默认为`0` */
     elevation?: number
     /** 默认为{@link Theme.borderRadius} */
     borderRadius?: number
@@ -17,14 +17,13 @@ export interface CardProps extends FlexProps {
 export function Card({
     flexable,
     bordered,
-    elevation,
+    elevation = 0,
     borderRadius,
     ...props
 }: CardProps) {
     const theme = useTheme()
 
     borderRadius ??= theme.borderRadius
-    elevation ??= theme.mode === 'light' ? 0 : 2
 
     return (
         <Flex

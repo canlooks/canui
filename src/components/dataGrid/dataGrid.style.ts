@@ -61,12 +61,12 @@ export const style = defineCss(({spacing, mode, gray, text, colors, easing}) => 
             -webkit-tap-highlight-color: transparent;
 
             &:hover {
-                background-color: ${gray(mode === 'light' ? .05 : .26)};
+                background-color: ${gray(mode === 'light' ? .05 : .2)};
             }
 
             &:active {
                 transition: background-color 0s;
-                background-color: ${gray(mode === 'light' ? .01 : .22)};
+                background-color: ${gray(mode === 'light' ? .09 : .24)};
             }
 
             &[data-ordering=true] {

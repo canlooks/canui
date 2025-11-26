@@ -39,16 +39,20 @@ export const style = defineCss(({spacing, mode, background, divider, boxShadow, 
                 @layer reset {
                     padding: ${spacing[8]}px;
 
-                    &[data-elevation="0"] {
-                        background-color: ${gray(.1)};
+                    &[data-bordered=true] {
+                        border: 1px solid ${divider};
                     }
 
-                    &[data-elevation="1"] {
+                    &[data-elevation="0"] {
                         background-color: ${gray(.14)};
                     }
 
+                    &[data-elevation="1"] {
+                        background-color: ${gray(.18)};
+                    }
+
                     &[data-elevation="2"] {
-                        background-color: ${gray(.2)};
+                        background-color: ${gray(.22)};
                     }
 
                     &[data-elevation="3"] {
@@ -56,11 +60,11 @@ export const style = defineCss(({spacing, mode, background, divider, boxShadow, 
                     }
 
                     &[data-elevation="4"] {
-                        background-color: ${gray(.34)};
+                        background-color: ${gray(.30)};
                     }
 
                     &[data-elevation="5"] {
-                        background-color: ${gray(.45)};
+                        background-color: ${gray(.34)};
                     }
                 }
         `

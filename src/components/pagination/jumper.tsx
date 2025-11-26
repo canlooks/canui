@@ -4,10 +4,11 @@ import {clsx} from '../../utils'
 import {classes} from './pagination.style'
 import {Input, InputProps} from '../input'
 import {usePaginationContext} from './pagination'
+import {InputBaseRef} from '../inputBase'
 
 export interface PaginationJumperProps extends DivProps {
     InputProps?: InputProps
-    InputRef?: Ref<HTMLDivElement>
+    InputRef?: Ref<InputBaseRef>
 }
 
 export const PaginationJumper = memo(({

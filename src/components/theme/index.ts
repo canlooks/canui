@@ -1,3 +1,5 @@
 export * from './themeContext'
+export * from './themeMethods'
+export * from './themeRegistry'
 export * from './themeTypes'
 export * from './themeVariables'

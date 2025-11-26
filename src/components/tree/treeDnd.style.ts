@@ -35,7 +35,7 @@ export function useStyle({indent}: {
                 width: 20px;
                 margin-right: ${spacing[3]}px;
                 text-align: center;
-                color: ${gray(.12)};
+                color: ${mode === 'light' ? gray(.16) : gray(.32)};
                 cursor: grab;
             }
 

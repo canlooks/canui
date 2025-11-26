@@ -1,6 +1,6 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Button, Curd, CurdColumn, Dialog, Input, Radio, SerialInput} from '../src'
+import {App, Button, Card, Curd, CurdColumn, Dialog, Input, Radio, SerialInput, Tree, useTheme} from '../src'
 import React, {useRef} from 'react'
 import {RC, useReactive} from '@canlooks/reactive/react'
 
@@ -19,11 +19,33 @@ const columns: CurdColumn[] = [
 ]
 
 const Root = RC(() => {
+    const {mode, update} = useTheme()
+
     return (
         <>
-            <Curd
-                columns={columns}
-            />
+            <Card>
+                <Button onClick={() => update({mode: mode === 'light' ? 'dark' : 'light'})}>Button</Button>
+                <Tree
+                    sortable
+                    showDragHandle
+                    nodes={[
+                        {
+                            id: '1',
+                            label: '选项1'
+                        },
+                        {
+                            id: '2',
+                            label: '选项2',
+                            children: [
+                                {
+                                    id: '2-2',
+                                    label: '选项2-2',
+                                }
+                            ]
+                        }
+                    ]}
+                />
+            </Card>
         </>
     )
 })
@@ -36,11 +58,10 @@ createRoot(document.getElementById('app')!).render(
             }
         `}/>
         <App
-            // theme={{mode: 'dark'}}
+            theme={{mode: 'dark'}}
             style={{
                 height: '100vh',
-                padding: 24,
-                background: 'white'
+                padding: 24
             }}
         >
             <Root/>

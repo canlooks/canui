@@ -22,6 +22,7 @@ export type ThemeEasing = { [P in ThemeEasingName]: string }
 
 /** 主题的使用对象 */
 export type Theme = {
+    name: string
     mode: ThemeMode
     fontSize: number
     fontFamily: string
@@ -43,11 +44,10 @@ export type Theme = {
     breakpoints: ResponsiveValue
     zoom: number
     update: (themeDefinition: ThemeDefinition | ((currentTheme: Theme) => ThemeDefinition)) => void
-    /** @private */
-    _sub?: boolean
+    set: (name: string) => void
 }
 
-export interface PartialTheme extends Partial<Omit<Theme, 'colors' | 'text' | 'background' | 'easing' | 'breakpoints' | 'update'>> {
+export interface PartialTheme extends Partial<Omit<Theme, 'colors' | 'text' | 'background' | 'easing' | 'breakpoints' | 'update' | 'set'>> {
     colors?: Partial<ThemeColors>
     text?: Partial<ThemeTextColors>
     background?: Partial<ThemeBackgroundColor>
@@ -59,3 +59,5 @@ export interface PartialTheme extends Partial<Omit<Theme, 'colors' | 'text' | 'b
 export interface ThemeDefinition extends Omit<PartialTheme, 'colors'> {
     colors?: { [P in ColorPresets]?: string }
 }
+
+export type NamedThemeDefinition = Omit<ThemeDefinition, 'name'> & { name: string }

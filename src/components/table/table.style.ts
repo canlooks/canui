@@ -8,8 +8,8 @@ export const classes = defineInnerClasses('table', [
 ])
 
 export const style = defineCss(({mode, spacing, gray, divider, background, easing, colors}) => {
-    const headerBg = gray(mode === 'light' ? .03 : .22)
-    const stripedBg = gray(mode === 'light' ? .02 : .21)
+    const headerBg = gray(mode === 'light' ? .03 : .18)
+    const stripedBg = gray(mode === 'light' ? .02 : .16)
     const selectedBg = Color(colors.primary.main).alpha(mode === 'light' ? .05 : .1).string()
 
     return css`

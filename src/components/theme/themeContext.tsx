@@ -1,7 +1,9 @@
 import {ReactNode, createContext, useContext, useMemo} from 'react'
-import {defaultDarkTheme, defaultLightTheme, defineTheme, restoreThemeDefinition} from './themeVariables'
+import {defaultDarkTheme, defaultLightTheme} from './themeVariables'
 import {mergeDeep, useDerivedState} from '../../utils'
 import {Theme, ThemeDefinition} from './themeTypes'
+import {defineTheme, restoreThemeDefinition} from './themeMethods'
+import {getTheme} from './themeRegistry'
 
 export const ThemeContext = createContext(
     defineTheme(defaultLightTheme) as Theme
@@ -22,7 +24,13 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
     const parentTheme = useTheme()
 
-    const [currentTheme, setCurrentTheme] = useDerivedState(theme)
+    const resolvedThemeDefinition = useMemo(() => {
+        return theme?.name
+            ? mergeDeep({}, getTheme(theme.name), theme)
+            : theme
+    }, [theme])
+
+    const [currentTheme, setCurrentTheme] = useDerivedState(resolvedThemeDefinition)
 
     const mergedThemeDefinition = useMemo(() => {
         return mergeDeep(
@@ -36,12 +44,11 @@ export function ThemeProvider({
 
     const themeContextValue = useMemo(() => {
         const value = defineTheme(mergedThemeDefinition) as Theme
-        value._sub = true
         value.update = theme => {
-            const newThemeDefinition = typeof theme === 'function' ? theme(value) : theme
-            setCurrentTheme(prev => {
-                return mergeDeep({...prev}, newThemeDefinition)
-            })
+            setCurrentTheme(typeof theme === 'function' ? theme(value) : theme)
+        }
+        value.set = name => {
+            value.update(getTheme(name))
         }
         return value
     }, [mergedThemeDefinition])
