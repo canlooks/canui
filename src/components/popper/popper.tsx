@@ -1,7 +1,7 @@
 import React, {CSSProperties, ReactElement, ReactNode, Ref, SetStateAction, cloneElement, isValidElement, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {DivProps, DefineElement, Placement} from '../../types'
 import {createPortal} from 'react-dom'
-import {clsx, cloneRef, listenAllPredecessorsScroll, toArray, useControlled, useDerivedState, useForceUpdate, useSync, useSyncState, useUnmounted, useContainer, isElementOverflowed, OverflowEdge} from '../../utils'
+import {clsx, cloneRef, listenAllPredecessorsScroll, toArray, useControlled, useDerivedState, useForceUpdate, useSync, useSyncState, useUnmounted, useContainer, isElementOverflowed, OverflowEdge, isChildOf} from '../../utils'
 import {ClickAway} from '../clickAway'
 import {classes, style} from './popper.style'
 import {PopperContext, usePopperContext} from './popperContext'
@@ -507,8 +507,12 @@ export function Popper({
         if (!hoverable) {
             return
         }
+        const anchorEl = getAnchorElement()
+        if (!anchorEl) {
+            return
+        }
         const pointerOver = (e: PointerEvent) => {
-            if (!isOvering.current && e.target === anchorRef.current) {
+            if (!isOvering.current && isChildOf(e.target as Element, anchorEl)) {
                 isOvering.current = true
                 pointerEnterFn()
             }
@@ -517,7 +521,6 @@ export function Popper({
             isOvering.current = false
             pointerLeaveFn()
         }
-        const anchorEl = anchorRef.current!
         anchorEl.addEventListener('pointerover', pointerOver)
         anchorEl.addEventListener('pointerleave', pointerLeave)
         return () => {
@@ -550,9 +553,12 @@ export function Popper({
         if (!focusable) {
             return
         }
+        const anchorEl = getAnchorElement()
+        if (!anchorEl) {
+            return
+        }
         const focus = () => openAndHold(true)
         const blur = () => openAndHold(false)
-        const anchorEl = anchorRef.current!
         anchorEl.addEventListener('focus', focus)
         anchorEl.addEventListener('blur', blur)
         return () => {
@@ -571,12 +577,15 @@ export function Popper({
         if (!enterable) {
             return
         }
+        const anchorEl = getAnchorElement()
+        if (!anchorEl) {
+            return
+        }
         const keyDown = (e: KeyboardEvent) => {
             if (e.key === 'Enter') {
                 openAndHold(true)
             }
         }
-        const anchorEl = anchorRef.current!
         anchorEl.addEventListener('keydown', keyDown)
         return () => {
             anchorEl.removeEventListener('keydown', keyDown)
@@ -593,8 +602,11 @@ export function Popper({
         if (!clickable) {
             return
         }
+        const anchorEl = getAnchorElement()
+        if (!anchorEl) {
+            return
+        }
         const click = () => openAndHold(true)
-        const anchorEl = anchorRef.current!
         anchorEl.addEventListener('click', click)
         return () => {
             anchorEl.removeEventListener('click', click)
@@ -611,10 +623,13 @@ export function Popper({
 
     useEffect(() => {
         if (clickToClose) {
+            const anchorEl = getAnchorElement()
+            if (!anchorEl) {
+                return
+            }
             const click = () => {
                 setOpenForce(false)
             }
-            const anchorEl = anchorRef.current!
             anchorEl.addEventListener('click', click)
             return () => {
                 anchorEl.removeEventListener('click', click)
@@ -632,12 +647,15 @@ export function Popper({
         if (!contextMenuable) {
             return
         }
+        const anchorEl = getAnchorElement()
+        if (!anchorEl) {
+            return
+        }
         const contextMenu = (e: MouseEvent) => {
             e.preventDefault()
             setContextMenuEvent(e)
             openAndHold(true)
         }
-        const anchorEl = anchorRef.current!
         anchorEl.addEventListener('contextmenu', contextMenu)
         return () => {
             anchorEl.removeEventListener('contextmenu', contextMenu)
@@ -682,7 +700,7 @@ export function Popper({
                 <ClickAway
                     disabled={!clickable && !enterable && !contextMenuable}
                     // 右键菜单点击anchor需要关闭弹框
-                    targets={() => contextMenuEvent.current ? null : anchorRef.current}
+                    targets={() => contextMenuEvent.current ? void 0 : getAnchorElement()}
                     onClickAway={onClickAway}
                 >
                     <div
