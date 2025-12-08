@@ -63,6 +63,8 @@ function columnsTransfer(columns?: (CurdColumn<any> | symbol)[], type: 'filter' 
         .sort((a, b) => (a.order || 0) - (b.order || 0))
 }
 
+export const CONTROL_COLUMN_KEY = '$control'
+
 /**
  * 统一处理Columns
  */
@@ -82,7 +84,22 @@ export function useCurdColumns<R extends RowType, V extends Id = Id>({
     } = columnConfigurable
 
     if (!defaultVisible || !defaultOrder) {
-        const defaultKeys = columns?.flatMap((col: any) => col.hideInTable ? [] : (col._key ?? [])) || []
+        let hasControlColumn = false
+        const defaultKeys = columns?.flatMap((col: any) => {
+            if (col.hideInTable) {
+                return []
+            }
+            if (col._key) {
+                if (col._key === CONTROL_COLUMN_KEY) {
+                    hasControlColumn = true
+                }
+                return col._key
+            }
+            return []
+        }) || []
+
+        !hasControlColumn && defaultKeys.push(CONTROL_COLUMN_KEY)
+
         defaultVisible ||= defaultKeys
         defaultOrder ||= defaultKeys
     }
