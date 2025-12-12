@@ -190,3 +190,9 @@ export function useStyle({indent}: {
         }
     `, [indent])
 }
+
+export const globalGrabbingStyle = css`
+    * {
+        cursor: grabbing;
+    }
+`

@@ -1,9 +1,12 @@
 import React, {ElementType, useCallback, useEffect, useRef} from 'react'
 import {useSortable} from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
-import {cloneRef, useSync} from '../../utils'
+import {cloneRef, clsx, useSync} from '../../utils'
 import {Arguments} from '@dnd-kit/sortable/dist/hooks/useSortable'
 import {OverridableComponent, OverridableProps} from '../../types'
+import {Global} from '@emotion/react'
+import {globalGrabbingStyle} from '../tree/treeDnd.style'
+import {classes, style} from './sortableItem.style'
 
 export type SortableItemOwnProps = {
     id: string | number
@@ -52,19 +55,24 @@ export const SortableItem = (
         useEffect(() => removeListener, [])
 
         return (
-            <Component
-                {...attributes}
-                {...listeners}
-                {...props}
-                ref={cloneRef(setNodeRef, props.ref)}
-                style={{
-                    transform: CSS.Transform.toString(transform),
-                    transition,
-                    ...props.style
-                }}
-                onTouchStart={disabled ? void 0 : onTouchStart}
-                data-dragging={isDragging}
-            />
+            <>
+                <Component
+                    {...attributes}
+                    {...listeners}
+                    {...props}
+                    ref={cloneRef(setNodeRef, props.ref)}
+                    css={style}
+                    className={clsx(classes.root, props.className)}
+                    style={{
+                        transform: CSS.Transform.toString(transform),
+                        transition,
+                        ...props.style
+                    }}
+                    onTouchStart={disabled ? void 0 : onTouchStart}
+                    data-dragging={isDragging}
+                />
+                {isDragging && <Global styles={globalGrabbingStyle}/>}
+            </>
         )
     }
 ) as OverridableComponent<SortableItemOwnProps>

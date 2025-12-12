@@ -1,6 +1,6 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder} from '../src'
+import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree} from '../src'
 import React, {ReactNode, useDeferredValue, useEffect, useMemo, useState} from 'react'
 import {RC, useReactive} from '@canlooks/reactive/react'
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
@@ -12,21 +12,32 @@ const Root = RC(() => {
 
     return (
         <>
-            <Button onClick={() => state.hasPermission = !state.hasPermission}>Button</Button>
-            <Curd
-                columns={[
+            <Upload type="image" sortable/>
+            <Tree
+                searchable
+                sortable
+                nodes={[
                     {
-                        title: 'Name',
-                        field: 'name'
+                        id: '1',
+                        label: '节点1',
+                        children: [
+                            {
+                                id: '1-1',
+                                label: '节点1-1'
+                            }
+                        ]
+                    },
+                    {
+                        id: '2',
+                        label: '节点2',
+                        children: [
+                            {
+                                id: '2-1',
+                                label: '节点2-1'
+                            }
+                        ]
                     }
                 ]}
-                rows={[
-                    {id: 1, name: '张三'}
-                ]}
-
-                creatable={state.hasPermission}
-                updatable={state.hasPermission}
-                deletable={state.hasPermission}
             />
         </>
     )

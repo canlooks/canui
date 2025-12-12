@@ -61,12 +61,12 @@ export const Pinchable = (({
                 zoomFn(innerScale.current * .5)
             }
             wrapperRef.current.zoomTo = zoomFn
-            wrapperRef.current.rotate =
-                wrapperRef.current.rotateLeft = () => {
-                    rotateFn(innerRotate.current - 90)
-                }
+            wrapperRef.current.rotate = rotateFn
+            wrapperRef.current.rotateLeft = () => {
+                rotateFn(innerRotate.current - 90)
+            }
             wrapperRef.current.rotateRight = () => {
-                rotateFn(innerRotate.current + 90)
+                rotateFn(innerRotate.current - 90)
             }
             wrapperRef.current.reset = resetAll
         }
@@ -199,7 +199,7 @@ export const Pinchable = (({
         setInnerRotate(0)
     }
 
-    const doubleClickHandler = (e: React.MouseEvent) => {
+    const onDoubleClick = (e: React.MouseEvent) => {
         childrenProps.onDoubleClick?.(e)
         if (innerScale.current < 1.5) {
             zoomFn(3, e.clientX, e.clientY)
@@ -208,11 +208,16 @@ export const Pinchable = (({
         }
     }
 
-    const wheelHandler = (e: React.WheelEvent) => {
+    const onWheel = (e: React.WheelEvent) => {
         childrenProps.onMouseWheel?.(e)
         e.deltaY > 0
             ? zoomFn(innerScale.current * .8, e.clientX, e.clientY)
             : zoomFn(innerScale.current * 1.2, e.clientX, e.clientY)
+    }
+
+    const onTransitionEnd = (e: React.TransitionEvent<HTMLElement>) => {
+        e.currentTarget.dataset.transition = 'false'
+        setInnerRotate(innerRotate.current % 360)
     }
 
     return (
@@ -234,9 +239,9 @@ export const Pinchable = (({
                     transformOrigin: 'center'
                 },
                 ...draggableHandles,
-                onDoubleClick: doubleClickHandler,
-                onWheel: wheelHandler,
-                onTransitionEnd: e => e.currentTarget.dataset.transition = 'false'
+                onDoubleClick,
+                onWheel,
+                onTransitionEnd
             })}
         </Component>
     )

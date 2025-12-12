@@ -126,6 +126,7 @@ export const Image = memo(({
                     {...previewProps}
                     open={previewOpen.current}
                     onOpenChange={setPreviewOpen}
+                    onPointerDown={e => e.stopPropagation()}
                 />
             }
         </div>

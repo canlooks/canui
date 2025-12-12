@@ -1,7 +1,8 @@
 import {createContext, Dispatch, memo, ReactNode, RefObject, SetStateAction, useContext, useRef, useState} from 'react'
 import {Id} from '../../types'
 import {SortPlacement, TreeBaseProps} from './tree'
-import {treeDndClasses} from './treeDnd.style'
+import {globalGrabbingStyle, treeDndClasses} from './treeDnd.style'
+import {Global} from '@emotion/react'
 
 type TreeDndContextItem<T> = [T | undefined, Dispatch<SetStateAction<T | undefined>>]
 
@@ -40,7 +41,10 @@ export const TreeDnd = memo(({
             sortable, showDragHandle, onSort,
             dragging, overing, placement
         }}>
-            <div className={treeDndClasses.levelBlock}>{children}</div>
+            <div className={treeDndClasses.levelBlock}>
+                {children}
+            </div>
+            {!!dragging[0] && <Global styles={globalGrabbingStyle}/>}
         </TreeDndContext>
     )
 })

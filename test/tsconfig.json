@@ -1,20 +1,17 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-//    "module": "CommonJS",
-    "resolveJsonModule": true,
     "noUnusedLocals": false,
+    "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "types": [
-      "@types/node",
-      "vite/client"
-    ]
+    "experimentalDecorators": true
   },
   "include": [
     "**/*"
   ],
   "ts-node": {
-    "esm": true
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
   }
 }

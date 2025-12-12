@@ -1,6 +1,7 @@
 import {useCallback, useDeferredValue, useMemo} from 'react'
 import {Id, Obj} from '../types'
 import {useControlled, useSync} from './hooks'
+import {NodeType, SortInfo} from '../components/tree'
 
 /**
  * ------------------------------------------------------------------------
@@ -98,4 +99,68 @@ export function useTreeSearch<N extends Obj, V extends Id = Id>({
         setInnerSearchValue,
         filteredTreeData
     }
+}
+
+/**
+ * 得到排序后的树结构
+ */
+export function sortTreeNodes<N extends NodeType<V>, V extends Id = Id>(props: {
+    nodes: N[]
+    primaryKey?: keyof N
+    childrenKey?: keyof N
+}, sortInfo: SortInfo<V>): N[] {
+    let {nodes, primaryKey = 'id', childrenKey = 'children'} = props
+    const {source, destination, placement} = sortInfo
+
+    nodes = structuredClone(nodes)
+
+    const pickUp = (nodes?: N[]): N | null => {
+        if (!nodes?.length) {
+            return null
+        }
+        for (let i = 0, {length} = nodes; i < length; i++) {
+            const node = nodes[i]
+            if (node[primaryKey] === source) {
+                nodes.splice(i, 1)
+                return node
+            }
+            const foundInChildren = pickUp(node[childrenKey])
+            if (foundInChildren) {
+                return foundInChildren
+            }
+        }
+        return null
+    }
+    pickUp(nodes)
+
+    const putDown = (nodes?: N[]) => {
+        if (!nodes?.length) {
+            return false
+        }
+        for (let i = 0, {length} = nodes; i < length; i++) {
+            const node = nodes[i]
+            if (node[primaryKey] === destination) {
+                switch (placement) {
+                    case 'before':
+                        nodes.splice(i, 0, node)
+                        return true
+                    case 'after':
+                        nodes.splice(i + 1, 0, node)
+                        return true
+                    default:
+                        node.children ||= []
+                        node.children.push(node)
+                        return true
+                }
+            }
+            const foundInChildren = pickUp(node[childrenKey])
+            if (foundInChildren) {
+                return foundInChildren
+            }
+        }
+        return false
+    }
+    putDown(nodes)
+
+    return nodes
 }

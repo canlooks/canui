@@ -103,6 +103,8 @@ export const TreeNode = memo(({
         inactiveBlock(e.currentTarget)
     }
 
+    const overingTimeout = useRef<any>(void 0)
+
     const activeBlock = (el: HTMLDivElement, _placement: SortPlacement | 'parent', upLevel = 0) => {
         if (_placement === 'parent') {
             let i = upLevel
@@ -131,6 +133,13 @@ export const TreeNode = memo(({
                 return true
             }
         })
+        // 如果有children且为折叠状态，over在该节点上一定时间后，需要展开该节点
+        if (hasChildren && !currentExpanded) {
+            overingTimeout.current ||= setTimeout(() => {
+                overingTimeout.current = void 0
+                toggleExpanded(id)
+            }, 600)
+        }
     }
 
     const inactiveBlock = (el?: HTMLDivElement) => {
@@ -144,6 +153,10 @@ export const TreeNode = memo(({
             el.dataset.active = 'false'
         })
         overing.current = void 0
+        if (overingTimeout.current) {
+            clearTimeout(overingTimeout.current)
+            overingTimeout.current = void 0
+        }
     }
 
     /**
