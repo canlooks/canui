@@ -138,7 +138,7 @@ export const SnackbarBase = memo(({
 
     const containerEl = useContainer(container, effectContainer)
 
-    return createPortal(
+    return containerEl.current && createPortal(
         stacks.flatMap((stack, i) => stack
             ? <TransitionGroup
                 key={i}

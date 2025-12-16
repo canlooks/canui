@@ -227,7 +227,7 @@ export function Popper({
         forcePlacement?: Placement
         openAnimation?: boolean
     }, beforeOpen?: () => void) => {
-        const containerRect = containerEl.current.getBoundingClientRect()
+        const containerRect = containerEl.current!.getBoundingClientRect()
 
         const popperEl = innerPopperRef.current!
         let {offsetWidth: popperWidth, offsetHeight: popperHeight} = popperEl
@@ -305,7 +305,7 @@ export function Popper({
                 }
                 popperEl.style.left = left + 'px'
                 popperEl.style.top = top + 'px'
-                return isElementOverflowed(popperEl, containerEl.current === document.body ? void 0 : containerEl.current)
+                return isElementOverflowed(popperEl, containerEl.current! === document.body ? void 0 : containerEl.current!)
             }
         } else {
             // 非右键菜单
@@ -375,7 +375,7 @@ export function Popper({
                 }
                 popperEl.style.left = left + 'px'
                 popperEl.style.top = top + 'px'
-                return isElementOverflowed(popperEl, containerEl.current === document.body ? void 0 : containerEl.current)
+                return isElementOverflowed(popperEl, containerEl.current! === document.body ? void 0 : containerEl.current!)
             }
         }
 
@@ -696,7 +696,7 @@ export function Popper({
                 })
                 : children
             }
-            {renderedOnce.current && createPortal(
+            {renderedOnce.current && containerEl.current && createPortal(
                 <ClickAway
                     disabled={!clickable && !enterable && !contextMenuable}
                     // 右键菜单点击anchor需要关闭弹框

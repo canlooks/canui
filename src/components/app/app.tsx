@@ -1,6 +1,6 @@
-import {createContext, ElementType, useContext, useMemo} from 'react'
+import {createContext, ElementType, useContext} from 'react'
 import {OverridableComponent, OverridableProps} from '../../types'
-import {clsx, defineCss} from '../../utils'
+import {clsx, defineCss, useExternalClass} from '../../utils'
 import {classes, style} from './app.style'
 import {ThemeProvider, ThemeProviderProps} from '../theme'
 import {AppDialog, AppDialogMethods} from './appDialog'
@@ -54,12 +54,12 @@ export function InnerApp({
     fill = true,
     ...props
 }: OverridableProps<AppProps, 'div'>) {
-    const appValue = useMemo(() => ({
+    const appValue = useExternalClass(() => ({
         dialog: App.dialog = new AppDialogMethods(),
         message: App.message = new AppMessageMethods(),
         notification: App.notification = new AppNotificationMethods(),
         actionSheet: App.actionSheet = new AppActionSheetMethods()
-    }), [])
+    }))
 
     return (
         <AppContext value={appValue}>

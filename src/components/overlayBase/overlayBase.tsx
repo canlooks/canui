@@ -58,9 +58,9 @@ export function OverlayBase({
             return
         }
         removeFocusOnOpen && (document.activeElement as HTMLElement)?.blur?.()
-        containerEl.current.style.overflow = 'hidden'
+        containerEl.current!.style.overflow = 'hidden'
         return () => {
-            containerEl.current.style.overflow = ''
+            containerEl.current!.style.overflow = ''
         }
     }, [open])
 
@@ -77,7 +77,7 @@ export function OverlayBase({
         forceRender === false && setShouldRender(false)
     }
 
-    return shouldRender.current && createPortal(
+    return shouldRender.current && containerEl.current && createPortal(
         <div
             {...props}
             css={style}

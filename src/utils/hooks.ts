@@ -162,20 +162,46 @@ export function useLoading<A extends any[], R>(fn: (...args: A) => R | Promise<R
  * @param effectContainer
  * @param defaultContainer 默认为`document.body`
  */
-export function useContainer<T extends HTMLElement | null>(container?: DefineElement<T>, effectContainer?: DefineElement<T>, defaultContainer: T = document.body as T): RefObject<T> {
-    const [containerEl, setContainerEl] = useDerivedState<T>(prev => {
+export function useContainer<T extends HTMLElement | null>(
+    container?: DefineElement<T>,
+    effectContainer?: DefineElement<T>,
+    defaultContainer?: DefineElement<T>
+): RefObject<T | null> {
+    const [containerEl, setContainerEl] = useDerivedState<T | null>(prev => {
         if (container) {
             return typeof container === 'function' ? container() : container
         }
-        return prev || defaultContainer
-    }, [container, defaultContainer])
+        return prev || null
+    }, [container])
 
     useEffect(() => {
-        if (effectContainer) {
-            const el = typeof effectContainer === 'function' ? effectContainer() : effectContainer
+        const _container = effectContainer || defaultContainer || document.body as T
+        if (_container) {
+            const el = typeof _container === 'function' ? _container() : _container
             setContainerEl(el)
         }
-    }, [])
+    }, [effectContainer, defaultContainer])
 
     return containerEl
+}
+
+/**
+ * 使用外部类，该方法可避免`StrictMode`下，React渲染行为与外部类实例生命周期不同步的问题
+ */
+export function useExternalClass<T>(setup: () => T, cleanup?: (instance: T) => void): T {
+    const mountTimes = useRef(0)
+    const prevInstance = useRef<T>(void 0)
+
+    const [instance] = useState(() => {
+        if (!mountTimes.current++) {
+            prevInstance.current = setup()
+        }
+        return prevInstance.current as T
+    })
+
+    useEffect(() => () => {
+        !--mountTimes.current && cleanup?.(instance)
+    }, [])
+
+    return instance
 }
