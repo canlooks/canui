@@ -2,12 +2,8 @@ import {ReactNode, memo, useMemo} from 'react'
 import {DivProps, Status as IStatus} from '../../types'
 import {classes, style} from './status.style'
 import {clsx, useStatusColor} from '../../utils'
-import {faCircleInfo} from '@fortawesome/free-solid-svg-icons/faCircleInfo'
-import {faCircleCheck} from '@fortawesome/free-solid-svg-icons/faCircleCheck'
-import {faCircleExclamation} from '@fortawesome/free-solid-svg-icons/faCircleExclamation'
-import {faCircleXmark} from '@fortawesome/free-solid-svg-icons/faCircleXmark'
-import {faCircleQuestion} from '@fortawesome/free-solid-svg-icons/faCircleQuestion'
-import {FontAwesomeIcon, FontAwesomeIconProps} from '@fortawesome/react-fontawesome'
+import {faCircleInfo, faCircleCheck, faCircleExclamation, faCircleXmark, faCircleQuestion} from '@fortawesome/free-solid-svg-icons'
+import {Icon, IconProps} from '../icon'
 
 export type StatusType = IStatus | 'confirm' | 'unknown'
 
@@ -20,7 +16,7 @@ export const statusMapToIconDefinition = {
     unknown: faCircleQuestion
 }
 
-export interface StatusIconProps extends Partial<FontAwesomeIconProps> {
+export interface StatusIconProps extends Partial<IconProps> {
     status?: StatusType
 }
 
@@ -30,7 +26,7 @@ export const StatusIcon = memo(({
 }: StatusIconProps) => {
     const statusColor = useStatusColor(status)
 
-    const iconProps: FontAwesomeIconProps = {
+    const iconProps: IconProps = {
         ...props,
         icon: props.icon || statusMapToIconDefinition[status],
         className: clsx(classes.icon, props.className),
@@ -40,7 +36,7 @@ export const StatusIcon = memo(({
         }), [statusColor, props.style])
     }
 
-    return <FontAwesomeIcon {...iconProps}/>
+    return <Icon {...iconProps}/>
 })
 
 export interface StatusProps extends DivProps {
@@ -51,7 +47,7 @@ export interface StatusProps extends DivProps {
     /** 是否播放动画，默认为false */
     animation?: boolean
     /** {@link variant}为`icon`时生效，传递给`<StatusIcon/>`组件 */
-    iconProps?: Partial<FontAwesomeIconProps>
+    iconProps?: Partial<IconProps>
 }
 
 const defaultLabel = {

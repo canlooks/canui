@@ -5,7 +5,7 @@ import {clsx, useControlled} from '../../utils'
 import {useTheme} from '../theme'
 import {Collapse} from '../transitionBase'
 import {Icon} from '../icon'
-import {faCaretRight} from '@fortawesome/free-solid-svg-icons/faCaretRight'
+import {faCaretRight} from '@fortawesome/free-solid-svg-icons'
 
 export interface AccordionProps extends Omit<DivProps, 'title' | 'prefix'> {
     size?: Size

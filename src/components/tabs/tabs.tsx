@@ -146,14 +146,16 @@ export const Tabs = memo(<T extends TabType = TabType>({
     const [shadowEnd, setShadowEnd] = useState(false)
 
     const setShadow = () => {
-        if (position === 'top' || position === 'bottom') {
-            const {scrollLeft} = scrollRef.current!
-            setShadowStart(scrollLeft > 0)
-            setShadowEnd(scrollLeft < scrollRef.current!.scrollWidth - scrollRef.current!.clientWidth)
-        } else {
-            const {scrollTop} = scrollRef.current!
-            setShadowStart(scrollTop > 0)
-            setShadowEnd(scrollTop < scrollRef.current!.scrollHeight - scrollRef.current!.clientHeight)
+        if (scrollRef.current) {
+            if (position === 'top' || position === 'bottom') {
+                const {scrollLeft} = scrollRef.current
+                setShadowStart(scrollLeft > 0)
+                setShadowEnd(scrollLeft < scrollRef.current!.scrollWidth - scrollRef.current!.clientWidth)
+            } else {
+                const {scrollTop} = scrollRef.current
+                setShadowStart(scrollTop > 0)
+                setShadowEnd(scrollTop < scrollRef.current!.scrollHeight - scrollRef.current!.clientHeight)
+            }
         }
     }
 

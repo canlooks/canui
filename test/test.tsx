@@ -1,20 +1,25 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree} from '../src'
+import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading} from '../src'
 import React, {ReactNode, StrictMode, useDeferredValue, useEffect, useMemo, useState} from 'react'
 import {RC, useReactive} from '@canlooks/reactive/react'
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 
 const Root = RC(() => {
     const state = useReactive({
-        hasPermission: false
+        loading: false
     })
 
     return (
         <>
-            <Button onClick={() => App.message.success({
-                title: '测试'
-            })}>Button</Button>
+            <div>
+                <Loading open={state.loading}>
+                    <div style={{height: 300}}>
+                        123
+                    </div>
+                </Loading>
+            </div>
+            <Button onClick={() => state.loading = !state.loading}>Button</Button>
         </>
     )
 })

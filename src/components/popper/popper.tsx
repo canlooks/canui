@@ -83,7 +83,7 @@ export function Popper({
     ref,
     popperRef,
     anchorElement,
-    container = document.body,
+    container,
     effectContainer,
     content,
     offset,

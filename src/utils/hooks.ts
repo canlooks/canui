@@ -92,9 +92,11 @@ export function useDerivedState(referredState: any, deps?: any[]) {
  */
 export function useUnmounted() {
     const isUnmounted = useRef(false)
-    useEffect(() => () => {
+
+    useExternalClass(() => void 0, () => () => {
         isUnmounted.current = true
-    }, [])
+    })
+
     return isUnmounted
 }
 
