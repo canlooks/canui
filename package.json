@@ -44,6 +44,7 @@
     "build:documentation": "vite build -c documentation/vite.config.mts && tsc -p documentation/tsconfig.bootstrap.json",
     "rebuild": "npm run clean && npm run build:core && npm run build:documentation",
     "dev": "vite -c test/vite.config.mts",
+    "dev:ssr": "next dev test",
     "dev:documentation": "vite -c documentation/vite.config.mts --host",
     "test:unit": "npx ts-node test/unit.ts"
   },
@@ -74,6 +75,7 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/react-transition-group": "^4.4.12",
     "mime": "^4.1.0",
+    "next": "^16.0.10",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-markdown": "^10.1.0",

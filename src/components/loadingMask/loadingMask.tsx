@@ -1,9 +1,9 @@
-import {memo, ReactElement, ReactNode} from 'react'
+import {memo, ReactElement, ReactNode, useMemo, useState} from 'react'
 import {classes, style} from './loadingMask.style'
 import {LoadingIndicator, LoadingIndicatorProps} from '../loadingIndicator'
 import {Progress, ProgressProps} from '../progress'
 import {ColorPropsValue} from '../../types'
-import {clsx, useDerivedState} from '../../utils'
+import {clsx} from '../../utils'
 import {Backdrop, BackdropProps} from '../backdrop'
 
 export interface LoadingMaskProps<T extends HTMLElement = HTMLElement> extends BackdropProps<T> {
@@ -24,19 +24,19 @@ export const LoadingMask = memo(<T extends HTMLElement>({
     progressProps,
     ...props
 }: LoadingMaskProps<T>) => {
-    const [visible, setVisible] = useDerivedState<boolean>((prevLoading) => {
-        // 只有第一次需要原样返回loading，之后visible不会立即变为false，交由onTransitionEnd()处理
-        return typeof prevLoading === 'undefined' ? open : true
+    const [visible, setVisible] = useState(open)
+
+    useMemo(() => {
+        open && setVisible(true)
     }, [open])
 
     const onExited = () => {
-        // 动画结束后，loading为false才需要改变visible
         setVisible(false)
     }
 
     const showProgress = typeof progress === 'number'
 
-    return open || visible.current
+    return open || visible
         ? <Backdrop
             variant="light"
             {...props}
