@@ -19,16 +19,16 @@ export function Deferred<T>({
     value,
     children
 }: DeferredPropsWithoutValue | DeferredPropsWithValue<T>) {
-    const [initialized, setInitialized] = useState(false)
-    const deferredInitialized = useDeferredValue(initialized)
+    const [mounted, setMounted] = useState(false)
+    const deferredMounted = useDeferredValue(mounted)
 
     useEffect(() => {
-        setInitialized(true)
+        setMounted(true)
     }, [])
 
     const deferredValue = useDeferredValue(value)
 
-    if (!deferredInitialized) {
+    if (!deferredMounted) {
         return init
     }
 

@@ -1,18 +1,6 @@
-import {useRef, useEffect, RefObject, Dispatch, SetStateAction, useState, useCallback, useMemo} from 'react'
-import {isPromise, getPromiseState} from './utils'
+import {useRef, useEffect, RefObject, Dispatch, SetStateAction, useState, useCallback, useMemo, EffectCallback, DependencyList} from 'react'
+import {isPromise, getPromiseState, arrayShallowEqual} from './utils'
 import {DefineElement} from '../types'
-
-/**
- * 获取渲染前的值
- * @param value
- */
-export function usePrev<T>(value: T) {
-    const prev = useRef<T>(null)
-    useEffect(() => {
-        prev.current = value
-    })
-    return prev.current
-}
 
 /**
  * 将某个值使用ref同步，主要用于对付组件的闭包问题
@@ -62,6 +50,11 @@ export function useDerivedState<T>(referredState: T, deps?: any[]): [RefObject<T
 export function useDerivedState(referredState: any, deps?: any[]) {
     const derivedState = useRef(void 0)
 
+    useMemo(() => {
+        // SSR模式下，derivedState会重置2次
+        derivedState.current = void 0
+    }, [])
+
     const updateState = (state: SetStateAction<any>) => {
         const newState = typeof state === 'function' ? state(derivedState.current) : state
         if (derivedState.current !== newState) {
@@ -86,6 +79,10 @@ export function useDerivedState(referredState: any, deps?: any[]) {
     ]
 }
 
+export function useMounted() {
+
+}
+
 /**
  * 组件卸载后得到{current: true}
  * @returns
@@ -93,7 +90,7 @@ export function useDerivedState(referredState: any, deps?: any[]) {
 export function useUnmounted() {
     const isUnmounted = useRef(false)
 
-    useExternalClass(() => void 0, () => () => {
+    useExternalClass(() => void 0, () => {
         isUnmounted.current = true
     })
 
@@ -206,4 +203,34 @@ export function useExternalClass<T>(setup: () => T, cleanup?: (instance: T) => v
     }, [])
 
     return instance
+}
+
+/**
+ * 用法同{@link useEffect}，但StrictMode下不会执行两次
+ */
+export function useStrictEffect(effect: EffectCallback, deps?: DependencyList) {
+    const prevDeps = useRef(deps as any[])
+
+    useEffect(() => {
+        const isDepsChanged = prevDeps.current ? arrayShallowEqual(prevDeps.current, deps as any[]) : true
+        if (isDepsChanged) {
+            prevDeps.current = deps as any[]
+            return effect()
+        }
+    })
+}
+
+/**
+ * 用法同{@link useEffect}，但会排除首次渲染
+ */
+export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
+    const mounted = useRef(false)
+
+    useStrictEffect(() => {
+        if (!mounted.current) {
+            mounted.current = true
+            return
+        }
+        return effect()
+    }, [deps])
 }

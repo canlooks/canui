@@ -1,5 +1,5 @@
 import {classes, style} from './anchorList.style'
-import {clsx, listenAllPredecessorsScroll, useDerivedState, useSyncState} from '../../utils'
+import {clsx, listenAllPredecessorsScroll, useDerivedState, useExternalClass, useSyncState} from '../../utils'
 import React, {memo, ReactNode, useEffect, useRef} from 'react'
 import {Flex, FlexProps} from '../flex'
 import {ActiveIndicator} from './activeIndicator'
@@ -46,11 +46,11 @@ export const AnchorList = memo(({
      * 初始化高亮与滚动位置
      */
 
-    const initialized = useRef(false)
+    const mounted = useRef(false)
 
-    useEffect(() => {
+    useExternalClass(() => {
         if (routeMode === 'history') {
-            initialized.current ||= scrollToId(location.hash.slice(1))
+            mounted.current ||= scrollToId(location.hash.slice(1))
         }
     })
 
@@ -63,7 +63,7 @@ export const AnchorList = memo(({
         scrollerEl.scrollTo({
             top: targetEl.offsetTop - offset,
             // 初始化之前无需平滑滚动
-            behavior: initialized.current ? scrollBehavior : 'instant'
+            behavior: mounted.current ? scrollBehavior : 'instant'
         })
         return true
     }

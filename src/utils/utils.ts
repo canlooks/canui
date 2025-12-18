@@ -136,6 +136,23 @@ export function mergeDeep(target: any, ...sources: any[]) {
     return target
 }
 
+export function arrayShallowEqual(a: any[], b: any[]) {
+    if (a === b) {
+        return true
+    }
+    if (a.length !== b.length) {
+        return false
+    }
+    let isEqual = true
+    for (let i = 0, {length} = a; i < length; i++) {
+        if (a[i] !== b[i]) {
+            isEqual = false
+            break
+        }
+    }
+    return isEqual
+}
+
 export type OverflowEdge = 'top' | 'bottom' | 'left' | 'right'
 
 /**

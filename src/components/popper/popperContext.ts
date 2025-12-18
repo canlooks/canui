@@ -1,4 +1,5 @@
-import {createContext, SetStateAction, useContext, useRef, RefObject, useEffect, useMemo, useCallback} from 'react'
+import {createContext, SetStateAction, useContext, useRef, RefObject, useCallback} from 'react'
+import {useExternalClass} from '../../utils'
 
 export const PopperContext = createContext({
     autoClose: false,
@@ -31,13 +32,11 @@ export function useScrollToTarget<T extends HTMLElement>(scrollerRef: RefObject<
         }
     }, [])
 
-    useMemo(() => {
+    useExternalClass(() => {
         beforeOpenCallbacks.add(beforeOpen)
-    }, [])
-
-    useEffect(() => () => {
+    }, () => {
         beforeOpenCallbacks.delete(beforeOpen)
-    }, [])
+    })
 
     return ref
 }

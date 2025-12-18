@@ -1,8 +1,8 @@
-import {Children, isValidElement, useEffect, useLayoutEffect, useRef} from 'react'
+import {Children, isValidElement, useLayoutEffect, useRef} from 'react'
 import {classes, useStyle} from './waterfall.style'
 import {WaterfallItem} from './waterfallItem'
 import {DivProps, ResponsiveProp} from '../../types'
-import {cloneRef, clsx, toResponsiveValue, useResponsiveValue} from '../../utils'
+import {cloneRef, clsx, toResponsiveValue, useExternalClass, useResponsiveValue, useUpdateEffect} from '../../utils'
 
 export interface WaterfallProps extends DivProps {
     /** 布局列数，默认为`{xs: 4}` */
@@ -52,19 +52,11 @@ export const Waterfall = ({
         })
     })
 
-    const isInitialized = useRef(false)
+    useUpdateEffect(computeItemOrder, [columnCountNum.current])
 
-    useEffect(() => {
-        if (!isInitialized.current) {
-            isInitialized.current = true
-            return
-        }
-        computeItemOrder()
-    }, [columnCountNum.current])
-
-    useEffect(() => () => {
+    useExternalClass(() => void 0, () => {
         resizeObserver.current!.disconnect()
-    }, [])
+    })
 
     return (
         <div

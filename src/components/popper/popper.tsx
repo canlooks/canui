@@ -1,7 +1,7 @@
 import React, {CSSProperties, ReactElement, ReactNode, Ref, SetStateAction, cloneElement, isValidElement, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {DivProps, DefineElement, Placement} from '../../types'
 import {createPortal} from 'react-dom'
-import {clsx, cloneRef, listenAllPredecessorsScroll, toArray, useControlled, useDerivedState, useForceUpdate, useSync, useSyncState, useUnmounted, useContainer, isElementOverflowed, OverflowEdge, isChildOf} from '../../utils'
+import {clsx, cloneRef, listenAllPredecessorsScroll, toArray, useControlled, useDerivedState, useForceUpdate, useSync, useSyncState, useUnmounted, useContainer, isElementOverflowed, OverflowEdge, isChildOf, useUpdateEffect} from '../../utils'
 import {ClickAway} from '../clickAway'
 import {classes, style} from './popper.style'
 import {PopperContext, usePopperContext} from './popperContext'
@@ -147,13 +147,7 @@ export function Popper({
 
     const {onChildrenOpenChange: tellParentOpenChange} = usePopperContext()
 
-    const initialized = useRef(false)
-
-    useEffect(() => {
-        if (!initialized.current) {
-            initialized.current = true
-            return
-        }
+    useUpdateEffect(() => {
         tellParentOpenChange(innerOpen.current)
     }, [innerOpen.current])
 

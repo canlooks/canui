@@ -148,10 +148,10 @@ export function Dialog({
         if (scrollBehavior !== 'card') {
             return
         }
-        if (innerOpen.current) {
+        if (innerOpen.current && bodyRef.current && bodyWrapRef.current) {
             const resizeObserver = new ResizeObserver(onScroll)
-            resizeObserver.observe(bodyRef.current!)
-            resizeObserver.observe(bodyWrapRef.current!)
+            resizeObserver.observe(bodyRef.current)
+            resizeObserver.observe(bodyWrapRef.current)
             return () => {
                 resizeObserver.disconnect()
             }

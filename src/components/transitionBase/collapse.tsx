@@ -1,6 +1,6 @@
-import {ElementType, ReactElement, useEffect, useRef, useState} from 'react'
+import {ElementType, ReactElement, useRef, useState} from 'react'
 import {TransitionBase, TransitionBaseProps} from './transitionBase'
-import {cloneRef} from '../../utils'
+import {cloneRef, useStrictEffect} from '../../utils'
 import {MergeProps} from '../../types'
 
 export type CollapseOwnProps = {
@@ -71,12 +71,12 @@ const Sweeping: <T extends HTMLElement = HTMLElement, C extends ElementType = 'd
         })
     }
 
-    const initialized = useRef(false)
+    const mounted = useRef(false)
 
-    useEffect(() => {
-        if (!initialized.current) {
+    useStrictEffect(() => {
+        if (!mounted.current) {
             // 首次渲染
-            initialized.current = true
+            mounted.current = true
             if (!appear) {
                 // 若appear为false，则跳过首次动画
                 return
