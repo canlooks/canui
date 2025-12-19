@@ -1,7 +1,7 @@
-import React, {ReactNode, isValidElement, memo, useEffect, useRef, useState} from 'react'
+import React, {ReactNode, isValidElement, memo, useRef, useState} from 'react'
 import {Collapse, Slide, TransitionBaseProps} from '../transitionBase'
 import {BlockPlacement, ColorPropsValue, DefineElement} from '../../types'
-import {clsx, getEasyID, useColor, useContainer} from '../../utils'
+import {clsx, getEasyID, useColor, useContainer, useUnmounted} from '../../utils'
 import {classes, style} from './snackbarBase.style'
 import {TransitionGroup} from 'react-transition-group'
 import {StatusIcon, statusMapToIconDefinition} from '../status'
@@ -78,9 +78,7 @@ export const SnackbarBase = memo(({
 
     const timers = useRef<any[]>([])
 
-    useEffect(() => () => {
-        timers.current.forEach(timer => clearTimeout(timer))
-    }, [])
+    const isUnmounted = useUnmounted()
 
     const defineMethod = (type: keyof SnackbarBaseMethods) => (props: ReactNode | SnackbarBaseProps) => new Promise<void>(resolve => {
         const propsObject = typeof props === 'object' && !isValidElement(props)
@@ -96,7 +94,7 @@ export const SnackbarBase = memo(({
         let id = getEasyID('snackbar')
 
         const onCloseButtonClick = () => {
-            setStacks(o => {
+            !isUnmounted.current && setStacks(o => {
                 o[index] = o[index].filter(s => s.id !== id)
                 return [...o]
             })
@@ -128,7 +126,6 @@ export const SnackbarBase = memo(({
             )
         }
     })
-
     methods.info = defineMethod('info')
     methods.success = defineMethod('success')
     methods.warning = defineMethod('warning')

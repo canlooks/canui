@@ -209,10 +209,10 @@ export function useExternalClass<T>(setup: () => T, cleanup?: (instance: T) => v
  * 用法同{@link useEffect}，但StrictMode下不会执行两次
  */
 export function useStrictEffect(effect: EffectCallback, deps?: DependencyList) {
-    const prevDeps = useRef(deps as any[])
+    const prevDeps = useRef<any[]>(void 0)
 
     useEffect(() => {
-        const isDepsChanged = prevDeps.current ? arrayShallowEqual(prevDeps.current, deps as any[]) : true
+        const isDepsChanged = prevDeps.current ? !arrayShallowEqual(prevDeps.current!, deps as any[]) : true
         if (isDepsChanged) {
             prevDeps.current = deps as any[]
             return effect()

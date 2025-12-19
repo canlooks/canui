@@ -131,36 +131,38 @@ export function sortTreeNodes<N extends NodeType<V>, V extends Id = Id>(props: {
         }
         return null
     }
-    pickUp(nodes)
+    const sourceNode = pickUp(nodes)
 
-    const putDown = (nodes?: N[]) => {
-        if (!nodes?.length) {
-            return false
-        }
-        for (let i = 0, {length} = nodes; i < length; i++) {
-            const node = nodes[i]
-            if (node[primaryKey] === destination) {
-                switch (placement) {
-                    case 'before':
-                        nodes.splice(i, 0, node)
-                        return true
-                    case 'after':
-                        nodes.splice(i + 1, 0, node)
-                        return true
-                    default:
-                        node.children ||= []
-                        node.children.push(node)
-                        return true
+    if (sourceNode) {
+        const putDown = (nodes?: N[]): boolean => {
+            if (!nodes?.length) {
+                return false
+            }
+            for (let i = 0, {length} = nodes; i < length; i++) {
+                const node = nodes[i]
+                if (node[primaryKey] === destination) {
+                    switch (placement) {
+                        case 'before':
+                            nodes.splice(i, 0, sourceNode)
+                            return true
+                        case 'after':
+                            nodes.splice(i + 1, 0, sourceNode)
+                            return true
+                        default:
+                            node.children ||= []
+                            node.children.push(sourceNode)
+                            return true
+                    }
+                }
+                const foundInChildren = putDown(node[childrenKey])
+                if (foundInChildren) {
+                    return foundInChildren
                 }
             }
-            const foundInChildren = pickUp(node[childrenKey])
-            if (foundInChildren) {
-                return foundInChildren
-            }
+            return false
         }
-        return false
+        putDown(nodes)
     }
-    putDown(nodes)
 
     return nodes
 }
