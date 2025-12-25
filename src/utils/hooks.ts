@@ -232,5 +232,5 @@ export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
             return
         }
         return effect()
-    }, [deps])
+    }, deps)
 }
