@@ -34,13 +34,15 @@ export function defineClasses(prefixName: string, names?: string[]) {
     return ret
 }
 
+const INNER_PREFIX = 'CanUI'
+
 /**
  * @private 携带`CanUI`前缀，内部使用
  */
 export function defineInnerClasses<T extends string>(prefixName: string): { root: string }
 export function defineInnerClasses<T extends string>(prefixName: string, names: T[]): { [P in T]: string } & { root: string }
 export function defineInnerClasses(prefixName: string, names?: string[]) {
-    const prefix = definePrefix('CanUI-' + humpToSegmented(prefixName))
+    const prefix = definePrefix(`${INNER_PREFIX}-${humpToSegmented(prefixName)}`)
     const ret = {root: prefix()} as any
     names?.forEach(name => {
         ret[name] = prefix(humpToSegmented(name))
@@ -138,7 +140,7 @@ export function useTouchSpread(colorPropsValue: ColorPropsValue) {
 }
 
 /**
- * 生成响应式样式，与{@link responsiveStyles}的区别在于，本方法会遍历{@link Theme}中的所有`breakpoints`，触发回调函数
+ * 生成响应式样式，与{@link responsiveStyles}的区别在于，本方法会遍历所有`breakpoints`，触发回调函数
  * @param breakpoints 传入{@link Theme}中的断点，或自定义断点
  * @param callback 每个断点触发一次回调
  */
