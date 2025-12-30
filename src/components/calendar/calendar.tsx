@@ -14,6 +14,7 @@ export type ViewLevel = 'date' | 'month' | 'year'
 type SharedProps = {
     min?: Dayjs
     max?: Dayjs
+    dateButtonProps?: ButtonProps | ((date: Dayjs) => ButtonProps)
     disabledDates?: (date: Dayjs) => boolean
     /** 是否显示`回今天`按钮，默认为`true` */
     showToday?: boolean
@@ -44,6 +45,7 @@ export interface PanelProps extends SharedProps {
 export const Calendar = ({
     viewLevel = 'date',
     showToday = true,
+    dateButtonProps,
     todayButtonText = '回今天',
     todayButtonProps,
     size = 'medium',
@@ -80,6 +82,7 @@ export const Calendar = ({
             }
         },
         showToday,
+        dateButtonProps,
         todayButtonText,
         todayButtonProps,
         _defaultNull

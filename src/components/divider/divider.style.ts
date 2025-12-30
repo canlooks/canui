@@ -18,6 +18,7 @@ export const style = defineCss(({spacing, divider}) => css`
         }
 
         &[data-orientation=horizontal] {
+            width: 100%;
             display: flex;
 
             .${classes.line} {
@@ -26,6 +27,7 @@ export const style = defineCss(({spacing, divider}) => css`
         }
 
         &[data-orientation=vertical] {
+            height: 100%;
             display: inline-flex;
             flex-direction: column;
 

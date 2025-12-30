@@ -9,6 +9,7 @@ import {faAngleLeft} from '@fortawesome/free-solid-svg-icons/faAngleLeft'
 import {faAngleRight} from '@fortawesome/free-solid-svg-icons/faAngleRight'
 import {faAnglesRight} from '@fortawesome/free-solid-svg-icons/faAnglesRight'
 import {classes} from './calendar.style'
+import {clsx} from '../../utils'
 
 const days = ['一', '二', '三', '四', '五', '六', '日']
 
@@ -38,6 +39,7 @@ export const PanelDates = memo(({
     max,
     disabledDates,
     showToday,
+    dateButtonProps,
     todayButtonText = '回今天',
     todayButtonProps,
     _defaultNull
@@ -95,20 +97,25 @@ export const PanelDates = memo(({
             const selected = !_defaultNull && _d.isSame(value, 'day')
             const isCurrentMonth = _d.isSame(innerD, 'month')
             const disabled = isDisabled(_d)
+            const outerProps = typeof dateButtonProps === 'function' ? dateButtonProps(_d) : dateButtonProps
 
             ret.push(
                 <Button
-                    key={i}
-                    className={classes.dateItem}
                     size="small"
                     variant={disabled || selected ? 'filled'
                         : isToday ? 'outlined'
                             : 'text'
                     }
-                    disabled={disabled}
                     color={selected ? 'primary' : 'text'}
+                    {...outerProps}
+                    key={i}
+                    className={clsx(classes.dateItem, outerProps?.className)}
+                    disabled={disabled}
                     data-other-month={!isCurrentMonth}
-                    onClick={() => !selected && setValue(_d)}
+                    onClick={e => {
+                        outerProps?.onClick?.(e)
+                        !selected && setValue(_d)
+                    }}
                 >
                     {_d.date()}
                 </Button>
@@ -156,7 +163,9 @@ export const PanelDates = memo(({
                         {...todayButtonProps}
                         onClick={e => {
                             todayButtonProps?.onClick?.(e)
-                            setValue(dayjs())
+                            const d = dayjs()
+                            setInnerD(d)
+                            setValue(d)
                         }}
                     >
                         {todayButtonText}

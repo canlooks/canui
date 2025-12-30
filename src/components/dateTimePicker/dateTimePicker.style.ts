@@ -18,6 +18,7 @@ export const style = defineCss(({text, spacing}) => css`
         .${classes.container} {
             display: flex;
             align-items: center;
+            gap: ${spacing[1]}px;
 
             .${classes.placeholder} {
                 flex: 1;

@@ -24,7 +24,7 @@ export const Flex = (
         inline,
         direction = 'row',
         wrap,
-        gap = 0,
+        gap,
         columnGap,
         rowGap,
         compact,

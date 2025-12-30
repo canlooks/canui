@@ -1,31 +1,24 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog} from '../src'
+import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image} from '../src'
 import React, {cloneElement, ReactNode, StrictMode, useDeferredValue, useEffect, useMemo, useState} from 'react'
 import {RC, useReactive} from '@canlooks/reactive/react'
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 
 const Root = RC(() => {
-    const state = useReactive({
-        open: false
-    })
 
     return (
         <>
-            <Child>
-                <div className="a">123</div>
-            </Child>
+            <Image.Gallery
+                open
+                src={[
+                    'http://localhost:3000/image/d0a68ee3-64ef-4c0e-9cb8-d973dd545dbc',
+                    'http://localhost:3000/image/c772967e-ff74-4b9b-8d7a-6a686409a951'
+                ]}
+            />
         </>
     )
 })
-
-function Child(props: {
-    children: ReactNode
-}) {
-    return cloneElement(props.children, {
-        className: props.children!.props.className + ' b'
-    })
-}
 
 createRoot(document.getElementById('app')!).render(
     <>

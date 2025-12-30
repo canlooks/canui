@@ -117,7 +117,7 @@ export const Gallery = memo(({
             if ((!left && dx > 0) || (!right && dx < 0)) {
                 return
             }
-            alowSlideTransition()
+            allowSlideTransition()
             const reset = () => {
                 wrapperRef.current!.style.left = -innerIndex.current * wrapperRef.current!.offsetWidth + 'px'
             }
@@ -159,12 +159,12 @@ export const Gallery = memo(({
         doubleClicked.current = true
     }
 
-    const alowSlideTransition = () => {
+    const allowSlideTransition = () => {
         wrapperRef.current && (wrapperRef.current.dataset.transition = 'set')
     }
 
     const goPrevLoop = () => {
-        alowSlideTransition()
+        allowSlideTransition()
         setInnerIndex(o => {
             imageItemRefs.current[o].reset()
             return (o + srcArr.current.length - 1) % srcArr.current.length
@@ -172,7 +172,7 @@ export const Gallery = memo(({
     }
 
     const goNextLoop = () => {
-        alowSlideTransition()
+        allowSlideTransition()
         setInnerIndex(o => {
             imageItemRefs.current[o].reset()
             return (o + 1) % srcArr.current.length

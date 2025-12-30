@@ -66,7 +66,7 @@ export const Pinchable = (({
                 rotateFn(innerRotate.current - 90)
             }
             wrapperRef.current.rotateRight = () => {
-                rotateFn(innerRotate.current - 90)
+                rotateFn(innerRotate.current + 90)
             }
             wrapperRef.current.reset = resetAll
         }
