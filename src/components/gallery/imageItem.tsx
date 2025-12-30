@@ -5,6 +5,8 @@ import {Pinchable, PinchableProps, PinchableRef} from '../pinchable'
 
 export interface ImageItemRef extends PinchableRef {
     isFit(): {
+        top: boolean
+        bottom: boolean
         left: boolean
         right: boolean
     }
@@ -23,10 +25,12 @@ export function ImageItem({
     useImperativeHandle(ref, () => {
         if (pinchableRef.current) {
             pinchableRef.current.isFit = () => {
-                const {x: pinchableX, width: pinchableWidth} = pinchableRef.current!.getBoundingClientRect()
-                const {x: imgX, width: imgWidth} = imgRef.current!.getBoundingClientRect()
+                const {x: pinchableX, y: pinchableY, width: pinchableWidth, height: pinchableHeight} = pinchableRef.current!.getBoundingClientRect()
+                const {x: imgX, y: imgY, width: imgWidth, height: imgHeight} = imgRef.current!.getBoundingClientRect()
 
                 return {
+                    top: imgY >= pinchableY,
+                    bottom: imgY + imgHeight <= pinchableY + pinchableHeight,
                     left: imgX >= pinchableX,
                     right: imgX + imgWidth <= pinchableX + pinchableWidth
                 }

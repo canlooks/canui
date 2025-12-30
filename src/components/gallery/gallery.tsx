@@ -89,7 +89,6 @@ export const Gallery = memo(({
 
     const draggableHandles = useDraggable({
         onDragStart() {
-            wrapperRef.current!.dataset.transition = 'drag'
             return {
                 isFit: imageItemRefs.current[innerIndex.current].isFit(),
                 startLeft: -innerIndex.current * wrapperRef.current!.offsetWidth
@@ -110,7 +109,6 @@ export const Gallery = memo(({
             wrapperRef.current!.style.left = newLeft + 'px'
         },
         onDragEnd({diff: [dx], speed: [speedX], data: {isFit: {left, right}}}) {
-            wrapperRef.current!.dataset.transition = ''
             if (!dx) {
                 return
             }
@@ -131,11 +129,12 @@ export const Gallery = memo(({
                     ? reset()
                     : goNextLoop()
             }
-
+            // 满足速度要求
             if (effectiveSpeed && speedX * 1000 >= effectiveSpeed) {
                 dx > 0 ? goPrev() : goNext()
                 return
             }
+            // 拖拽距离达到一半
             const halfWidth = wrapperRef.current!.offsetWidth / 2
             if (dx > halfWidth) {
                 goPrev()

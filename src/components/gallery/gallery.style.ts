@@ -87,10 +87,6 @@ export const style = defineCss(({spacing, easing, breakpoints}) => css`
                     transition: left .5s ${easing.bounce} 0s;
                 }
 
-                &[data-transition=drag] {
-                    transition: left .1s linear;
-                }
-
                 .${classes.imageItem} {
                     padding: 90px;
 
