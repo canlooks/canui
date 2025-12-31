@@ -1,6 +1,6 @@
 import React, {cloneElement, ElementType, ReactElement, Ref, useImperativeHandle, useRef} from 'react'
 import {OverridableProps} from '../../types'
-import {cloneRef, clsx, GestureOptions, range, useControlled, useGesture} from '../../utils'
+import {cloneRef, clsx, edgeBounce, GestureOptions, range, useControlled, useGesture} from '../../utils'
 import {classes, style} from './pinchable.style'
 
 export interface PinchableRef extends HTMLDivElement {
@@ -25,11 +25,17 @@ type PinchableOwnProps = {
     translate?: [number, number]
     onTranslateChange?(translate: [number, number]): void
     /** 平移限制，`translate`非受控模式下有效 */
-    translateLimit?: (targetX: number, targetY: number, scale: number) => [number, number]
+    translateLimit?: (targetX: number, targetY: number, scale: number, rotateDeg: number) => [number, number]
     defaultRotate?: number
     rotate?: number
     onRotateChange?(rotate: number): void
     children?: ReactElement
+    /** 拖拽至最边缘时，是否允许弹性溢出，默认为`true` */
+    allowEdgeBounce?: boolean
+    /** 元素弹性移动距离，默认为24 */
+    bounceElementTranslate?: number
+    /** 手指弹性拖拽距离，默认为240 */
+    bounceDragDistance?: number
 }
 
 export type PinchableProps<C extends ElementType = 'div'> = OverridableProps<PinchableOwnProps, C>
@@ -50,6 +56,9 @@ export const Pinchable = (({
     rotate,
     onRotateChange,
     children,
+    allowEdgeBounce = true,
+    bounceElementTranslate = 24,
+    bounceDragDistance = 240,
     ...props
 }: PinchableProps) => {
     useImperativeHandle(ref, () => {
@@ -90,6 +99,12 @@ export const Pinchable = (({
         onDrag(info, e) {
             gestureOptions?.onDrag?.(info, e)
             const {diff: [dx, dy], data: [startX, startY]} = info
+            setInnerTranslate(translateLimitFn(startX + dx, startY + dy, void 0, void 0, true))
+        },
+        onDragEnd(info) {
+            gestureOptions?.onDragEnd?.(info)
+            const {diff: [dx, dy], data: [startX, startY]} = info
+            allowTransition('bounce')
             setInnerTranslate(translateLimitFn(startX + dx, startY + dy))
         },
         onPinchStart(info) {
@@ -134,9 +149,15 @@ export const Pinchable = (({
         return
     }
 
-    const translateLimitFn = (x: number, y: number, scale = innerScale.current, deg = innerRotate.current): [number, number] => {
+    const translateLimitFn = (
+        x: number,
+        y: number,
+        scale = innerScale.current,
+        deg = innerRotate.current,
+        bounce = false
+    ): [number, number] => {
         if (translateLimit) {
-            return translateLimit(x, y, scale)
+            return translateLimit(x, y, scale, deg)
         }
 
         const {clientWidth: wrapperWidth, clientHeight: wrapperHeight} = wrapperRef.current!
@@ -147,16 +168,23 @@ export const Pinchable = (({
         const limitX = contentWidth > wrapperWidth ? (contentWidth - wrapperWidth) / 2 : 0
         const limitY = contentHeight > wrapperHeight ? (contentHeight - wrapperHeight) / 2 : 0
 
+        if (!bounce) {
+            return [
+                range(x, -limitX, limitX),
+                range(y, -limitY, limitY)
+            ]
+        }
+
         return [
-            range(x, -limitX, limitX),
-            range(y, -limitY, limitY)
+            edgeBounce(x, {min: -limitX, max: limitX, allowEdgeBounce, bounceElementTranslate, bounceDragDistance}),
+            edgeBounce(y, {min: -limitY, max: limitY, allowEdgeBounce, bounceElementTranslate, bounceDragDistance})
         ]
     }
 
     const childrenProps = children.props as any
 
-    const allowTransition = () => {
-        contentRef.current && (contentRef.current.dataset.transition = 'true')
+    const allowTransition = (transitionType = 'true') => {
+        contentRef.current && (contentRef.current.dataset.transition = transitionType)
     }
 
     const zoomFn = (targetScale: number, originX?: number, originY?: number) => {
@@ -216,7 +244,7 @@ export const Pinchable = (({
     }
 
     const onTransitionEnd = (e: React.TransitionEvent<HTMLElement>) => {
-        e.currentTarget.dataset.transition = 'false'
+        e.currentTarget.dataset.transition = ''
         setInnerRotate(innerRotate.current % 360)
     }
 

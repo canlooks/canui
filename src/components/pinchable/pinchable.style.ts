@@ -15,8 +15,14 @@ export const style = defineCss(({easing}) => css`
             touch-action: none;
         }
 
-        .${classes.content}[data-transition=true] {
-            transition: all .25s ${easing.easeOut};
+        .${classes.content} {
+            &[data-transition=true] {
+                transition: all .25s ${easing.easeOut};
+            }
+
+            &[data-transition=bounce] {
+                transition: all .25s ${easing.bounce};
+            }
         }
     }
 `)

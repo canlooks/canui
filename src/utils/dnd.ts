@@ -2,6 +2,8 @@ import {DragEndEvent, PointerSensor, useSensor, useSensors} from '@dnd-kit/core'
 import {arrayMove} from '@dnd-kit/sortable'
 import {Id, Obj} from '../types'
 import {NodeType, SortInfo} from '../components/tree'
+import {range} from './utils'
+import {BezierFunc, cubicBezier} from './bezier'
 
 /**
  * 默认提供给@dnd-kit的sensors属性
@@ -83,4 +85,34 @@ export function onTreeNodeSort<N extends NodeType<V>, V extends Id = Id>(info: S
     }
 
     return treeNodes
+}
+
+export function edgeBounce(value: number, {
+    allowEdgeBounce,
+    min,
+    max,
+    bounceElementTranslate,
+    bounceDragDistance,
+    bezierFn = cubicBezier(0, 0, 0, 1)
+}: {
+    allowEdgeBounce: boolean
+    min: number
+    max: number
+    bounceElementTranslate: number
+    bounceDragDistance: number
+    bezierFn?: BezierFunc
+}) {
+    if (allowEdgeBounce && bounceElementTranslate && bounceDragDistance > 0) {
+        value = range(value, min - bounceDragDistance, max + bounceDragDistance)
+
+        if (value < min) {
+            value = min - bezierFn((min - value) / bounceDragDistance) * bounceElementTranslate
+        } else if (value > max) {
+            value = max + bezierFn((value - max) / bounceDragDistance) * bounceElementTranslate
+        }
+
+        return value
+    }
+
+    return range(value, min, max)
 }

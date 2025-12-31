@@ -75,6 +75,7 @@ export function ImageItem({
             {...props}
             ref={pinchableRef}
             className={clsx(classes.imageItem, props.className)}
+            allowEdgeBounce={false}
         >
             <img
                 ref={imgRef}

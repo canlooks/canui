@@ -1,6 +1,6 @@
 import {memo, ReactNode, useRef} from 'react'
 import {Modal, ModalProps} from '../modal'
-import {clsx, cubicBezier, range, toArray, useControlled, useDraggable, useSync} from '../../utils'
+import {clsx, edgeBounce, toArray, useControlled, useDraggable, useSync} from '../../utils'
 import {classes, style} from './gallery.style'
 import {Button, ButtonProps} from '../button'
 import {Tooltip} from '../tooltip'
@@ -33,6 +33,8 @@ export interface ImagePreviewProps extends ModalProps {
     showClose?: boolean
     /** 自定义渲染控制按钮 */
     renderControl?: ReactNode
+    /** 拖拽至最边缘时，是否允许弹性溢出，默认为`true` */
+    allowEdgeBounce?: boolean
     /** 元素弹性移动距离，默认为24 */
     bounceElementTranslate?: number
     /** 手指弹性拖拽距离，默认为240 */
@@ -48,8 +50,6 @@ const commonControlProps: ButtonProps = {
     color: 'text'
 }
 
-const bounceBezier = cubicBezier(0, 0, 0, 1)
-
 export const Gallery = memo(({
     src,
     defaultIndex = 0,
@@ -62,6 +62,7 @@ export const Gallery = memo(({
     showZoom = true,
     showClose = true,
     renderControl,
+    allowEdgeBounce = true,
     bounceElementTranslate = 24,
     bounceDragDistance = 240,
     effectiveSpeed = 450,
@@ -87,6 +88,8 @@ export const Gallery = memo(({
      * 左右滚动翻页
      */
 
+    const dragDirection = useRef<'vertical' | 'horizontal'>(void 0)
+
     const draggableHandles = useDraggable({
         onDragStart() {
             return {
@@ -94,29 +97,55 @@ export const Gallery = memo(({
                 startLeft: -innerIndex.current * wrapperRef.current!.offsetWidth
             }
         },
-        onDrag({diff: [dx], data: {isFit: {left, right}, startLeft}}) {
-            if ((!left && dx > 0) || (!right && dx < 0)) {
+        onDrag({diff: [dx, dy], data: {isFit: {left, right, top, bottom}, startLeft}}) {
+            if ((!left && dx > 0)
+                || (!right && dx < 0)
+                || (!top && dy > 0)
+                || (!bottom && dy < 0)
+            ) {
+                // 图片超出边缘时，无需触发Gallery的滑动翻页，此时拖拽效果由Pinchable处理
                 return
             }
-            const min = -wrapperRef.current!.offsetWidth * (srcArr.current.length - 1)
-            const max = 0
-            let newLeft = range(startLeft + dx, min - bounceDragDistance, max + bounceDragDistance)
-            if (newLeft < min) {
-                newLeft = min - bounceBezier(-(newLeft - min) / bounceDragDistance) * bounceElementTranslate
-            } else if (newLeft > max) {
-                newLeft = max + bounceBezier((newLeft - max) / bounceDragDistance) * bounceElementTranslate
+
+            if (!dragDirection.current) {
+                if (dx < -5 && 5 < dx) {
+                    dragDirection.current = 'horizontal'
+                }
+                if (dy < -5 && 5 < dy) {
+                    dragDirection.current = 'vertical'
+                }
             }
-            wrapperRef.current!.style.left = newLeft + 'px'
+
+            if (dragDirection.current !== 'vertical') {
+                // 处理横向拖动
+                const min = -wrapperRef.current!.offsetWidth * (srcArr.current.length - 1)
+                const max = 0
+                const newLeft = edgeBounce(startLeft + dx, {min, max, allowEdgeBounce, bounceElementTranslate, bounceDragDistance})
+                wrapperRef.current!.style.left = newLeft + 'px'
+            }
+
+            if (dragDirection.current !== 'horizontal') {
+                // 处理纵向拖动
+                wrapperRef.current!.style.top = dy + 'px'
+                // TODO 做到这里
+                // const scale =
+                // wrapperRef.current!.style.transform = `scale(${scale})`
+            }
         },
-        onDragEnd({diff: [dx], speed: [speedX], data: {isFit: {left, right}}}) {
+        onDragEnd({diff: [dx, dy], speed: [speedX], data: {isFit: {left, right, top, bottom}}}) {
             if (!dx) {
                 return
             }
-            if ((!left && dx > 0) || (!right && dx < 0)) {
+            if ((!left && dx > 0)
+                || (!right && dx < 0)
+                || (!top && dy > 0)
+                || (!bottom && dy < 0)
+            ) {
+                // 图片超出边缘时，无需触发Gallery的滑动翻页，此时拖拽效果由Pinchable处理
                 return
             }
-            allowSlideTransition()
             const reset = () => {
+                allowSlideTransition('bounce')
                 wrapperRef.current!.style.left = -innerIndex.current * wrapperRef.current!.offsetWidth + 'px'
             }
             const goPrev = () => {
@@ -143,12 +172,6 @@ export const Gallery = memo(({
             } else {
                 reset()
             }
-        },
-        onClick: () => {
-            doubleClicked.current = false
-            setTimeout(() => {
-                !doubleClicked.current && close()
-            }, 250)
         }
     })
 
@@ -158,8 +181,10 @@ export const Gallery = memo(({
         doubleClicked.current = true
     }
 
-    const allowSlideTransition = () => {
-        wrapperRef.current && (wrapperRef.current.dataset.transition = 'set')
+    const allowSlideTransition = (transitionType = 'true') => {
+        if (wrapperRef.current) {
+            wrapperRef.current.dataset.transition = transitionType
+        }
     }
 
     const goPrevLoop = () => {

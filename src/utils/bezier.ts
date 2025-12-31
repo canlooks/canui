@@ -1,12 +1,14 @@
+export type BezierFunc = (x: number) => number
+
 /**
  * 创建一个Bezier曲线函数，默认从(0,0)到(1,1)
  * @param p1x 
  * @param p1y 
  * @param p2x 
  * @param p2y 
- * @returns {(x: number) => number} 返回一个函数，接收x返回y
+ * @returns {BezierFunc} 返回一个函数，接收x返回y
  */
-export function cubicBezier(p1x: number, p1y: number, p2x: number, p2y: number) {
+export function cubicBezier(p1x: number, p1y: number, p2x: number, p2y: number): BezierFunc {
     const ZERO_LIMIT = 1e-6
     // Calculate the polynomial coefficients,
     // implicit first and last control points are (0,0) and (1,1).

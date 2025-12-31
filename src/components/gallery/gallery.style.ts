@@ -83,8 +83,12 @@ export const style = defineCss(({spacing, easing, breakpoints}) => css`
                     top: 0;
                 }
 
-                &[data-transition=set] {
-                    transition: left .5s ${easing.bounce} 0s;
+                &[data-transition=true] {
+                    transition: left .4s ${easing.ease};
+                }
+
+                &[data-transition=bounce] {
+                    transition: left .25s ${easing.bounce};
                 }
 
                 .${classes.imageItem} {
@@ -103,10 +107,6 @@ export const style = defineCss(({spacing, easing, breakpoints}) => css`
             }
 
             .${classes.galleryContainer} .${classes.galleryWrapper} {
-                &[data-transition=true] {
-                    transition: left .4s ${easing.ease};
-                }
-
                 .${classes.imageItem} {
                     padding: 0;
                 }
