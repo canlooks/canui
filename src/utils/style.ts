@@ -221,12 +221,14 @@ export function useResponsiveValue<T = number>(prop: ResponsiveProp<T>, disabled
 
     const fn = () => {
         let maxBreakpoint: Breakpoints = 'xs'
-        for (const k in syncBreakpoints.current) {
-            if (window.innerWidth < syncBreakpoints.current[k as Breakpoints]) {
-                break
-            }
-            if (k in responsiveObj) {
-                maxBreakpoint = k as Breakpoints
+        if (typeof window !== 'undefined') {
+            for (const k in syncBreakpoints.current) {
+                if (window.innerWidth < syncBreakpoints.current[k as Breakpoints]) {
+                    break
+                }
+                if (k in responsiveObj) {
+                    maxBreakpoint = k as Breakpoints
+                }
             }
         }
         return responsiveObj[maxBreakpoint]!

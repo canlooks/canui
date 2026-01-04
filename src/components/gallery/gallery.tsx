@@ -1,6 +1,6 @@
 import {memo, ReactNode, useRef} from 'react'
 import {Modal, ModalProps} from '../modal'
-import {clsx, edgeBounce, toArray, useControlled, useDraggable, useSync} from '../../utils'
+import {cloneRef, clsx, edgeBounce, toArray, useControlled, useDraggable, useSync} from '../../utils'
 import {classes, style} from './gallery.style'
 import {Button, ButtonProps} from '../button'
 import {Tooltip} from '../tooltip'
@@ -50,6 +50,8 @@ const commonControlProps: ButtonProps = {
     color: 'text'
 }
 
+const DOUBLE_CLICK_DELAY = 300
+
 export const Gallery = memo(({
     src,
     defaultIndex = 0,
@@ -78,10 +80,15 @@ export const Gallery = memo(({
 
     const [innerIndex, setInnerIndex] = useControlled(defaultIndex, index, onIndexChange)
 
+    const maskRef = useRef<HTMLDivElement>(null)
+
     const wrapperRef = useRef<HTMLDivElement>(null)
 
     const imageItemRefs = useRef<ImageItemRef[]>([])
     imageItemRefs.current = []
+
+    const imgRefs = useRef<HTMLImageElement[]>([])
+    imgRefs.current = []
 
     /**
      * --------------------------------------------------------------
@@ -92,6 +99,8 @@ export const Gallery = memo(({
 
     const draggableHandles = useDraggable({
         onDragStart() {
+            maskRef.current!.style.transition = 'none'
+
             return {
                 isFit: imageItemRefs.current[innerIndex.current].isFit(),
                 startLeft: -innerIndex.current * wrapperRef.current!.offsetWidth
@@ -108,10 +117,11 @@ export const Gallery = memo(({
             }
 
             if (!dragDirection.current) {
-                if (dx < -5 && 5 < dx) {
+                if (dx <= -5 || 5 <= dx) {
                     dragDirection.current = 'horizontal'
+                    resetVerticalDrag()
                 }
-                if (dy < -5 && 5 < dy) {
+                if (dy <= -5 || 5 <= dy) {
                     dragDirection.current = 'vertical'
                 }
             }
@@ -126,16 +136,16 @@ export const Gallery = memo(({
 
             if (dragDirection.current !== 'horizontal') {
                 // 处理纵向拖动
-                wrapperRef.current!.style.top = dy + 'px'
-                // TODO 做到这里
-                // const scale =
-                // wrapperRef.current!.style.transform = `scale(${scale})`
+                const rate = 1 - Math.abs(dy) / 2 / wrapperRef.current!.offsetHeight
+                imageItemRefs.current[innerIndex.current]!.style.transform = `translateY(${dy}px) scale(${rate})`
+                maskRef.current!.style.opacity = rate.toString()
             }
         },
-        onDragEnd({diff: [dx, dy], speed: [speedX], data: {isFit: {left, right, top, bottom}}}) {
-            if (!dx) {
+        onDragEnd({diff: [dx, dy], speed: [speedX, speedY], data: {isFit: {left, right, top, bottom}}}) {
+            if (!dx && !dy) {
                 return
             }
+            resetVerticalDrag(true)
             if ((!left && dx > 0)
                 || (!right && dx < 0)
                 || (!top && dy > 0)
@@ -144,47 +154,88 @@ export const Gallery = memo(({
                 // 图片超出边缘时，无需触发Gallery的滑动翻页，此时拖拽效果由Pinchable处理
                 return
             }
-            const reset = () => {
-                allowSlideTransition('bounce')
-                wrapperRef.current!.style.left = -innerIndex.current * wrapperRef.current!.offsetWidth + 'px'
-            }
-            const goPrev = () => {
-                innerIndex.current === 0
-                    ? reset()
-                    : goPrevLoop()
-            }
-            const goNext = () => {
-                innerIndex.current === srcArr.current.length - 1
-                    ? reset()
-                    : goNextLoop()
-            }
-            // 满足速度要求
-            if (effectiveSpeed && speedX * 1000 >= effectiveSpeed) {
-                dx > 0 ? goPrev() : goNext()
-                return
-            }
-            // 拖拽距离达到一半
-            const halfWidth = wrapperRef.current!.offsetWidth / 2
-            if (dx > halfWidth) {
-                goPrev()
-            } else if (dx < -halfWidth) {
-                goNext()
+            if (dragDirection.current === 'vertical') {
+                if ((effectiveSpeed && speedY * 1000 >= effectiveSpeed)
+                    || Math.abs(dy) > wrapperRef.current!.offsetHeight / 2
+                ) {
+                    close()
+                }
             } else {
-                reset()
+                const goPrev = () => {
+                    innerIndex.current === 0
+                        ? resetHorizontalDrag()
+                        : goPrevLoop()
+                }
+                const goNext = () => {
+                    innerIndex.current === srcArr.current.length - 1
+                        ? resetHorizontalDrag()
+                        : goNextLoop()
+                }
+                // 满足速度要求
+                if (effectiveSpeed && speedX * 1000 >= effectiveSpeed) {
+                    dx > 0 ? goPrev() : goNext()
+                    return
+                }
+                // 拖拽距离达到一半
+                const halfWidth = wrapperRef.current!.offsetWidth / 2
+                if (dx >= halfWidth) {
+                    goPrev()
+                } else if (dx <= -halfWidth) {
+                    goNext()
+                } else {
+                    resetHorizontalDrag()
+                }
             }
+            dragDirection.current = void 0
+        },
+        onClick: () => {
+            setTimeout(() => {
+                !doubleClicked.current && close()
+            }, DOUBLE_CLICK_DELAY)
         }
     })
+
+    const resetHorizontalDrag = () => {
+        allowSlideTransition('bounce')
+        wrapperRef.current!.style.left = -innerIndex.current * wrapperRef.current!.offsetWidth + 'px'
+    }
+
+    const resetVerticalDrag = (transition = false) => {
+        const imageItem = imageItemRefs.current[innerIndex.current]!
+        const mask = maskRef.current!
+
+        if (transition) {
+            imageItem.dataset.transition = 'true'
+            // mask的css定义了transition，只需去掉style.transition即可实现过渡
+            mask.style.transition = ''
+        }
+        imageItem.style.transform = ''
+        mask.style.opacity = ''
+
+    }
 
     const doubleClicked = useRef(false)
 
     const doubleClickHandler = () => {
         doubleClicked.current = true
+        setTimeout(() => doubleClicked.current = false, DOUBLE_CLICK_DELAY)
     }
 
     const allowSlideTransition = (transitionType = 'true') => {
         if (wrapperRef.current) {
             wrapperRef.current.dataset.transition = transitionType
         }
+    }
+
+    const clearTransition = () => {
+        if (wrapperRef.current) {
+            wrapperRef.current.dataset.transition = ''
+        }
+        const imageItem = imageItemRefs.current[innerIndex.current]
+        if (imageItem) {
+            imageItem.dataset.transition = ''
+        }
+        maskRef.current!.style.transition = ''
     }
 
     const goPrevLoop = () => {
@@ -243,6 +294,7 @@ export const Gallery = memo(({
             onClosed={resetAll}
             maskProps={{
                 ...props.maskProps,
+                ref: cloneRef(maskRef, props.maskProps?.ref),
                 children: (
                     <>
                         <div className={classes.control}>
@@ -339,13 +391,18 @@ export const Gallery = memo(({
                         ref={wrapperRef}
                         className={classes.galleryWrapper}
                         style={{left: -innerIndex.current * 100 + '%'}}
-                        onTransitionEnd={e => e.currentTarget.dataset.transition = ''}
+                        onTransitionEnd={clearTransition}
                     >
                         {srcArr.current.map((src, i) =>
                             <ImageItem
                                 key={i}
                                 ref={r => {
                                     r && imageItemRefs.current.push(r)
+                                }}
+                                imgProps={{
+                                    ref: r => {
+                                        r && imgRefs.current.push(r)
+                                    }
                                 }}
                                 style={{left: i * 100 + '%'}}
                                 src={src}

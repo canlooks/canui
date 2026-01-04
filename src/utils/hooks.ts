@@ -51,7 +51,7 @@ export function useDerivedState(referredState: any, deps?: any[]) {
     const derivedState = useRef(void 0)
 
     useMemo(() => {
-        // SSR模式下，derivedState会重置2次
+        // StrictMode下，derivedState会重置2次
         derivedState.current = void 0
     }, [])
 
@@ -233,4 +233,20 @@ export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
         }
         return effect()
     }, deps)
+}
+
+/**
+ * 用法同{@link useMemo}，但StrictMode下不会执行两次
+ */
+export function useStrictMemo<T>(factory: () => T, deps?: DependencyList) {
+    const prevDeps = useRef<any[]>(void 0)
+    const memoizedValue = useRef<T>(void 0)
+
+    const isDepsChanged = prevDeps.current ? !arrayShallowEqual(prevDeps.current!, deps as any[]) : true
+    if (isDepsChanged) {
+        prevDeps.current = deps as any[]
+        return memoizedValue.current = factory()
+    }
+
+    return memoizedValue.current
 }

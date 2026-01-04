@@ -1,7 +1,7 @@
 import {css} from '@emotion/react'
 import {defineInnerClasses, defineCss} from '../../utils'
 
-export const classes = defineInnerClasses('image-preview', [
+export const classes = defineInnerClasses('gallery', [
     'button',
     'control',
     'swap',
@@ -81,14 +81,14 @@ export const style = defineCss(({spacing, easing, breakpoints}) => css`
                 &, .${classes.imageItem} {
                     position: absolute;
                     top: 0;
-                }
 
-                &[data-transition=true] {
-                    transition: left .4s ${easing.ease};
-                }
+                    &[data-transition=true] {
+                        transition: all .3s ${easing.easeOut};
+                    }
 
-                &[data-transition=bounce] {
-                    transition: left .25s ${easing.bounce};
+                    &[data-transition=bounce] {
+                        transition: all .25s ${easing.bounce};
+                    }
                 }
 
                 .${classes.imageItem} {

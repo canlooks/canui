@@ -19,6 +19,7 @@ export function Icon({
             {...props as FontAwesomeIconProps}
             className={clsx(classes.root, props.className)}
             color={useColor(color)}
+            fontSize={14}
         />
     )
 }

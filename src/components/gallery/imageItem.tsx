@@ -1,6 +1,6 @@
 import {classes} from './gallery.style'
-import {Ref, useEffect, useImperativeHandle, useRef} from 'react'
-import {clsx} from '../../utils'
+import {JSX, Ref, useEffect, useImperativeHandle, useRef} from 'react'
+import {cloneRef, clsx} from '../../utils'
 import {Pinchable, PinchableProps, PinchableRef} from '../pinchable'
 
 export interface ImageItemRef extends PinchableRef {
@@ -15,11 +15,13 @@ export interface ImageItemRef extends PinchableRef {
 interface ImageItemProps extends PinchableProps {
     ref?: Ref<ImageItemRef>
     src?: string
+    imgProps?: JSX.IntrinsicElements['img']
 }
 
 export function ImageItem({
     ref,
     src,
+    imgProps,
     ...props
 }: ImageItemProps) {
     useImperativeHandle(ref, () => {
@@ -78,11 +80,12 @@ export function ImageItem({
             allowEdgeBounce={false}
         >
             <img
-                ref={imgRef}
-                className={classes.image}
-                src={src}
                 draggable={false}
                 alt=""
+                src={src}
+                {...imgProps}
+                ref={cloneRef(imgRef, imgProps?.ref)}
+                className={clsx(classes.image, imgProps?.className)}
             />
         </Pinchable>
     )

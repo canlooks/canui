@@ -1,7 +1,7 @@
 import {ReactNode, cloneElement, isValidElement, useEffect, useImperativeHandle, useMemo, useRef, ElementType, Ref} from 'react'
 import {FormRef, FormSharedProps, FormValue, useFormContext, useFormStyleContext, useFormValueContext} from './form'
 import {ColorPropsValue, MergeProps, Size} from '../../types'
-import {FieldPath, clsx, getValueOnChange, queryDeep, stringifyField, useDerivedState, toArray, getShortID, isUnset} from '../../utils'
+import {FieldPath, clsx, getValueOnChange, queryDeep, stringifyField, useDerivedState, toArray, getShortID, isUnset, useStrictMemo} from '../../utils'
 import {DescriptionItem, DescriptionItemProps} from '../descriptions'
 import {classes} from './form.style'
 import {Collapse} from '../transitionBase'
@@ -189,7 +189,7 @@ export const FormItem: <I = any, C extends ElementType = 'div'>(props: FormItemP
         return formValue && dependencies?.map(d => queryDeep(formValue, d))
     }, [formValue, ...dependencies || []])
 
-    useMemo(() => {
+    useStrictMemo(() => {
         if (!shouldValidate.current) {
             // 跳过首次渲染
             shouldValidate.current = true

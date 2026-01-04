@@ -6,6 +6,9 @@ import {RC, useReactive} from '@canlooks/reactive/react'
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 
 const Root = RC(() => {
+    const state = useReactive({
+        open: true
+    })
 
     return (
         <>
@@ -20,9 +23,11 @@ const Root = RC(() => {
             {/*        draggable={false}*/}
             {/*    />*/}
             {/*</Pinchable>*/}
+            <Button onClick={() => state.open = true}>Button</Button>
+
             <Image.Gallery
-                open
-                onOpenChange={console.log}
+                open={state.open}
+                onOpenChange={_open => state.open = _open}
                 src={[
                     'http://localhost:3000/image/d0a68ee3-64ef-4c0e-9cb8-d973dd545dbc',
                     'http://localhost:3000/image/c772967e-ff74-4b9b-8d7a-6a686409a951'
