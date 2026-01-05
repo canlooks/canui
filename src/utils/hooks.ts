@@ -174,7 +174,10 @@ export function useContainer<T extends HTMLElement | null>(
     }, [container])
 
     useEffect(() => {
-        const _container = effectContainer || defaultContainer || document.body as T
+        let _container = effectContainer || defaultContainer
+        if (typeof _container === 'undefined') {
+            _container = document.body as T
+        }
         if (_container) {
             const el = typeof _container === 'function' ? _container() : _container
             setContainerEl(el)

@@ -1,6 +1,6 @@
 'use client'
 
-import {Button, Descriptions, Flex, Form, Icon, Input, Loading} from '../../src'
+import {Button, Card, Descriptions, Flex, Form, Icon, Input, Loading, TouchRipple} from '../../src'
 import {useState} from 'react'
 import {faUser} from '@fortawesome/free-solid-svg-icons'
 
@@ -14,22 +14,10 @@ export default function AppPage() {
 
     return (
         <div style={{height: '50vh'}}>
-            <Form
-                labelPlacement="top"
-                items={[
-                    {
-                        field: 'account',
-                        rules: {required: true},
-                        label: (
-                            <Flex gap={6} alignItems="center">
-                                <Icon icon={faUser}/>
-                                <div style={{flex: 1}}>账号</div>
-                            </Flex>
-                        ),
-                        children: <Input/>
-                    }
-                ]}
-            />
+            <Card style={{position: 'relative', background: 'pink', overflow: 'hidden'}}>
+                123
+                <TouchRipple/>
+            </Card>
         </div>
     )
 }
