@@ -45,14 +45,14 @@ export interface InputBaseProps<T extends 'input' | 'textarea'> extends Omit<Div
 export const InputBase = (({
     ref,
     variant = 'outlined',
-    size,
-    shape,
+    size = 'medium',
+    shape = 'square',
     color = 'primary',
     children,
     prefix,
     suffix,
     onClear,
-    loading,
+    loading = false,
     type,
     clearable = type !== 'number',
     // 以下属性传递给<input/>

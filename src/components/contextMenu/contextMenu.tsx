@@ -15,8 +15,8 @@ export function ContextMenu({
         return items?.map((p, i) => {
             return typeof p === 'object' && p && !isValidElement(p)
                 ? <MenuItem
-                    key={p.value ?? i}
                     {...p}
+                    key={p.value ?? p.key ?? i}
                 >
                     {renderItems(p.children)}
                 </MenuItem>

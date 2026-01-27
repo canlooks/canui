@@ -55,11 +55,16 @@ export function InnerApp({
     ...props
 }: OverridableProps<AppProps, 'div'>) {
     const appValue = useExternalClass(() => ({
-        dialog: App.dialog = new AppDialogMethods(),
-        message: App.message = new AppMessageMethods(),
-        notification: App.notification = new AppNotificationMethods(),
-        actionSheet: App.actionSheet = new AppActionSheetMethods()
+        dialog: new AppDialogMethods(),
+        message: new AppMessageMethods(),
+        notification: new AppNotificationMethods(),
+        actionSheet: new AppActionSheetMethods()
     }))
+
+    App.dialog ||= appValue.dialog
+    App.message ||= appValue.message
+    App.notification ||= appValue.notification
+    App.actionSheet ||= appValue.actionSheet
 
     return (
         <AppContext value={appValue}>

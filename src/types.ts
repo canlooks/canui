@@ -96,4 +96,9 @@ export type SelectableMultipleProps<T> = {
     onChange?(value: T[]): void
 }
 
-export type SelectableProps<T> = SelectableSingleProps<T> | SelectableMultipleProps<T>
+export type SelectableProps<T> = {
+    multiple?: boolean
+    defaultValue?: T | T[]
+    value?: T | T[]
+    onChange?(value: T | T[]): void
+}

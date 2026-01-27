@@ -83,7 +83,7 @@ export const Tree = memo(<N extends NodeType<V>, V extends Id = Id>({
     multiple,
     showCheckbox = !!multiple,
     readOnly,
-    clickLabelToExpand,
+    clickLabelToExpand = false,
 
     defaultExpanded,
     expanded,
@@ -94,10 +94,10 @@ export const Tree = memo(<N extends NodeType<V>, V extends Id = Id>({
     onSort,
 
     searchable,
-    searchInputProps,
-    defaultSearchValue,
+    defaultSearchValue = '',
     searchValue,
     onSearchChange,
+    searchInputProps,
 
     // 从SelectionContext继承来的属性
     primaryKey = 'id',
@@ -173,7 +173,7 @@ export const Tree = memo(<N extends NodeType<V>, V extends Id = Id>({
             <SelectionContext
                 {...{
                     options: actualTreeNodes, primaryKey, childrenKey, relation, integration,
-                    multiple, defaultValue, value, onChange, disabled
+                    disabled, multiple, defaultValue, value, onChange, onToggle
                 } as SelectionContextProps<N, V>}
             >
                 <TreeContext

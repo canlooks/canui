@@ -1,17 +1,15 @@
 import {isSelected, isUnset, toArray, useControlled, useDerivedState, useSync} from '../../utils'
 import {Dispatch, SetStateAction, useCallback, useMemo, useRef} from 'react'
 import {ISelectionContext, OptionType, SelectionContextProps, useSelectionContext} from './selectionContext'
-import {Id} from '../../types'
+import {Id, SelectableProps} from '../../types'
 
 export function useSelection<O extends OptionType<V>, V extends Id = Id>(props: SelectionContextProps<O, V>): ISelectionContext<O, V> {
-    props = Object.assign({
-        primaryKey: 'id',
-        childrenKey: 'children',
-        relation: 'dependent',
-        integration: 'shallowest',
-        multiple: false,
-        disabled: false
-    }, props)
+    props.primaryKey ??= 'id'
+    props.childrenKey ??= 'children'
+    props.relation ??= 'dependent'
+    props.integration ??= 'shallowest'
+    props.multiple ??= false
+    props.disabled ??= false
 
     let [innerValue, setInnerValue] = useControlled<any>(props.defaultValue, props.value, props.onChange)
 
@@ -202,7 +200,6 @@ export function useSelection<O extends OptionType<V>, V extends Id = Id>(props: 
                 children && loopOptions(callback, children, ret)
             })
         }
-
     }, [context.inSelection])
 
     return {
@@ -215,19 +212,16 @@ export function useSelection<O extends OptionType<V>, V extends Id = Id>(props: 
         setOptions: setInnerOptions,
         optionsMap,
         selectionStatus,
-        toggleSelected,
-        onToggle: props.onToggle
+        toggleSelected
     }
 }
 
-export function useFlatSelection<V extends Id | Id[]>(params: {
+export type UseFlatSelectionParams<V extends Id = Id> = SelectableProps<V> & {
     disabled?: boolean
-    multiple?: boolean
     clearable?: boolean
-    defaultValue?: V,
-    value?: V,
-    onChange?: (value: V) => void
-}): [V, (value: V) => void, Dispatch<SetStateAction<V>>] {
+}
+
+export function useFlatSelection<V extends Id = Id>(params: UseFlatSelectionParams<V>): [V, (value: V) => void, Dispatch<SetStateAction<V>>] {
     const [innerValue, setInnerValue] = useControlled<any>(params.defaultValue, params.value, params.onChange)
 
     const sync = useSync(params)

@@ -39,7 +39,7 @@ export const Tag = memo(({
     return (
         <div
             {...props}
-            css={useStyle({color: color || 'text.secondary'})}
+            css={useStyle({color})}
             className={clsx(classes.root, props.className)}
             data-variant={variant}
             data-size={size}
@@ -55,8 +55,9 @@ export const Tag = memo(({
             }
             {closable &&
                 <Button
-                    variant="plain"
                     className={classes.close}
+                    variant="plain"
+                    color={color}
                     onClick={closeHandler}
                 >
                     <Icon icon={faXmark}/>

@@ -193,7 +193,7 @@ export const TreeNode = memo(({
                         e.stopPropagation()
                         toggleExpanded(id)
                     }}
-                    onPointerDown={e => e.stopPropagation()}
+                    onPointerDown={e => e.preventDefault()}
                 >
                     {renderExpandIcon
                         ? renderExpandIcon(id, currentExpanded, [...expandedSet])

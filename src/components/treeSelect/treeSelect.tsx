@@ -1,84 +1,80 @@
-import {Children, ReactElement, ReactNode, Ref, isValidElement, memo, useMemo, ComponentProps} from 'react'
-import {Popper, PopperProps, PopperRef} from '../popper'
+import {Children, isValidElement, memo, ReactElement, ReactNode, useMemo} from 'react'
 import {NodeType, Tree, TreeBaseProps, TreeNode} from '../tree'
-import {useControlled, toArray, clsx, mergeComponentProps, isNoValue} from '../../utils'
-import {InputBase} from '../inputBase'
-import {LoadingIndicator} from '../loadingIndicator'
-import {popperStyle} from '../popper/popper.style'
-import {Tag} from '../tag'
-import {classes, style} from './treeSelect.style'
-import {Id, SelectableSingleProps} from '../../types'
+import {Id} from '../../types'
+import {SelectBase, SelectBaseMultipleProps, SelectBaseOwnProps, SelectBaseProps, SelectBaseSingleProps} from '../selectBase'
+import {InputBaseProps} from '../inputBase'
 import {useSelection} from '../selectionContext'
-import {Icon} from '../icon'
-import {faChevronDown} from '@fortawesome/free-solid-svg-icons/faChevronDown'
 import {Placeholder} from '../placeholder'
 
-interface TreeSelectBaseProps<N extends NodeType<V>, V extends Id = Id> extends TreeBaseProps<N, V> {
-    /** <select />内部由<input />实现 */
-    inputProps?: ComponentProps<'input'>
-    popperProps?: PopperProps
-    popperRef?: Ref<PopperRef>
-
+export interface TreeSelectOwnProps<N extends NodeType<V>, V extends Id = Id> extends SelectBaseOwnProps, Omit<TreeBaseProps<N, V>, 'prefix'> {
     options?: N[]
-
-    sizeAdaptable?: boolean
-    loading?: boolean
-
-    defaultOpen?: boolean
-    open?: boolean
-    onOpenChange?(open: boolean): void
-    /** 以下属性转发至<InputBase/> */
-    placeholder?: string
-    autoFocus?: boolean
-    clearable?: boolean
-    onClear?(): void
+    inputBaseProps?: InputBaseProps<'input'>
+    variant?: InputBaseProps<'input'>['variant']
+    size?: InputBaseProps<'input'>['size']
+    shape?: InputBaseProps<'input'>['shape']
+    color?: InputBaseProps<'input'>['color']
+    prefix?: InputBaseProps<'input'>['prefix']
+    suffix?: InputBaseProps<'input'>['suffix']
+    onClear?: InputBaseProps<'input'>['onClear']
 }
 
-export interface TreeSelectSingleProps<N extends NodeType<V>, V extends Id = Id> extends TreeSelectBaseProps<N, V>, SelectableSingleProps<V> {
-    renderBackfill?(selectedValue: V): ReactNode
+export interface TreeSelectSingleProps<N extends NodeType<V>, V extends Id = Id> extends TreeSelectOwnProps<N, V>, SelectBaseSingleProps<V> {
 }
 
-export interface TreeSelectMultipleProps<N extends NodeType<V>, V extends Id = Id> extends TreeSelectBaseProps<N, V>, SelectableSingleProps<V> {
-    renderBackfill?(selectedValue: V[]): ReactNode
+export interface TreeSelectMultipleProps<N extends NodeType<V>, V extends Id = Id> extends TreeSelectOwnProps<N, V>, SelectBaseMultipleProps<V> {
 }
 
 export type TreeSelectProps<N extends NodeType<V>, V extends Id = Id> = TreeSelectSingleProps<N, V> | TreeSelectMultipleProps<N, V>
 
-export const TreeSelect = memo(<N extends NodeType<V>, V extends Id = Id>({
+export const TreeSelect = memo(({
     inputProps,
     popperProps,
     popperRef,
 
-    nodes,
-    options,
-
-    defaultValue,
-    value,
-    onChange,
-
-    sizeAdaptable,
-    loading,
-
-    defaultOpen,
+    defaultOpen = false,
     open,
     onOpenChange,
 
+    sizeAdaptable = true,
+
+    searchable,
+    defaultSearchValue = '',
+    searchValue,
+    onSearchChange,
+    searchInputProps,
+
+    options,
+    nodes,
+    children,
+
+    // 从SelectableProps继承
+    multiple = false,
+    defaultValue,
+    value,
+    onChange,
     renderBackfill,
+
     // 以下属性转发至<InputBase/>
+    inputBaseProps,
+    variant = 'outlined',
+    size = 'medium',
+    shape = 'square',
+    color = 'primary',
+    prefix,
+    suffix,
     placeholder = '请选择',
+    disabled,
+    readOnly,
     autoFocus,
-    clearable,
+    clearable = multiple,
     onClear,
-    ...props
-}: TreeSelectProps<N, V>) => {
-    props.labelKey ??= 'label'
+    loading = false,
 
-    const [innerOpen, setInnerOpen] = useControlled(defaultOpen, open, onOpenChange)
-
-    const openChangeHandler = (open: boolean) => {
-        popperProps?.onOpenChange?.(open)
-        setInnerOpen(open)
-    }
+    ...treeProps
+}: TreeSelectProps<any>) => {
+    treeProps.labelKey ??= 'label'
+    treeProps.primaryKey ??= 'value'
+    treeProps.childrenKey ??= 'children'
 
     const actualOptions = useMemo(() => {
         if (options) {
@@ -87,7 +83,7 @@ export const TreeSelect = memo(<N extends NodeType<V>, V extends Id = Id>({
         if (nodes) {
             return nodes
         }
-        const fn = (arr?: ReactNode[]): N[] | undefined => {
+        const fn = (arr?: ReactNode[]): any[] | undefined => {
             return arr?.map(node => {
                 if (isValidElement(node)) {
                     const {props} = node as any
@@ -99,121 +95,93 @@ export const TreeSelect = memo(<N extends NodeType<V>, V extends Id = Id>({
                 return node
             })
         }
-        return fn(Children.toArray(props.children))
-    }, [options, nodes, props.children])
+        return fn(Children.toArray(children))
+    }, [options, nodes, children])
 
     const {
         value: innerValue,
         setValue: setInnerValue,
         toggleSelected,
         optionsMap
-    } = useSelection({
+    } = useSelection<any, any>({
         options: actualOptions,
-        primaryKey: props.primaryKey ?? 'value',
-        childrenKey: props.childrenKey ?? 'children',
-        clearable: !!props.multiple,
-        multiple: props.multiple as any,
-        defaultValue: defaultValue as any,
+        primaryKey: treeProps.primaryKey,
+        childrenKey: treeProps.childrenKey,
+        clearable: multiple,
+        multiple,
+        defaultValue,
         value,
         onChange
     })
 
-    useMemo(() => {
-        // 单选模式下，选中一次就自动关闭弹框
-        !props.multiple && setInnerOpen(false)
-    }, [innerValue, props.multiple])
-
     const clearHandler = () => {
         onClear?.()
-        setInnerValue(props.multiple ? [] : void 0)
-    }
-
-    const renderBackfillFn = () => {
-        if (renderBackfill) {
-            return renderBackfill(innerValue)
-        }
-        if (props.multiple) {
-            return toArray(innerValue)?.map((v: V) =>
-                <Tag
-                    key={v}
-                    closable
-                    onClose={() => toggleSelected(v)}
-                >
-                    {optionsMap.get(v)?.[props.labelKey!] ?? v}
-                </Tag>
-            )
-        }
-        return (
-            <div className={classes.backfillWrap}>
-                {optionsMap.get(innerValue)?.[props.labelKey!] ?? innerValue}
-            </div>
-        )
+        setInnerValue(multiple ? [] : void 0)
     }
 
     return (
-        <Popper
-            css={popperStyle}
-            open={innerOpen.current}
-            onOpenChange={openChangeHandler}
-            placement="bottom"
-            variant="collapse"
-            trigger={['click', 'enter']}
-            disabled={props.disabled || props.readOnly}
-            sizeAdaptable={sizeAdaptable}
-            content={
-                options?.length
-                    ? <Tree
-                        primaryKey="value"
-                        {...props}
-                        nodes={options}
-                        value={innerValue}
-                        onChange={setInnerValue}
-                    />
-                    : <Placeholder/>
+        <SelectBase
+            {...{
+                inputProps,
+                popperProps,
+                popperRef,
+
+                defaultOpen,
+                open,
+                onOpenChange,
+
+                placeholder,
+                sizeAdaptable,
+                disabled,
+                readOnly,
+
+                searchable,
+                defaultSearchValue,
+                searchValue,
+                onSearchChange,
+                searchInputProps,
+
+                multiple,
+                renderBackfill
+            } as SelectBaseProps}
+            _internalProps={{
+                inputBaseProps: {
+                    ...inputBaseProps,
+                    variant,
+                    size,
+                    shape,
+                    color,
+                    prefix,
+                    suffix,
+                    disabled,
+                    readOnly,
+                    autoFocus,
+                    clearable,
+                },
+                labelKey: treeProps.labelKey,
+                optionsMap,
+                innerValue,
+                onToggleSelected: toggleSelected,
+                onClear: clearHandler,
+                renderPopperContent: (searchValue, toggleSelected) => {
+                    return actualOptions?.length
+                        ? <Tree
+                            {...treeProps}
+                            nodes={actualOptions}
+                            searchable={false}
+                            searchValue={searchValue}
+                            value={innerValue}
+                            onToggle={(checked, value) => toggleSelected(value)}
+
+                            multiple={multiple}
+                            disabled={disabled}
+                            readOnly={readOnly}
+                        />
+                        : <Placeholder/>
                 }
-            {...popperProps}
-                popperRef={popperRef}
-                onPointerDown={e => {
-                popperProps?.onPointerDown?.(e)
-                e.preventDefault()
             }}
-                >
-                <InputBase<'input'>
-                clearable={!!props.multiple}
-                css={style}
-                className={clsx(classes.root, props.className)}
-                data-focused={open}
-                value={innerValue}
-                onClear={clearHandler}
-                placeholder={placeholder}
-                autoFocus={autoFocus}
-                disabled={props.disabled}
-                readOnly={props.readOnly}
-                >
-            {inputBaseProps =>
-                <div className={classes.contentWrap}>
-            {isNoValue(innerValue)
-                ? <div className={classes.placeholder}>{placeholder}</div>
-                : <div className={classes.backfill}>
-                    {renderBackfillFn()}
-                </div>
-            }
-            <input
-                size={1}
-                {...mergeComponentProps(inputBaseProps, inputProps)}
-                data-hidden="true"
-            />
-            <div className={classes.arrow} data-open={open}>
-                {loading
-                    ? <LoadingIndicator/>
-                    : <Icon icon={faChevronDown}/>
-                }
-            </div>
-        </div>
-}
-</InputBase>
-</Popper>
-)
+        />
+    )
 }) as any as {
     <N extends NodeType<V>, V extends Id = Id>(props: TreeSelectProps<N, V>): ReactElement
     Option: typeof TreeNode

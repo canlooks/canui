@@ -59,7 +59,7 @@ export const DataGridRows = memo(<R extends RowType, V extends Id = Id>({
                     {
                         className: clsx(_rowProps, _level > 0 && classes.sub),
                         onClick() {
-                            clickRowToSelect && toggleSelected!(trKey, row)
+                            clickRowToSelect && toggleSelected(trKey)
                         }
                     }
                 )}
@@ -87,9 +87,7 @@ export const DataGridRows = memo(<R extends RowType, V extends Id = Id>({
                                 <Component
                                     checked={status === 2}
                                     indeterminate={status === 1}
-                                    onChange={() => {
-                                        toggleSelected!(trKey, row)
-                                    }}
+                                    onChange={() => toggleSelected(trKey)}
                                     onClick={e => e.stopPropagation()}
                                 />
                             </TdCell>

@@ -1,8 +1,8 @@
+import {defineCss, defineInnerClasses} from '../../utils'
 import {css} from '@emotion/react'
-import {defineInnerClasses, defineCss} from '../../utils'
 import {classes as tagClasses} from '../tag/tag.style'
 
-export const classes = defineInnerClasses('tree-select', [
+export const classes = defineInnerClasses('select-base', [
     'contentWrap',
     'placeholder',
     'backfill',
@@ -18,7 +18,7 @@ export const style = defineCss(({spacing, text, easing}) => css`
         .${classes.contentWrap} {
             display: flex;
             align-items: center;
-            gap: ${spacing[1]}px;
+            gap: ${spacing[2]}px;
         }
 
         .${classes.placeholder} {

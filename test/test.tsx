@@ -1,37 +1,32 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable} from '../src'
+import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable, ContextMenu, useAppContext, Select, TreeSelect} from '../src'
 import React, {cloneElement, ReactNode, StrictMode, useDeferredValue, useEffect, useMemo, useState} from 'react'
 import {RC, useReactive} from '@canlooks/reactive/react'
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
+import {Id} from '../src/types'
 
 const Root = RC(() => {
     const state = useReactive({
-        open: true
+        value: ['1'] as Id[]
+        // value: '1'
     })
 
     return (
         <>
-            {/*<Pinchable*/}
-            {/*    style={{overflow: 'hidden', background: 'pink'}}*/}
-            {/*>*/}
-            {/*    <img*/}
-            {/*        style={{*/}
-            {/*            height: '80vh'*/}
-            {/*        }}*/}
-            {/*        src="http://localhost:3000/image/d0a68ee3-64ef-4c0e-9cb8-d973dd545dbc"*/}
-            {/*        draggable={false}*/}
-            {/*    />*/}
-            {/*</Pinchable>*/}
-            <Button onClick={() => state.open = true}>Button</Button>
-
-            <Image.Gallery
-                open={state.open}
-                onOpenChange={_open => state.open = _open}
-                src={[
-                    'http://localhost:3000/image/d0a68ee3-64ef-4c0e-9cb8-d973dd545dbc',
-                    'http://localhost:3000/image/c772967e-ff74-4b9b-8d7a-6a686409a951'
+            <TreeSelect
+                multiple
+                options={[
+                    {
+                        value: '1', label: '选项1', children: [
+                            {value: '1-1', label: '选项1-1'},
+                            {value: '1-2', label: '选项1-2'}
+                        ]
+                    },
+                    {value: '2', label: '选项2'}
                 ]}
+                value={state.value}
+                onChange={v => state.value = v}
             />
         </>
     )
@@ -52,7 +47,7 @@ createRoot(document.getElementById('app')!).render(
             }}
             style={{
                 height: '100vh',
-                padding: 24,
+                padding: 24
             }}
         >
             <Root/>

@@ -119,61 +119,58 @@ export const OptionsBase = memo(<O extends MenuOptionType<V>, V extends Id = Id>
             return <Placeholder/>
         }
         const makeProps = (params: {
-            opt?: O
+            option: O
             label: ReactNode
             value: V
             index: number
             selected: boolean
             scrollHere?: boolean
-        }): MenuItemProps => ({
-            ref: params.scrollHere || params.selected ? selectedItemRef : void 0,
-            showCheckbox,
-            selected: params.selected,
-            focused: verticalIndex.current === params.index,
-            label: typeof params.label === 'string' && searchValue
-                ? <Highlight keywords={searchValue?.split(' ')}>{params.label}</Highlight>
-                : params.label,
-            onClick: e => {
-                e.stopPropagation()
-                params.opt?.onClick?.(e)
-                syncOnToggleSelected.current?.(params.value, e)
-            },
-            onPointerEnter: e => {
-                params.opt?.onPointerEnter?.(e)
-                setVerticalIndex(-1)
-            },
-            children: null
-        })
+        }) => {
+            return mergeComponentProps(params.option, {
+                ref: params.scrollHere || params.selected ? selectedItemRef : void 0,
+                showCheckbox,
+                selected: params.selected,
+                focused: verticalIndex.current === params.index,
+                value: params.value,
+                label: typeof params.label === 'string' && searchValue
+                    ? <Highlight keywords={searchValue?.split(' ')}>{params.label}</Highlight>
+                    : params.label,
+                onClick: e => {
+                    e.stopPropagation()
+                    syncOnToggleSelected.current?.(params.value, e)
+                },
+                onPointerEnter: () => {
+                    setVerticalIndex(-1)
+                },
+                children: null
+            } as MenuItemProps)
+        }
         if (options) {
             return (filteredOptions as O[]).map((opt, index) => {
                 const value: V = opt[primaryKey]
                 const label = opt[labelKey] ?? value
                 return (
                     <MenuItem
-                        key={opt.key ?? value as any ?? index}
-                        value={value}
-                        {...mergeComponentProps(
-                            opt,
-                            makeProps({
-                                label,
-                                value,
-                                index,
-                                selected: isSelected(value, selectedValue),
-                                scrollHere: opt.scrollHere
-                            })
-                        )}
+                        key={opt.key ?? value ?? index}
+                        {...makeProps({
+                            option: opt,
+                            label,
+                            value,
+                            index,
+                            selected: isSelected(value, selectedValue),
+                            scrollHere: opt.scrollHere
+                        })}
                     />
                 )
             })
         }
-        // children
         return filteredOptions.map((c, index) => {
             if (!isValidElement(c)) {
                 return c as ReactNode
             }
             const {value, label, scrollHere} = c.props as MenuOptionType<V>
             return cloneElement(c, makeProps({
-                opt: c.props as O,
+                option: c.props as O,
                 label,
                 value: value as V,
                 index,

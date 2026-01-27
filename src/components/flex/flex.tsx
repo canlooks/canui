@@ -1,5 +1,5 @@
 import {CSSProperties, Children, cloneElement, isValidElement, ElementType} from 'react'
-import {classes} from './flex.style'
+import {classes, style} from './flex.style'
 import {clsx, filterProperties} from '../../utils'
 import {TransportStyle, TransportStyleOwnProps} from '../transportStyle'
 import {OverridableComponent, OverridableProps} from '../../types'
@@ -50,6 +50,7 @@ export const Flex = (
         return (
             <TransportStyle
                 {...props}
+                css={style}
                 className={clsx(classes.root, props.className)}
                 style={filterProperties({
                     display: inline ? 'inline-flex' : 'flex',

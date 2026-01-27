@@ -47,8 +47,7 @@ export type ISelectionContext<O extends OptionType<V>, V extends Id = Id> = {
     setOptions: Dispatch<SetStateAction<undefined | O[]>>
     optionsMap: Map<V, O>
     selectionStatus: Map<V, 1 | 2>
-    toggleSelected(value: V, option?: O): void
-    onToggle?(checked: boolean, value: V, option?: O): void
+    toggleSelected(value: V): void
 }
 
 const SelectionContextProvider = createContext({} as ISelectionContext<any, any>)
