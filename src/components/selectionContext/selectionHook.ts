@@ -3,7 +3,7 @@ import {Dispatch, SetStateAction, useCallback, useMemo, useRef} from 'react'
 import {ISelectionContext, OptionType, SelectionContextProps, useSelectionContext} from './selectionContext'
 import {Id, SelectableProps} from '../../types'
 
-export function useSelection<O extends OptionType<V>, V extends Id = Id>(props: SelectionContextProps<O, V>): ISelectionContext<O, V> {
+export function useSelection<O extends OptionType<V>, V extends Id = Id>({...props}: SelectionContextProps<O, V>): ISelectionContext<O, V> {
     props.primaryKey ??= 'id'
     props.childrenKey ??= 'children'
     props.relation ??= 'dependent'
@@ -216,7 +216,8 @@ export function useSelection<O extends OptionType<V>, V extends Id = Id>(props: 
     }
 }
 
-export type UseFlatSelectionParams<V extends Id = Id> = SelectableProps<V> & {
+export type UseFlatSelectionParams<V extends Id = Id> = Omit<SelectableProps<V>, 'multiple'> & {
+    multiple?: boolean
     disabled?: boolean
     clearable?: boolean
 }

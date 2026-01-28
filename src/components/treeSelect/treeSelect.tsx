@@ -1,21 +1,13 @@
 import {Children, isValidElement, memo, ReactElement, ReactNode, useMemo} from 'react'
-import {NodeType, Tree, TreeBaseProps, TreeNode} from '../tree'
+import {NodeType, Tree, TreeNode, TreeProps, TreeSharedProps} from '../tree'
 import {Id} from '../../types'
-import {SelectBase, SelectBaseMultipleProps, SelectBaseOwnProps, SelectBaseProps, SelectBaseSingleProps} from '../selectBase'
-import {InputBaseProps} from '../inputBase'
+import {SelectBase, SelectBaseMultipleProps, SelectBaseOwnProps, SelectBaseSingleProps} from '../selectBase'
 import {useSelection} from '../selectionContext'
 import {Placeholder} from '../placeholder'
 
-export interface TreeSelectOwnProps<N extends NodeType<V>, V extends Id = Id> extends SelectBaseOwnProps, Omit<TreeBaseProps<N, V>, 'prefix'> {
+export interface TreeSelectOwnProps<N extends NodeType<V>, V extends Id = Id> extends SelectBaseOwnProps, TreeSharedProps<N, V> {
     options?: N[]
-    inputBaseProps?: InputBaseProps<'input'>
-    variant?: InputBaseProps<'input'>['variant']
-    size?: InputBaseProps<'input'>['size']
-    shape?: InputBaseProps<'input'>['shape']
-    color?: InputBaseProps<'input'>['color']
-    prefix?: InputBaseProps<'input'>['prefix']
-    suffix?: InputBaseProps<'input'>['suffix']
-    onClear?: InputBaseProps<'input'>['onClear']
+    treeProps?: TreeProps<N, V>
 }
 
 export interface TreeSelectSingleProps<N extends NodeType<V>, V extends Id = Id> extends TreeSelectOwnProps<N, V>, SelectBaseSingleProps<V> {
@@ -27,55 +19,43 @@ export interface TreeSelectMultipleProps<N extends NodeType<V>, V extends Id = I
 export type TreeSelectProps<N extends NodeType<V>, V extends Id = Id> = TreeSelectSingleProps<N, V> | TreeSelectMultipleProps<N, V>
 
 export const TreeSelect = memo(({
-    inputProps,
-    popperProps,
-    popperRef,
-
-    defaultOpen = false,
-    open,
-    onOpenChange,
-
-    sizeAdaptable = true,
-
-    searchable,
-    defaultSearchValue = '',
-    searchValue,
-    onSearchChange,
-    searchInputProps,
-
     options,
-    nodes,
     children,
+    treeProps,
+    // 从TreeSharedProps继承
+    nodes,
+    labelKey = 'label',
+    searchTokenKey,
+    showLine,
+    indent,
+    renderExpandIcon,
+    showCheckbox,
+    readOnly, // 同时转发至<InputBase/>, <SelectBase/>
+    clickLabelToExpand,
+    defaultExpanded,
+    expanded,
+    onExpandedChange,
+    sortable,
+    showDragHandle,
+    onSort,
+
+    primaryKey = 'value',
+    childrenKey = 'children',
+    relation = 'dependent',
+    integration = 'shallowest',
+    clearable, // 同时转发至<InputBase/>, <SelectBase/>
+    disabled, // 同时转发至<InputBase/>, <SelectBase/>
+    onToggle,
 
     // 从SelectableProps继承
-    multiple = false,
-    defaultValue,
+    multiple = false, // 同时转发至<Tree/>, <SelectBase/>
+    defaultValue, // 同时转发至<Tree/>
     value,
     onChange,
     renderBackfill,
 
-    // 以下属性转发至<InputBase/>
-    inputBaseProps,
-    variant = 'outlined',
-    size = 'medium',
-    shape = 'square',
-    color = 'primary',
-    prefix,
-    suffix,
-    placeholder = '请选择',
-    disabled,
-    readOnly,
-    autoFocus,
-    clearable = multiple,
-    onClear,
-    loading = false,
-
-    ...treeProps
+    ...props
 }: TreeSelectProps<any>) => {
-    treeProps.labelKey ??= 'label'
-    treeProps.primaryKey ??= 'value'
-    treeProps.childrenKey ??= 'children'
-
     const actualOptions = useMemo(() => {
         if (options) {
             return options
@@ -105,77 +85,69 @@ export const TreeSelect = memo(({
         optionsMap
     } = useSelection<any, any>({
         options: actualOptions,
-        primaryKey: treeProps.primaryKey,
-        childrenKey: treeProps.childrenKey,
+        primaryKey,
+        childrenKey,
         clearable: multiple,
-        multiple,
+        multiple: multiple as any,
         defaultValue,
         value,
         onChange
     })
 
-    const clearHandler = () => {
-        onClear?.()
+    const onClear = () => {
+        props.onClear?.()
         setInnerValue(multiple ? [] : void 0)
     }
 
     return (
         <SelectBase
-            {...{
-                inputProps,
-                popperProps,
-                popperRef,
-
-                defaultOpen,
-                open,
-                onOpenChange,
-
-                placeholder,
-                sizeAdaptable,
-                disabled,
-                readOnly,
-
-                searchable,
-                defaultSearchValue,
-                searchValue,
-                onSearchChange,
-                searchInputProps,
-
-                multiple,
-                renderBackfill
-            } as SelectBaseProps}
+            {...props}
+            readOnly={readOnly}
+            clearable={clearable}
+            disabled={disabled}
+            multiple={multiple}
+            renderBackfill={renderBackfill}
+            onClear={onClear}
             _internalProps={{
-                inputBaseProps: {
-                    ...inputBaseProps,
-                    variant,
-                    size,
-                    shape,
-                    color,
-                    prefix,
-                    suffix,
-                    disabled,
-                    readOnly,
-                    autoFocus,
-                    clearable,
-                },
-                labelKey: treeProps.labelKey,
+                labelKey,
                 optionsMap,
                 innerValue,
                 onToggleSelected: toggleSelected,
-                onClear: clearHandler,
                 renderPopperContent: (searchValue, toggleSelected) => {
                     return actualOptions?.length
                         ? <Tree
                             {...treeProps}
+                            {...{
+                                nodes,
+                                labelKey,
+                                searchTokenKey,
+                                showLine,
+                                indent,
+                                renderExpandIcon,
+                                showCheckbox,
+                                readOnly,
+                                clickLabelToExpand,
+                                defaultExpanded,
+                                expanded,
+                                onExpandedChange,
+                                sortable,
+                                showDragHandle,
+                                onSort,
+
+                                primaryKey,
+                                childrenKey,
+                                relation,
+                                integration,
+                                clearable,
+                                disabled,
+                                onToggle
+                            }}
+                            multiple={multiple as any}
                             nodes={actualOptions}
                             searchable={false}
                             searchValue={searchValue}
                             value={innerValue}
                             onToggle={(checked, value) => toggleSelected(value)}
-
-                            multiple={multiple}
-                            disabled={disabled}
-                            readOnly={readOnly}
                         />
                         : <Placeholder/>
                 }

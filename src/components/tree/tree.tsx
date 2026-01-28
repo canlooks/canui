@@ -22,8 +22,7 @@ export type SortInfo<V extends Id = Id> = {
     placement: SortPlacement
 }
 
-export interface TreeBaseProps<N extends NodeType<V>, V extends Id = Id> extends Omit<SelectionContextBaseProps<N, V>, 'options'>,
-    Omit<DivProps, 'defaultValue' | 'onChange' | 'onToggle'> {
+export interface TreeSharedProps<N extends NodeType<V>, V extends Id = Id> extends Omit<SelectionContextBaseProps<N, V>, 'options'> {
     nodes?: N[]
     /** 默认为`label` */
     labelKey?: keyof N
@@ -46,7 +45,10 @@ export interface TreeBaseProps<N extends NodeType<V>, V extends Id = Id> extends
     /** 是否显示拖拽把手，默认为`true` */
     showDragHandle?: boolean
     onSort?(info: SortInfo<V>): void
+}
 
+export interface TreeBaseProps<N extends NodeType<V>, V extends Id = Id> extends TreeSharedProps<N, V>,
+    Omit<DivProps, 'defaultValue' | 'onChange' | 'onToggle'> {
     searchable?: boolean
     searchInputProps?: InputProps
     defaultSearchValue?: string

@@ -444,7 +444,9 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
                     filterProps,
                     {
                         ref: innerFilterRef,
-                        onFinish: filterHandler
+                        ...filterableProps?.showButton === false
+                            ? {onChange: (field, value, formValue) => filterHandler(formValue)}
+                            : {onFinish: filterHandler}
                     }
                 )}
             >

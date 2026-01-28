@@ -77,8 +77,6 @@ export const Typography = memo(({
      * 复制
      */
 
-    const textRef = useRef<HTMLSpanElement>(null)
-
     const [copied, setCopied] = useState(false)
 
     const unmounted = useUnmounted()
@@ -87,7 +85,7 @@ export const Typography = memo(({
         if (copied) {
             return
         }
-        const text = textRef.current!.innerText
+        const text = innerRef.current!.innerText
         navigator.clipboard.writeText(text).then()
         onCopy?.(text)
         setCopied(true)
@@ -132,7 +130,6 @@ export const Typography = memo(({
         >
             {ellipsisRows > 0
                 ? <span
-                    ref={textRef}
                     className={classes.text}
                     style={{
                         WebkitLineClamp: ellipsisRows > 1 ? ellipsisRows : void 0,

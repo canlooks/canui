@@ -12,7 +12,7 @@ import {Tag} from '../tag'
 import {LoadingIndicator} from '../loadingIndicator'
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons/faChevronDown'
 
-export type SelectBaseOwnProps = {
+export interface SelectBaseOwnProps extends Omit<InputBaseProps<'input'>, 'children' | 'placeholder' | 'defaultValue' | 'value' | 'onChange' | 'onToggle'> {
     /** <select />内部由<input />实现 */
     inputProps?: ComponentProps<'input'>
     popperProps?: PopperProps
@@ -71,23 +71,21 @@ export function SelectBase({
     renderBackfill,
 
     _internalProps: {
-        inputBaseProps,
         labelKey,
         optionsMap,
         innerValue,
         onToggleSelected,
-        onClear,
         renderPopperContent
     },
+
+    ...props
 }: Omit<SelectBaseProps, 'defaultValue' | 'value' | 'onChange'> & {
     /** @private 内部使用的属性 */
     _internalProps: {
-        inputBaseProps?: Omit<InputBaseProps<'input'>, 'children'>
         labelKey: keyof any
         optionsMap: Map<Id, any>
         innerValue: (Id & Id[]) | undefined
         onToggleSelected(value: Id): void
-        onClear: (() => void) | undefined
         renderPopperContent(searchValue: string, toggleSelected: (value: Id) => void): ReactNode
     }
 }) {
@@ -206,14 +204,13 @@ export function SelectBase({
             <InputBase<'input'>
                 clearable={multiple}
                 {...mergeComponentProps<InputBaseProps<'input'>>(
-                    inputBaseProps,
+                    props,
                     {
                         css: style,
                         className: classes.root,
                         disabled,
                         readOnly,
                         value: innerValue,
-                        onClear,
                         onBlur
                     }
                 )}
