@@ -4,7 +4,7 @@ import {ColumnType, DataGrid, DataGridBaseProps, DataGridMultipleProps, DataGrid
 import {Form, FormItemProps, FormProps, FormRef, FormValue} from '../form'
 import {CurdFilterable, CurdFilterableProps} from './curdFilterable'
 import {classes, style} from './curd.style'
-import {FieldPath, clsx, useControlled, useCurdColumns, useDerivedState, useLoading, useSync, mergeComponentProps, CONTROL_COLUMN_KEY} from '../../utils'
+import {FieldPath, clsx, useControlled, useCurdColumns, useDerivedState, useLoading, useSync, mergeComponentProps, CONTROL_COLUMN_KEY, useStrictEffect} from '../../utils'
 import {Button, ButtonProps} from '../button'
 import {Tooltip} from '../tooltip'
 import {CurdColumnConfig} from './curdColumnConfig'
@@ -369,7 +369,7 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
         }
     }, props.loading)
 
-    useEffect(() => {
+    useStrictEffect(() => {
         innerLoadRows().then()
     }, [innerPage.current, innerPageSize.current, innerOrderColumn.current, innerOrderType.current])
 

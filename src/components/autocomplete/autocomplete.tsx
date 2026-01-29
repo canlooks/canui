@@ -1,8 +1,8 @@
-import React, {Children, ReactElement, ReactNode, Ref, SetStateAction, isValidElement, memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {Children, ReactElement, ReactNode, Ref, SetStateAction, isValidElement, memo, useCallback, useMemo, useRef, useState} from 'react'
 import {Popper, PopperProps, PopperRef} from '../popper'
 import {MenuOptionType, OptionsBase} from '../optionsBase'
 import {Input, InputProps} from '../input'
-import {isUnset, useControlled, useDerivedState, useLoading, useSync, mergeComponentProps} from '../../utils'
+import {isUnset, useControlled, useDerivedState, useLoading, useSync, mergeComponentProps, useStrictEffect} from '../../utils'
 import {classes} from './autocomplete.style'
 import {popperStyle} from '../popper/popper.style'
 import {Id} from '../../types'
@@ -69,7 +69,7 @@ export const Autocomplete = memo(<O extends MenuOptionType>({
         )
     }, loading)
 
-    useEffect(() => {
+    useStrictEffect(() => {
         !changedBySelect.current && innerLoadOptions()
     }, [innerValue.current])
 
