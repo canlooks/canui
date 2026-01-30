@@ -72,7 +72,7 @@ export function useStyle({color}: Required<Pick<CheckboxBaseProps, 'color'>>) {
                 }
 
                 .${classes.label} {
-                    transition: color .25s ${easing.easeOut};
+                    transition: opacity .25s ${easing.easeOut};
                 }
 
                 &[data-size=small] {
@@ -114,7 +114,7 @@ export function useStyle({color}: Required<Pick<CheckboxBaseProps, 'color'>>) {
                     }
 
                     .${classes.label} {
-                        transition: color 0s;
+                        transition: opacity 0s;
                         opacity: 1;
                     }
                 }

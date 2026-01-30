@@ -17,7 +17,7 @@ export const style = defineCss(({divider, borderRadius, background, spacing, tex
         background-color: ${background.content};
         transition: margin .25s ${easing.easeOut};
 
-        .${classes.titleRow} {
+        > .${classes.titleRow} {
             display: flex;
             align-items: center;
             gap: ${spacing[2]}px;
@@ -43,7 +43,7 @@ export const style = defineCss(({divider, borderRadius, background, spacing, tex
         }
 
         &:not([data-read-only=true]):not([data-disabled=true]) {
-            .${classes.titleRow} {
+            > .${classes.titleRow} {
                 cursor: pointer;
             }
         }
@@ -51,18 +51,18 @@ export const style = defineCss(({divider, borderRadius, background, spacing, tex
         &[data-disabled=true] {
             background-color: ${gray(.1)};
 
-            .${classes.titleRow} {
+            > .${classes.titleRow} {
                 cursor: not-allowed;
             }
         }
 
         &[data-expanded=true] {
-            .${classes.titleRow} {
+            > .${classes.titleRow} {
                 padding: 15px ${spacing[5]}px;
-            }
 
-            .${classes.expandIcon} {
-                transform: rotate(90deg);
+                > .${classes.expandIcon} {
+                    transform: rotate(90deg);
+                }
             }
         }
 
@@ -71,24 +71,24 @@ export const style = defineCss(({divider, borderRadius, background, spacing, tex
         }
 
         &[data-size=small] {
-            .${classes.titleRow} {
+            > .${classes.titleRow} {
                 padding: 6px ${spacing[5]}px;
             }
 
             &[data-expanded=true] {
-                .${classes.titleRow} {
+                > .${classes.titleRow} {
                     padding: 11px ${spacing[5]}px;
                 }
             }
         }
 
         &[data-size=large] {
-            .${classes.titleRow} {
+            > .${classes.titleRow} {
                 padding: 12px ${spacing[5]}px;
             }
 
             &[data-expanded=true] {
-                .${classes.titleRow} {
+                > .${classes.titleRow} {
                     padding: 17px ${spacing[5]}px;
                 }
             }

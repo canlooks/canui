@@ -49,6 +49,7 @@ export type CurdRef<R extends RowType = RowType, F extends FormValue = FormValue
     setPage(page: number): void
     setPageSize(size: number): void
     openCreateDialog(defaultValue?: F): Promise<F> | undefined
+    openUpdateDialog(row: R, defaultValue?: F): Promise<F> | undefined
     selectSingle(): Promise<R> | undefined
     selectMultiple(selected?: Id[]): Promise<Id[]> | undefined
 }
@@ -189,14 +190,19 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
         reload() {
             return innerLoadRows()
         },
-        setPage(page: number) {
+        setPage(page) {
             setInnerPage(page)
         },
-        setPageSize(size: number) {
+        setPageSize(size) {
             setInnerPageSize(size)
         },
-        openCreateDialog(defaultValue?: F) {
+        openCreateDialog(defaultValue) {
+            activeRow.current = void 0
             return curdDialogRef.current?.open(void 0, defaultValue)
+        },
+        openUpdateDialog(row, defaultValue) {
+            activeRow.current = row
+            return curdDialogRef.current?.open(row, defaultValue)
         },
         selectSingle() {
             return curdDialogRef.current?.selectSingle()
