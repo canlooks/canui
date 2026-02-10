@@ -13,6 +13,10 @@ export interface AccordionProps extends Omit<DivProps, 'title' | 'prefix'> {
     prefix?: ReactNode
     suffix?: ReactNode
 
+    /**
+     * 展开图标的位置，默认为`left`
+     */
+    expandIconPlacement?: 'left' | 'right'
     expandIcon?: ReactNode | ((expanded: boolean) => ReactNode)
     defaultExpanded?: boolean
     expanded?: boolean
@@ -27,6 +31,7 @@ export function Accordion({
     title,
     prefix,
     suffix,
+    expandIconPlacement = 'left',
     expandIcon,
     defaultExpanded = false,
     expanded,
@@ -65,13 +70,21 @@ export function Accordion({
             data-read-only={readOnly}
             data-disabled={disabled}
         >
-            <div className={classes.titleRow} onClick={toggleExpanded}>
+            <div
+                className={classes.titleRow}
+                style={{
+                    flexDirection: expandIconPlacement === 'right' ? 'row-reverse' : 'row'
+                }}
+                onClick={toggleExpanded}
+            >
                 {renderExpandIcon()}
-                {!!prefix && <div className={classes.prefix}>{prefix}</div>}
-                <div className={classes.title}>
-                    {title}
+                <div className={classes.titleContentWrapper}>
+                    {!!prefix && <div className={classes.prefix}>{prefix}</div>}
+                    <div className={classes.title}>
+                        {title}
+                    </div>
+                    {!!suffix && <div className={classes.suffix}>{suffix}</div>}
                 </div>
-                {!!suffix && <div className={classes.suffix}>{suffix}</div>}
             </div>
             {!!props.children &&
                 <Collapse in={innerExpanded.current}>

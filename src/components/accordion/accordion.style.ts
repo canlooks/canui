@@ -4,6 +4,7 @@ import {defineInnerClasses, defineCss} from '../../utils'
 export const classes = defineInnerClasses('accordion', [
     'titleRow',
     'expandIcon',
+    'titleContentWrapper',
     'title',
     'prefix',
     'suffix',
@@ -24,21 +25,28 @@ export const style = defineCss(({divider, borderRadius, background, spacing, tex
             padding: 9px ${spacing[5]}px;
             transition: padding .25s ${easing.easeOut};
 
-            .${classes.expandIcon} {
+            > .${classes.expandIcon} {
                 color: ${text.disabled};
                 transition: transform .25s ${easing.easeOut};
             }
-
-            .${classes.title} {
+            
+            > .${classes.titleContentWrapper} {
                 flex: 1;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                overflow: hidden;
-            }
+                display: flex;
+                align-items: center;
+                gap: ${spacing[2]}px;
 
-            .${classes.prefix},
-            .${classes.suffix} {
-                color: ${text.secondary};
+                > .${classes.title} {
+                    flex: 1;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                > .${classes.prefix},
+                > .${classes.suffix} {
+                    color: ${text.secondary};
+                }
             }
         }
 

@@ -52,10 +52,12 @@ type SharedGestureOptions = {
 }
 
 export interface DraggableGestureOptions<D = any> extends SharedGestureOptions {
-    /** 按下后经过一段时间才触发拖拽事件，单位ms */
+    /** 按下后经过一段时间才触发拖拽事件，默认`0`，单位ms */
     delay?: number
-    /** 拖拽一段距离后才触发拖拽事件，单位px */
+    /** 拖拽一段距离后才触发拖拽事件，默认`0`，单位px */
     distance?: number
+    /** 允许点击事件触发的抖动距离，默认`2`，单位px */
+    clickVibration?: number
     onDragStart?(e: React.PointerEvent): D
     onDrag?(info: DragInfo<D>, e: PointerEvent): void
     onDragEnd?(info: DragEndInfo<D>): void
@@ -100,6 +102,7 @@ export function useGesture<D = any, P = any>(options: GestureOptions<D, P>): {
         zoom,
         draggable: true,
         distance: 0,
+        clickVibration: 2,
         preventNativeTouchMove: true,
         ...options
     })
@@ -166,10 +169,11 @@ export function useGesture<D = any, P = any>(options: GestureOptions<D, P>): {
     const draggingPointerMove = useCallback((e: PointerEvent) => {
         e.preventDefault()
         const dragInfo = settleDragInfo(e)
-        if (!isRollback.current) {
-            const absDiffX = Math.abs(dragInfo.diff[0])
-            const absDiffY = Math.abs(dragInfo.diff[1])
+        const absDiffX = Math.abs(dragInfo.diff[0])
+        const absDiffY = Math.abs(dragInfo.diff[1])
 
+        if (!isRollback.current) {
+            // 非pinching事件回滚
             if (delayTimeout.current) {
                 if (absDiffX > 5 || absDiffY > 5) {
                     // 延时尚未结束，但偏移量过大，取消拖拽
@@ -177,13 +181,20 @@ export function useGesture<D = any, P = any>(options: GestureOptions<D, P>): {
                 }
                 return
             }
+
             const {distance} = syncOptions.current
             if (absDiffX < distance || absDiffY < distance) {
                 // 拖拽距离未达到起步距离
                 return
             }
         }
-        isDragged.current = true
+
+        const {clickVibration} = syncOptions.current
+        if (!isDragged.current && (absDiffX > clickVibration || absDiffY > clickVibration)) {
+            // 拖拽距离超过允许抖动，将isDragged标记为true
+            isDragged.current = true
+        }
+
         syncOptions.current.onDrag?.(dragInfo, e)
     }, [])
 
