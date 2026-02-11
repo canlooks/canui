@@ -1,26 +1,59 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable, ContextMenu, useAppContext, Select, TreeSelect, Typography, Accordion, useDraggable} from '../src'
+import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable, ContextMenu, useAppContext, Select, TreeSelect, Typography, Accordion, useDraggable, OptionsBase, useFlatSelection, usePopperContext, useFormContext} from '../src'
 import React, {cloneElement, ReactNode, StrictMode, useDeferredValue, useEffect, useMemo, useState} from 'react'
 import {RC, useReactive} from '@canlooks/reactive/react'
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import {Id} from '../src/types'
 
-const Root = RC(() => {
-    const state = useReactive({
-        value: ['1'] as Id[]
-        // value: '1'
-    })
+const TestControl = ({value, onChange}: {
+    value?: string
+    onChange?(value: string): void
+}) => {
+    const [selectedValue, toggleSelect] = useFlatSelection({value, onChange})
 
-    const draggable = useDraggable({
-        onClick: () => {
-            console.log(17, 'click')
-        }
-    })
+    return (
+        <OptionsBase
+            options={[
+                {value: 'test1', label: 'test1'},
+                {value: 'test2', label: 'test2'},
+            ]}
+            selectedValue={selectedValue}
+            onToggleSelected={value => {
+                toggleSelect(value)
+            }}
+        />
+    )
+}
+
+const Root = RC(() => {
 
     return (
         <>
-            <Typography.div copyable editable ellipsisRows={1} {...draggable}>abcd</Typography.div>
+            <Curd
+                columns={[
+                    {
+                        field: 'test',
+                        filterInline: {
+                            multiple: false,
+                            control: <TestControl/>,
+                            // searchable: true,
+                            // options: [
+                            //     {value: 'test1', label: 'test1'},
+                            //     {value: 'test2', label: 'test2'},
+                            // ]
+                        }
+                    }
+                ]}
+                loadRows={(pagination, filterValue, sorter) => {
+                    console.log('filterValue', filterValue)
+                    return {
+                        rows: [],
+                        total: 0
+                    }
+                }}
+                // filterBubbleProps={{autoClose: true}}
+            />
         </>
     )
 })

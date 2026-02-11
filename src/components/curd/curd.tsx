@@ -63,11 +63,15 @@ export interface CurdBaseProps<R extends RowType = RowType, F extends FormValue 
     /** 嵌入式样式通常用于Dialog或Card组件内 */
     variant?: 'standard' | 'embeded'
 
-    loadRows?: (
-        pagination?: { page: number, pageSize: number },
-        filterValue?: FormValue,
-        sorter?: { field: FieldPath, type: OrderType }
-    ) => LoadRowsReturn<R> | Promise<LoadRowsReturn<R>>
+    loadRows?: {
+        bivarianceHack(pagination?: {
+            page: number;
+            pageSize: number;
+        }, filterValue?: FormValue, sorter?: {
+            field: FieldPath;
+            type: OrderType;
+        }): LoadRowsReturn<R> | Promise<LoadRowsReturn<R>>
+    }['bivarianceHack']
 
     columns?: (CurdColumn<R> | symbol)[]
 
@@ -217,10 +221,16 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
      * 筛选部分
      */
 
+    const inlineFilterRef = useRef<FormRef>(null)
     const innerFilterRef = useRef<FormRef>(null)
 
-    const filterHandler = (value: FormValue) => {
-        onFilter?.(value)
+    const getFilterValue = () => ({
+        ...inlineFilterRef.current!.getFormValue(),
+        ...innerFilterRef.current!.getFormValue()
+    })
+
+    const filterHandler = () => {
+        onFilter?.(getFilterValue())
         innerLoadRows().then()
     }
 
@@ -360,7 +370,7 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
                         pageSize: innerPageSize.current
                     }
                     : void 0,
-                innerFilterRef.current!.getFormValue(),
+                getFilterValue(),
                 innerOrderColumn.current
                     ? {
                         field: innerOrderColumn.current,
@@ -451,7 +461,7 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
                     {
                         ref: innerFilterRef,
                         ...filterableProps?.showButton === false
-                            ? {onChange: (field, value, formValue) => filterHandler(formValue)}
+                            ? {onChange: filterHandler}
                             : {onFinish: filterHandler}
                     }
                 )}
@@ -521,6 +531,9 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
 
                     loading={innerLoading.current}
                     rows={innerRows.current}
+
+                    filterProps={{ref: inlineFilterRef}}
+                    onFilter={filterHandler}
 
                     paginatable={!loadRows && props.paginatable}
                     renderPagination={loadRows && props.paginatable !== false

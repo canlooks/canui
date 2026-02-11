@@ -98,7 +98,7 @@ export const DataGridRows = memo(<R extends RowType, V extends Id = Id>({
                         // 排除无需加入dom节点的属性
                         // width属性只需加入thead列中，普通列需排除
                         // rowSpan与colSpan需排除
-                        title, key, children, sticky, field, render, sorter, filter,
+                        title, key, children, field, render, sorter, filter,
                         width,
                         _key, _negativeRowSpan, rowSpan, colSpan,
                         ..._colProps
@@ -110,8 +110,7 @@ export const DataGridRows = memo(<R extends RowType, V extends Id = Id>({
                         <TdCell
                             {..._colProps}
                             key={_key}
-                            className={shouldRenderExpand ? classes.expandable : void 0}
-                            sticky={sticky}
+                            className={clsx(_colProps.className, shouldRenderExpand && classes.expandable)}
                         >
                             {shouldRenderExpand
                                 ? <div className={classes.expandableWrap} style={{paddingLeft: _level * indent}}>

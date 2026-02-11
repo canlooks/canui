@@ -10,10 +10,10 @@ import {Tooltip} from '../tooltip'
 import {faCaretDown} from '@fortawesome/free-solid-svg-icons/faCaretDown'
 import {Button} from '../button'
 import {faFilter} from '@fortawesome/free-solid-svg-icons/faFilter'
-import {Bubble} from '../bubble'
+import {Bubble, BubbleProps} from '../bubble'
 import {FilterBubbleContent} from './filterBubbleContent'
 import {useFormValueContext} from '../form'
-import {isUnset} from '../../utils'
+import {isUnset, mergeComponentProps} from '../../utils'
 
 interface DataGridHeadProps<R extends RowType, V extends Id = Id> extends Required<Pick<DataGridProps<R, V>,
     | 'primaryKey' | 'orderType' | 'onOrderChange'
@@ -24,6 +24,7 @@ interface DataGridHeadProps<R extends RowType, V extends Id = Id> extends Requir
     flattedColumns: (symbol | ColumnType<R>)[] | undefined
     completedColumns: (symbol | ColumnType<R>)[] | undefined
 
+    filterBubbleProps: DataGridProps<R, V>['filterBubbleProps']
     onFilterClick: DataGridProps<R, V>['onFilterClick']
 }
 
@@ -39,6 +40,7 @@ export const DataGridHead = memo(<R extends RowType, V extends Id = Id>({
     orderType,
     onOrderChange,
 
+    filterBubbleProps,
     onFilterClick
 }: DataGridHeadProps<R, V>) => {
     const {multiple, setValue, selectionStatus} = useSelectionContext()
@@ -122,7 +124,7 @@ export const DataGridHead = memo(<R extends RowType, V extends Id = Id>({
                     }
                     const {
                         // 排除无需加入dom节点的属性
-                        title, key, children, sticky, field, render, sorter, filter,
+                        title, key, children, field, render, sorter, filter,
                         _key, _negativeRowSpan = 0,
                         ...colProps
                     } = col
@@ -150,7 +152,6 @@ export const DataGridHead = memo(<R extends RowType, V extends Id = Id>({
                             rowSpan={headRows.length - _negativeRowSpan}
                             {...colProps}
                             key={_key}
-                            sticky={sticky}
                             data-sortable={!!sortable}
                             data-ordering={isOrderingColumn}
                             data-order-type={currentOrderType}
@@ -184,17 +185,19 @@ export const DataGridHead = memo(<R extends RowType, V extends Id = Id>({
                                             {filter === true
                                                 ? filterButton
                                                 : <Bubble
-                                                    style={{maxWidth: 360}}
-                                                    trigger="click"
-                                                    placement="bottomRight"
-                                                    autoClose={false}
-                                                    content={
-                                                        <FilterBubbleContent
-                                                            columnKey={_key!}
-                                                            columnFilterProps={filter}
-                                                        />
-                                                    }
-                                                    onClick={e => e.stopPropagation()}
+                                                    {...mergeComponentProps<BubbleProps>({
+                                                        style: {maxWidth: 360},
+                                                        trigger: 'click',
+                                                        placement: 'bottomRight',
+                                                        autoClose: false,
+                                                        content: (
+                                                            <FilterBubbleContent
+                                                                columnKey={_key!}
+                                                                columnFilterProps={filter}
+                                                            />
+                                                        ),
+                                                        onClick: e => e.stopPropagation()
+                                                    }, filterBubbleProps)}
                                                 >
                                                     {filterButton}
                                                 </Bubble>

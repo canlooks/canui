@@ -14,6 +14,7 @@ import {DataGridRows} from './dataGridRows'
 import {ColumnResizeContext} from './columnResize'
 import {Form, FormProps, FormValue} from '../form'
 import {FilterControlProps, FilterOptionsProps} from './filterBubbleContent'
+import {BubbleProps} from '../bubble'
 
 export type RowType = Obj
 
@@ -93,6 +94,7 @@ export interface DataGridBaseProps<R extends RowType = RowType> extends DataGrid
 
     filterProps?: FormProps
     initialFilterValue?: FormValue
+    filterBubbleProps?: BubbleProps
     onFilter?(filterValue: FormValue): void
     onFilterClick?(column: Id, e: React.MouseEvent<HTMLButtonElement>): void
     /** 若需要本地筛选，必须指定该方法 */
@@ -178,6 +180,7 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
 
     filterProps,
     initialFilterValue,
+    filterBubbleProps,
     onFilter,
     onFilterClick,
     filterPredicate,
@@ -366,12 +369,12 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
             <Form
                 {...mergeComponentProps<FormProps>(
                     {
+                        className: classes.filterForm,
                         variant: 'plain',
                         initialValue: innerFilterValue
                     },
                     filterProps,
                     {
-                        className: classes.filterForm,
                         onFinish: filterHandler
                     }
                 )}
@@ -411,6 +414,7 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
                                         orderType={innerOrderType.current}
                                         onOrderChange={orderChangeHandler}
 
+                                        filterBubbleProps={filterBubbleProps}
                                         onFilterClick={onFilterClick}
                                     />
                                     <tbody>

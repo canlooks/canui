@@ -4,8 +4,13 @@ import {useFlatSelection} from '../selectionContext'
 import {Flex} from '../flex'
 import {Button} from '../button'
 import {usePopperContext} from '../popper'
-import {memo, useEffect} from 'react'
+import {memo, useDeferredValue, useEffect, useState} from 'react'
 import {FormItem, FormItemChildren, useFormContext, useFormValueContext} from '../form'
+import {filterOptionsStyle} from './filterBubbleContent.style'
+import {Input} from '../input'
+import {Icon} from '../icon'
+import {faSearch} from '@fortawesome/free-solid-svg-icons'
+import {useUpdateEffect} from '../../utils'
 
 type FilterSharedProps = {
     /** 是否显示`重置`按钮，默认为`true` */
@@ -15,6 +20,8 @@ type FilterSharedProps = {
 export interface FilterOptionsProps extends FilterSharedProps, OptionsBaseProps<MenuOptionType> {
     /** 默认为`true` */
     multiple?: boolean
+    /** 默认为`false` */
+    searchable?: boolean
 }
 
 export interface FilterControlProps extends FilterSharedProps {
@@ -30,15 +37,13 @@ export const FilterBubbleContent = memo(({
 }) => {
     const {formRef} = useFormContext()
 
-    /**
-     * ------------------------------------------------------------------------------------
-     * 弹框关闭时触发筛选
-     */
-
     const {open, setOpen} = usePopperContext()
 
     useEffect(() => {
-        !open && formRef!.current!.submit().then()
+        if (!open && 'multiple' in columnFilterProps && columnFilterProps.multiple) {
+            // 多选模式下，关闭弹框触发筛选
+            formRef!.current!.submit().then()
+        }
     }, [open])
 
     return (
@@ -49,8 +54,8 @@ export const FilterBubbleContent = memo(({
                     : <FilterOptions {...columnFilterProps}/>
                 }
             </FormItem>
-            {columnFilterProps.showButton !== false
-                ? <Flex
+            {columnFilterProps.showButton !== false &&
+                <Flex
                     gap={6}
                     justifyContent="center"
                     marginTop={6}
@@ -65,7 +70,10 @@ export const FilterBubbleContent = memo(({
                         重置
                     </Button>
                 </Flex>
-                : <TriggerFilterOnChange/>
+            }
+            {'multiple' in columnFilterProps && !columnFilterProps.multiple &&
+                // 单选模式，变化即触发筛选
+                <TriggerFilterOnChange onSubmit={() => setOpen(false)}/>
             }
         </>
     )
@@ -74,6 +82,7 @@ export const FilterBubbleContent = memo(({
 const FilterOptions = memo(({
     multiple = true,
     showButton = true,
+    searchable = false,
     value,
     onChange,
     ...props
@@ -83,23 +92,41 @@ const FilterOptions = memo(({
 }) => {
     const [selectedValue, toggleSelect] = useFlatSelection({multiple, value, onChange})
 
+    const [searchValue, setSearchValue] = useState('')
+
+    const deferredSearchValue = useDeferredValue(searchValue)
+
     return (
-        <OptionsBase
-            showCheckbox={multiple}
-            {...props}
-            selectedValue={selectedValue}
-            onToggleSelected={toggleSelect}
-        />
+        <div css={filterOptionsStyle}>
+            {searchable &&
+                <Input
+                    prefix={<Icon icon={faSearch}/>}
+                    placeholder="搜索"
+                    value={searchValue}
+                    onChange={e => setSearchValue(e.target.value)}
+                />
+            }
+            <OptionsBase
+                showCheckbox={multiple}
+                {...props}
+                searchValue={deferredSearchValue}
+                selectedValue={selectedValue}
+                onToggleSelected={toggleSelect}
+            />
+        </div>
     )
 })
 
-const TriggerFilterOnChange = memo(() => {
+function TriggerFilterOnChange(props: {
+    onSubmit?(): void
+}) {
     const {formRef} = useFormContext()
     const {formValue} = useFormValueContext()
 
-    useEffect(() => {
+    useUpdateEffect(() => {
         formRef!.current!.submit().then()
+        props.onSubmit?.()
     }, [formValue])
 
     return null
-})
+}

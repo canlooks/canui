@@ -4,18 +4,30 @@ import {defineInnerClasses, defineCss} from '../../utils'
 export const classes = defineInnerClasses('curd-column-config', [
     'content',
     'title',
+    'titleText',
+    'description',
     'item',
     'checkbox'
 ])
 
-export const style = defineCss(({spacing}) => css`
+export const style = defineCss(({spacing, text}) => css`
     @layer reset {
         .${classes.content} {
             min-width: 160px;
 
             .${classes.title} {
-                font-weight: bold;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
                 padding: ${spacing[3]}px;
+                
+                .${classes.titleText} {
+                    font-weight: bold;
+                }
+                
+                .${classes.description} {
+                    color: ${text.disabled};
+                }
             }
 
             .${classes.item} {

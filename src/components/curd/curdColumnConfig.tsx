@@ -55,7 +55,10 @@ export const CurdColumnConfig = memo(<R extends RowType>({
                 <DndContext sensors={useDndSensors()} onDragEnd={dragEndHandler}>
                     <SortableContext items={columns?.map((col, i) => col._key ?? i)}>
                         <div className={classes.content}>
-                            <div className={classes.title}>列设置</div>
+                            <div className={classes.title}>
+                                <div className={classes.titleText}>列设置</div>
+                                <div className={classes.description}>拖拽调整顺序</div>
+                            </div>
                             {columns?.map((col, i) =>
                                 <SortableItem
                                     id={col._key ?? i}
