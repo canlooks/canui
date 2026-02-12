@@ -35,13 +35,13 @@ const Root = RC(() => {
                     {
                         field: 'test',
                         filterInline: {
+                            // control: <TestControl/>,
                             multiple: false,
-                            control: <TestControl/>,
-                            // searchable: true,
-                            // options: [
-                            //     {value: 'test1', label: 'test1'},
-                            //     {value: 'test2', label: 'test2'},
-                            // ]
+                            searchable: true,
+                            options: [
+                                {value: 'test1', label: 'test1'},
+                                {value: 'test2', label: 'test2'},
+                            ]
                         }
                     }
                 ]}

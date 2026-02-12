@@ -4,6 +4,7 @@ import {classes as buttonClasses} from '../button/button.style'
 import {classes as loadingClasses} from '../loading/loading.style'
 
 export const classes = defineInnerClasses('curd', [
+    'filterForm',
     'filter',
     'filterGridContainer',
     'filterGrid',
@@ -30,6 +31,12 @@ export const style = defineCss(({spacing, text, background, borderRadius}) => cs
         min-height: 0;
         display: flex;
         flex-direction: column;
+        
+        .${classes.filterForm} {
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
 
         .${classes.filter} {
             display: flex;

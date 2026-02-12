@@ -5,16 +5,15 @@ import {Flex} from '../flex'
 import {Button} from '../button'
 import {usePopperContext} from '../popper'
 import {memo, useDeferredValue, useEffect, useState} from 'react'
-import {FormItem, FormItemChildren, useFormContext, useFormValueContext} from '../form'
+import {FormItem, FormItemChildren, useFormContext} from '../form'
 import {filterOptionsStyle} from './filterBubbleContent.style'
 import {Input} from '../input'
 import {Icon} from '../icon'
 import {faSearch} from '@fortawesome/free-solid-svg-icons'
-import {useUpdateEffect} from '../../utils'
 
 type FilterSharedProps = {
     /** 是否显示`重置`按钮，默认为`true` */
-    showButton?: boolean
+    showResetButton?: boolean
 }
 
 export interface FilterOptionsProps extends FilterSharedProps, OptionsBaseProps<MenuOptionType> {
@@ -40,8 +39,8 @@ export const FilterBubbleContent = memo(({
     const {open, setOpen} = usePopperContext()
 
     useEffect(() => {
-        if (!open && 'multiple' in columnFilterProps && columnFilterProps.multiple) {
-            // 多选模式下，关闭弹框触发筛选
+        if (!open) {
+            // 关闭弹框触发筛选
             formRef!.current!.submit().then()
         }
     }, [open])
@@ -51,10 +50,15 @@ export const FilterBubbleContent = memo(({
             <FormItem field={columnKey}>
                 {'control' in columnFilterProps
                     ? columnFilterProps.control
-                    : <FilterOptions {...columnFilterProps}/>
+                    : <FilterOptions
+                        {...columnFilterProps}
+                        onChange={() => {
+                            !columnFilterProps.multiple && setOpen(false)
+                        }}
+                    />
                 }
             </FormItem>
-            {columnFilterProps.showButton !== false &&
+            {columnFilterProps.showResetButton !== false &&
                 <Flex
                     gap={6}
                     justifyContent="center"
@@ -63,17 +67,13 @@ export const FilterBubbleContent = memo(({
                     <Button
                         variant="text"
                         onClick={() => {
-                            formRef!.current!.setFieldValue(columnKey, null)
+                            formRef!.current!.resetField(columnKey)
                             setOpen(false)
                         }}
                     >
                         重置
                     </Button>
                 </Flex>
-            }
-            {'multiple' in columnFilterProps && !columnFilterProps.multiple &&
-                // 单选模式，变化即触发筛选
-                <TriggerFilterOnChange onSubmit={() => setOpen(false)}/>
             }
         </>
     )
@@ -116,17 +116,3 @@ const FilterOptions = memo(({
         </div>
     )
 })
-
-function TriggerFilterOnChange(props: {
-    onSubmit?(): void
-}) {
-    const {formRef} = useFormContext()
-    const {formValue} = useFormValueContext()
-
-    useUpdateEffect(() => {
-        formRef!.current!.submit().then()
-        props.onSubmit?.()
-    }, [formValue])
-
-    return null
-}

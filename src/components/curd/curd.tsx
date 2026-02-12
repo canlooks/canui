@@ -48,6 +48,8 @@ export type CurdRef<R extends RowType = RowType, F extends FormValue = FormValue
     reload(): Promise<void>
     setPage(page: number): void
     setPageSize(size: number): void
+    setFilterValue(filterValue: FormValue): void
+    resetFilter(): void
     openCreateDialog(defaultValue?: F): Promise<F> | undefined
     openUpdateDialog(row: R, defaultValue?: F): Promise<F> | undefined
     selectSingle(): Promise<R> | undefined
@@ -200,6 +202,14 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
         setPageSize(size) {
             setInnerPageSize(size)
         },
+        setFilterValue(filterValue) {
+            innerFilterRef.current!.setFormValue(filterValue)
+            innerLoadRows().then()
+        },
+        resetFilter() {
+            innerFilterRef.current!.resetForm()
+            innerLoadRows().then()
+        },
         openCreateDialog(defaultValue) {
             activeRow.current = void 0
             return curdDialogRef.current?.open(void 0, defaultValue)
@@ -221,13 +231,9 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
      * 筛选部分
      */
 
-    const inlineFilterRef = useRef<FormRef>(null)
     const innerFilterRef = useRef<FormRef>(null)
 
-    const getFilterValue = () => ({
-        ...inlineFilterRef.current!.getFormValue(),
-        ...innerFilterRef.current!.getFormValue()
-    })
+    const getFilterValue = () => innerFilterRef.current!.getFormValue()
 
     const filterHandler = () => {
         onFilter?.(getFilterValue())
@@ -454,12 +460,13 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
             <Form
                 {...mergeComponentProps<FormProps>(
                     {
+                        ref: innerFilterRef,
+                        className: classes.filterForm,
                         variant: 'plain',
                         initialValue: initialFilterValue
                     },
                     filterProps,
                     {
-                        ref: innerFilterRef,
                         ...filterableProps?.showButton === false
                             ? {onChange: filterHandler}
                             : {onFinish: filterHandler}
@@ -467,102 +474,101 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
                 )}
             >
                 {renderFilterableFn()}
-            </Form>
 
-            {(creatable || toolbarLeft || toolbarRight || reloadable || resizable || columnConfigurable) &&
-                <div className={classes.toolbar}>
-                    <div className={classes.toolbarLeft}>
-                        {creatable &&
-                            <Button
-                                prefix={<Icon icon={faPlus}/>}
-                                {...createButtonProps}
-                                onClick={createHandler}
-                            >
-                                {createName}{dataName}
-                            </Button>
-                        }
-                        {toolbarLeft}
-                    </div>
-                    <div className={classes.toolbarRight}>
-                        {!!toolbarRight &&
-                            <>
-                                {toolbarRight}
-                                <Divider className={classes.divider} orientation="vertical"/>
-                            </>
-                        }
-                        {reloadable &&
-                            <Tooltip title="刷新">
+                {(creatable || toolbarLeft || toolbarRight || reloadable || resizable || columnConfigurable) &&
+                    <div className={classes.toolbar}>
+                        <div className={classes.toolbarLeft}>
+                            {creatable &&
                                 <Button
-                                    shape="circular"
-                                    variant="text"
-                                    color="text.secondary"
-                                    prefix={<Icon icon={faRotateRight}/>}
-                                    loading={innerLoading.current}
-                                    onClick={reloadHandler}
+                                    prefix={<Icon icon={faPlus}/>}
+                                    {...createButtonProps}
+                                    onClick={createHandler}
+                                >
+                                    {createName}{dataName}
+                                </Button>
+                            }
+                            {toolbarLeft}
+                        </div>
+                        <div className={classes.toolbarRight}>
+                            {!!toolbarRight &&
+                                <>
+                                    {toolbarRight}
+                                    <Divider className={classes.divider} orientation="vertical"/>
+                                </>
+                            }
+                            {reloadable &&
+                                <Tooltip title="刷新">
+                                    <Button
+                                        shape="circular"
+                                        variant="text"
+                                        color="text.secondary"
+                                        prefix={<Icon icon={faRotateRight}/>}
+                                        loading={innerLoading.current}
+                                        onClick={reloadHandler}
+                                    />
+                                </Tooltip>
+                            }
+                            {resizable &&
+                                <CurdResizable
+                                    innerSize={innerSize.current}
+                                    setInnerSize={setInnerSize}
                                 />
-                            </Tooltip>
-                        }
-                        {resizable &&
-                            <CurdResizable
-                                innerSize={innerSize.current}
-                                setInnerSize={setInnerSize}
-                            />
-                        }
-                        {columnConfigurable &&
-                            <CurdColumnConfig
-                                columns={orderedColumns}
-                                innerVisible={innerVisible.current}
-                                setInnerVisible={setInnerVisible}
-                                setInnerOrder={setInnerOrder}
-                            />
-                        }
+                            }
+                            {columnConfigurable &&
+                                <CurdColumnConfig
+                                    columns={orderedColumns}
+                                    innerVisible={innerVisible.current}
+                                    setInnerVisible={setInnerVisible}
+                                    setInnerOrder={setInnerOrder}
+                                />
+                            }
+                        </div>
                     </div>
+                }
+
+                <div className={classes.card}>
+                    <DataGrid
+                        {...dataGridProps}
+                        columns={actualColumns}
+                        tableProps={{
+                            ...props.tableProps,
+                            ...resizable && {size: innerSize.current}
+                        }}
+
+                        loading={innerLoading.current}
+                        rows={innerRows.current}
+
+                        paginatable={!loadRows && props.paginatable}
+                        renderPagination={loadRows && props.paginatable !== false
+                            ? () =>
+                                <Pagination
+                                    {...props.paginationProps}
+                                    total={innerTotal.current}
+                                    page={innerPage.current}
+                                    onPageChange={setInnerPage}
+                                    pageSize={innerPageSize.current}
+                                    onPageSizeChange={setInnerPageSize}
+                                />
+                            : props.renderPagination
+                        }
+
+                        orderColumn={innerOrderColumn.current}
+                        orderType={innerOrderType.current}
+                        onOrderChange={orderChangeHandler}
+
+                        _noRenderFormTag
+                    />
                 </div>
-            }
 
-            <div className={classes.card}>
-                <DataGrid
-                    {...dataGridProps}
-                    columns={actualColumns}
-                    tableProps={{
-                        ...props.tableProps,
-                        ...resizable && {size: innerSize.current}
-                    }}
-
-                    loading={innerLoading.current}
-                    rows={innerRows.current}
-
-                    filterProps={{ref: inlineFilterRef}}
-                    onFilter={filterHandler}
-
-                    paginatable={!loadRows && props.paginatable}
-                    renderPagination={loadRows && props.paginatable !== false
-                        ? () =>
-                            <Pagination
-                                {...props.paginationProps}
-                                total={innerTotal.current}
-                                page={innerPage.current}
-                                onPageChange={setInnerPage}
-                                pageSize={innerPageSize.current}
-                                onPageSizeChange={setInnerPageSize}
-                            />
-                        : props.renderPagination
-                    }
-
-                    orderColumn={innerOrderColumn.current}
-                    orderType={innerOrderType.current}
-                    onOrderChange={orderChangeHandler}
-                />
-            </div>
-
-            {(creatable || updatable) &&
-                <CurdDialog
-                    {...dialogProps}
-                    ref={curdDialogRef}
-                    onFinish={finishHandler}
-                    curdProps={props}
-                />
-            }
+                {(creatable || updatable) &&
+                    <CurdDialog
+                        {...dialogProps}
+                        ref={curdDialogRef}
+                        onFinish={finishHandler}
+                        curdProps={props}
+                    />
+                }
+            </Form>
         </div>
     )
 }) as any as {

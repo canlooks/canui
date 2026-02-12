@@ -101,7 +101,7 @@ export const FormItem: <I = any, C extends ElementType = 'div'>(props: FormItemP
      * 重置与初始化
      */
 
-    const reset = (currentFormValue = formValue, initialFormValue?: FormValue) => {
+    const reset = (currentFormValue = formValue, initialFormValue = {}) => {
         // formRef的resetForm()方法会传入新的formValue，其他情况使用当前的formValue
         shouldValidate.current = isTouched.current = false
         if (!isUnset(field) && currentFormValue) {
@@ -109,7 +109,7 @@ export const FormItem: <I = any, C extends ElementType = 'div'>(props: FormItemP
                 queryDeep(currentFormValue, field, () => initialValue)
             } else if (typeof initialFormValue !== 'undefined') {
                 const initialFieldValue = queryDeep(initialFormValue, field)
-                queryDeep(currentFormValue, field, initialFieldValue)
+                queryDeep(currentFormValue, field, () => initialFieldValue)
             }
         }
         setInnerError(false)

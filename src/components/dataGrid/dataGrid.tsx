@@ -138,6 +138,9 @@ export interface DataGridBaseProps<R extends RowType = RowType> extends DataGrid
     bordered?: TableProps['bordered']
     striped?: TableProps['striped']
     tableProps?: TableProps
+
+    /** @private 内部使用，在<Curd/>内渲染时，禁用Form标签 */
+    _noRenderFormTag?: boolean
 }
 
 export interface DataGridSingleProps<R extends RowType = RowType, V extends Id = Id> extends DataGridBaseProps<R> {
@@ -215,6 +218,8 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
     bordered,
     striped,
     tableProps,
+
+    _noRenderFormTag = false,
 
     multiple,
     defaultValue,
@@ -357,6 +362,72 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
         return orderedRows?.slice((page! - 1) * pageSize!, page! * pageSize!)
     }, [orderedRows, _paginationProps.page, _paginationProps.pageSize, paginatable])
 
+    const renderedContent = (
+        <ColumnResizeContext columnResizable={columnResizable}>
+            {({scrollerRef, tableRef}) =>
+                <TableContainer ref={scrollerRef} className={classes.container}>
+                    <Table
+                        size={size}
+                        bordered={bordered}
+                        striped={striped}
+                        {...tableProps}
+                        ref={cloneRef(tableProps?.ref, tableRef)}
+                    >
+                        <SelectionContext
+                            options={rows}
+                            primaryKey={primaryKey}
+                            childrenKey={childrenKey !== null ? childrenKey : void 0}
+                            relation={relation}
+                            integration={integration}
+                            disabled={!selectable}
+                            multiple={multiple}
+                            defaultValue={defaultValue as any}
+                            value={value as any}
+                            onChange={onChange as any}
+                        >
+                            <DataGridHead
+                                rows={rows}
+                                flattedColumns={flattedColumns}
+                                completedColumns={completedColumns}
+
+                                primaryKey={primaryKey}
+                                allowSelectAll={allowSelectAll}
+                                columnResizable={columnResizable}
+
+                                orderColumn={innerOrderColumn.current}
+                                orderType={innerOrderType.current}
+                                onOrderChange={orderChangeHandler}
+
+                                filterBubbleProps={filterBubbleProps}
+                                onFilterClick={onFilterClick}
+                            />
+                            <tbody>
+                            <DataGridContext value={
+                                useMemo(() => ({
+                                    slots, slotProps,
+                                    rowProps, primaryKey, childrenKey, clickRowToSelect, indent, renderExpandIcon,
+                                    expandedSet, flattedColumns, toggleExpanded
+                                }), [
+                                    slots, slotProps,
+                                    rowProps, primaryKey, childrenKey, clickRowToSelect, indent, renderExpandIcon,
+                                    expandedSet, flattedColumns
+                                ])
+                            }>
+                                {!!paginatedRows?.length &&
+                                    <DataGridRows rows={paginatedRows}/>
+                                }
+                            </DataGridContext>
+                            </tbody>
+                        </SelectionContext>
+                    </Table>
+                    {!paginatedRows?.length && (
+                        emptyPlaceholder ?? <Placeholder className={classes.empty}/>
+                    )}
+                </TableContainer>
+            }
+        </ColumnResizeContext>
+    )
+
     return (
         <Loading
             fill={false}
@@ -366,83 +437,24 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
             open={loading}
             data-column-resizable={columnResizable}
         >
-            <Form
-                {...mergeComponentProps<FormProps>(
-                    {
-                        className: classes.filterForm,
-                        variant: 'plain',
-                        initialValue: innerFilterValue
-                    },
-                    filterProps,
-                    {
-                        onFinish: filterHandler
-                    }
-                )}
-            >
-                <ColumnResizeContext columnResizable={columnResizable}>
-                    {({scrollerRef, tableRef}) =>
-                        <TableContainer ref={scrollerRef} className={classes.container}>
-                            <Table
-                                size={size}
-                                bordered={bordered}
-                                striped={striped}
-                                {...tableProps}
-                                ref={cloneRef(tableProps?.ref, tableRef)}
-                            >
-                                <SelectionContext
-                                    options={rows}
-                                    primaryKey={primaryKey}
-                                    childrenKey={childrenKey !== null ? childrenKey : void 0}
-                                    relation={relation}
-                                    integration={integration}
-                                    disabled={!selectable}
-                                    multiple={multiple}
-                                    defaultValue={defaultValue as any}
-                                    value={value as any}
-                                    onChange={onChange as any}
-                                >
-                                    <DataGridHead
-                                        rows={rows}
-                                        flattedColumns={flattedColumns}
-                                        completedColumns={completedColumns}
-
-                                        primaryKey={primaryKey}
-                                        allowSelectAll={allowSelectAll}
-                                        columnResizable={columnResizable}
-
-                                        orderColumn={innerOrderColumn.current}
-                                        orderType={innerOrderType.current}
-                                        onOrderChange={orderChangeHandler}
-
-                                        filterBubbleProps={filterBubbleProps}
-                                        onFilterClick={onFilterClick}
-                                    />
-                                    <tbody>
-                                    <DataGridContext value={
-                                        useMemo(() => ({
-                                            slots, slotProps,
-                                            rowProps, primaryKey, childrenKey, clickRowToSelect, indent, renderExpandIcon,
-                                            expandedSet, flattedColumns, toggleExpanded
-                                        }), [
-                                            slots, slotProps,
-                                            rowProps, primaryKey, childrenKey, clickRowToSelect, indent, renderExpandIcon,
-                                            expandedSet, flattedColumns
-                                        ])
-                                    }>
-                                        {!!paginatedRows?.length &&
-                                            <DataGridRows rows={paginatedRows}/>
-                                        }
-                                    </DataGridContext>
-                                    </tbody>
-                                </SelectionContext>
-                            </Table>
-                            {!paginatedRows?.length && (
-                                emptyPlaceholder ?? <Placeholder className={classes.empty}/>
-                            )}
-                        </TableContainer>
-                    }
-                </ColumnResizeContext>
-            </Form>
+            {_noRenderFormTag
+                ? renderedContent
+                : <Form
+                    {...mergeComponentProps<FormProps>(
+                        {
+                            className: classes.filterForm,
+                            variant: 'plain',
+                            initialValue: innerFilterValue
+                        },
+                        filterProps,
+                        {
+                            onFinish: filterHandler
+                        }
+                    )}
+                >
+                    {renderedContent}
+                </Form>
+            }
             {renderPaginationFn()}
         </Loading>
     )
