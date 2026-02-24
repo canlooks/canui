@@ -2,6 +2,7 @@ import {ReactNode, isValidElement, memo, useState} from 'react'
 import {ActionSheet, ActionSheetProps} from '../actionSheet'
 import {MenuItemProps} from '../menuItem'
 import {Obj} from '../../types'
+import {getRandomId} from '../../utils'
 
 export interface AppActionSheetProps<A extends MenuItemProps & Obj> extends Omit<ActionSheetProps<A>, 'onAction' | 'onConfirm'> {
     onAction?(action: A, ...args: any[]): any
@@ -22,16 +23,19 @@ export class AppActionSheetMethods {
 export const AppActionSheet = memo(({methods}: { methods: AppActionSheetMethods }) => {
     const [stacks, setStacks] = useState<StackProps<MenuItemProps>[]>([])
 
-    const defineMethods = (type: keyof AppActionSheetMethods) =>
-        (params?: ReactNode | AppActionSheetProps<MenuItemProps>, ...args: any[]) =>
-            new Promise<any>((resolve, reject) => {
+    const defineMethods = (type: keyof AppActionSheetMethods) => {
+        return (params?: ReactNode | AppActionSheetProps<MenuItemProps>, ...args: any[]) => {
+            return new Promise<any>((resolve, reject) => {
                 const props = typeof params !== 'object' || isValidElement(params)
                     ? {title: params} as AppActionSheetProps<MenuItemProps>
                     : params as AppActionSheetProps<MenuItemProps>
+                const key = getRandomId()
+
                 setStacks(o => [
                     ...o,
                     {
                         ...props,
+                        key,
                         type,
                         onAction(action) {
                             props?.onAction?.(action, ...args)
@@ -47,20 +51,19 @@ export const AppActionSheet = memo(({methods}: { methods: AppActionSheetMethods 
                         },
                         onClosed() {
                             props?.onClosed?.()
-                            setStacks(_o => {
-                                _o.splice(o.length, 1)
-                                return [..._o]
-                            })
+                            setStacks(stacks => stacks.filter(stack => stack.key !== key))
                         }
                     }
                 ])
             })
+        }
+    }
 
     methods.confirm = defineMethods('confirm')
     methods.open = defineMethods('open')
 
-    return stacks.map((p, i) =>
-        <AppActionSheetStack key={i} {...p}/>
+    return stacks.map(p =>
+        <AppActionSheetStack {...p} key={p.key}/>
     )
 })
 
@@ -77,17 +80,11 @@ const AppActionSheetStack = memo(<A extends MenuItemProps>({
     type,
     ...props
 }: StackProps<A>) => {
-    const [open, setOpen] = useState(true)
-
     return (
         <ActionSheet
             showConfirm={type === 'confirm'}
+            defaultOpen
             {...props}
-            open={open}
-            onClose={reason => {
-                props.onClose?.(reason)
-                setOpen(false)
-            }}
         />
     )
 })

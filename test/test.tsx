@@ -6,54 +6,25 @@ import {RC, useReactive} from '@canlooks/reactive/react'
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import {Id} from '../src/types'
 
-const TestControl = ({value, onChange}: {
-    value?: string
-    onChange?(value: string): void
-}) => {
-    const [selectedValue, toggleSelect] = useFlatSelection({value, onChange})
-
-    return (
-        <OptionsBase
-            options={[
-                {value: 'test1', label: 'test1'},
-                {value: 'test2', label: 'test2'},
-            ]}
-            selectedValue={selectedValue}
-            onToggleSelected={value => {
-                toggleSelect(value)
-            }}
-        />
-    )
-}
-
 const Root = RC(() => {
+    const onClick = () => {
+        App.dialog.confirm({
+            title: 'Confirm',
+            content: 'Are you sure?',
+            onConfirm: () => {
+                App.dialog.success({
+                    title: 'success',
+                    content: 'Yes',
+                })
+            }
+        })
+    }
 
     return (
         <>
-            <Curd
-                columns={[
-                    {
-                        field: 'test',
-                        filterInline: {
-                            // control: <TestControl/>,
-                            multiple: false,
-                            searchable: true,
-                            options: [
-                                {value: 'test1', label: 'test1'},
-                                {value: 'test2', label: 'test2'},
-                            ]
-                        }
-                    }
-                ]}
-                loadRows={(pagination, filterValue, sorter) => {
-                    console.log('filterValue', filterValue)
-                    return {
-                        rows: [],
-                        total: 0
-                    }
-                }}
-                // filterBubbleProps={{autoClose: true}}
-            />
+            <Button onClick={onClick}>
+                Button
+            </Button>
         </>
     )
 })
@@ -66,11 +37,6 @@ createRoot(document.getElementById('app')!).render(
             }
         `}/>
         <App
-            theme={{
-                easing: {
-                    // bounce: 'ease-out'
-                }
-            }}
             style={{
                 height: '100vh',
                 padding: 24

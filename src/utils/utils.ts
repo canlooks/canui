@@ -2,26 +2,10 @@ import {Ref, ReactNode, ElementType, ComponentProps} from 'react'
 import {Id, Obj} from '../types'
 
 /**
- * 生成最简易的随机ID
- * @param namespace
+ * 获取UUID
  */
-export function getEasyID(namespace = '') {
-    return `${namespace}${Date.now()}${Math.random()}`
-}
-
-const randomIdAlphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-'
-
-/**
- * 获取任意长度由随机字母组成的ID
- * @param length
- */
-export function getShortID(length = 8) {
-    const {length: alphabetLength} = randomIdAlphabet
-    let id = ''
-    while (length--) {
-        id += randomIdAlphabet[Math.floor(Math.random() * alphabetLength)]
-    }
-    return id
+export function getRandomId() {
+    return crypto.randomUUID()
 }
 
 /**

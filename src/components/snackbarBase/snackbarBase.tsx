@@ -1,7 +1,7 @@
 import React, {ReactNode, isValidElement, memo, useRef, useState} from 'react'
 import {Collapse, Slide, TransitionBaseProps} from '../transitionBase'
 import {BlockPlacement, ColorPropsValue, DefineElement} from '../../types'
-import {clsx, getEasyID, useColor, useContainer, useUnmounted} from '../../utils'
+import {clsx, getRandomId, useColor, useContainer, useUnmounted} from '../../utils'
 import {classes, style} from './snackbarBase.style'
 import {TransitionGroup} from 'react-transition-group'
 import {StatusIcon, statusMapToIconDefinition} from '../status'
@@ -91,7 +91,7 @@ export const SnackbarBase = memo(({
         } = propsObject
 
         const index = placementToIndex[placement]
-        let id = getEasyID('snackbar')
+        let id = getRandomId()
 
         const onCloseButtonClick = () => {
             !isUnmounted.current && setStacks(o => {

@@ -1,7 +1,7 @@
 import {ReactNode, cloneElement, isValidElement, useEffect, useImperativeHandle, useMemo, useRef, ElementType, Ref} from 'react'
 import {FormRef, FormSharedProps, FormValue, useFormContext, useFormStyleContext, useFormValueContext} from './form'
 import {ColorPropsValue, MergeProps, Size} from '../../types'
-import {FieldPath, clsx, getValueOnChange, queryDeep, stringifyField, useDerivedState, toArray, getShortID, isUnset, useStrictMemo} from '../../utils'
+import {FieldPath, clsx, getValueOnChange, queryDeep, stringifyField, useDerivedState, toArray, getRandomId, isUnset, useStrictMemo} from '../../utils'
 import {DescriptionItem, DescriptionItemProps} from '../descriptions'
 import {classes} from './form.style'
 import {Collapse} from '../transitionBase'
@@ -235,7 +235,7 @@ export const FormItem: <I = any, C extends ElementType = 'div'>(props: FormItemP
 
     const [randomKey] = useDerivedState<string>(prev => {
         // fieldValue变为undefined时，需要更新key以强制重渲染组件
-        return !prev || typeof fieldValue === 'undefined' ? getShortID() : prev
+        return !prev || typeof fieldValue === 'undefined' ? getRandomId() : prev
     }, [fieldValue])
 
     const renderedChildren = useMemo(() => {

@@ -1,7 +1,7 @@
 import React, {Dispatch, ReactElement, ReactNode, SetStateAction, memo, useImperativeHandle, useRef, ComponentProps} from 'react'
 import {DivProps} from '../../types'
 import {classes, style} from './upload.style'
-import {clsx, getShortID, onDndDragEnd, useControlled, useDndSensors, mergeComponentProps} from '../../utils'
+import {clsx, getRandomId, onDndDragEnd, useControlled, useDndSensors, mergeComponentProps} from '../../utils'
 import {Button, ButtonProps} from '../button'
 import {FileItem} from './fileItem'
 import {TransitionGroup} from 'react-transition-group'
@@ -62,7 +62,7 @@ export interface UploadProps<R = any, A extends any[] = any[]> extends UploadSha
 const markFileId = (files?: FileList | (File | UploadFile<any, any[]>)[]) => {
     if (files) {
         for (const file of files) {
-            (file as UploadFile<any, any[]>).id ||= getShortID()
+            (file as UploadFile).id ||= getRandomId()
         }
     }
 }

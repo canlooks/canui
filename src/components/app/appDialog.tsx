@@ -1,6 +1,7 @@
 import {ReactNode, memo, useState} from 'react'
 import {Dialog, DialogProps} from '../dialog'
 import {StatusIcon} from '../status'
+import {getRandomId} from '../../utils'
 
 export interface AppDialogProps extends Omit<DialogProps, 'content' | 'onConfirm' | 'onCancel'> {
     content?: ReactNode
@@ -31,28 +32,29 @@ export const AppDialog = memo(({methods}: { methods: AppDialogMethods }) => {
     const defineMethod = (type: keyof AppDialogMethods) => {
         return (props: AppDialogProps, ...args: any[]) => {
             return new Promise<void>((resolve, reject) => {
-                setStacks(o => [
-                    ...o,
-                    {
-                        ...props,
-                        type,
-                        async onConfirm() {
-                            await props.onConfirm?.(...args)
-                            resolve()
-                        },
-                        onCancel() {
-                            props.onCancel?.(...args)
-                            reject()
-                        },
-                        onClosed() {
-                            props.onClosed?.()
-                            setStacks(_o => {
-                                _o.splice(o.length, 1)
-                                return [..._o]
-                            })
+                const key = getRandomId()
+                setStacks(o => {
+                    return [
+                        ...o,
+                        {
+                            ...props,
+                            key,
+                            type,
+                            onConfirm: async () => {
+                                await props.onConfirm?.(...args)
+                                resolve()
+                            },
+                            onCancel: () => {
+                                props.onCancel?.(...args)
+                                reject()
+                            },
+                            onClosed: () => {
+                                props.onClosed?.()
+                                setStacks(stacks => stacks.filter(stack => stack.key !== key))
+                            }
                         }
-                    }
-                ])
+                    ]
+                })
             })
         }
     }
@@ -63,8 +65,8 @@ export const AppDialog = memo(({methods}: { methods: AppDialogMethods }) => {
     methods.error = defineMethod('error')
     methods.confirm = defineMethod('confirm')
 
-    return stacks.map((p, i) => {
-        return <AppDialogStack key={i} {...p} />
+    return stacks.map(p => {
+        return <AppDialogStack {...p} key={p.key}/>
     })
 })
 
@@ -82,8 +84,6 @@ const AppDialogStack = memo(({
     content,
     ...props
 }: StackProps) => {
-    const [open, setOpen] = useState(true)
-
     return (
         <Dialog
             width={360}
@@ -92,12 +92,8 @@ const AppDialogStack = memo(({
             showCancel={type === 'confirm'}
             showClose={false}
             confirmText={type === 'confirm' ? void 0 : '知道了'}
+            defaultOpen
             {...props}
-            open={open}
-            onClose={reason => {
-                props.onClose?.(reason)
-                setOpen(false)
-            }}
         >
             {content}
         </Dialog>
