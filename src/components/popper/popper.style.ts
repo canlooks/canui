@@ -18,7 +18,10 @@ export const style = defineCss(theme => {
                 left: 0;
                 z-index: ${zIndex.popper};
                 transition-property: transform, opacity;
-                transition-duration: .25s;
+                
+                &[data-animation=true] {
+                    transition-duration: .25s;
+                }
 
                 &[data-open=true] {
                     transition-timing-function: ${easing.bounce}, ${easing.easeOut};

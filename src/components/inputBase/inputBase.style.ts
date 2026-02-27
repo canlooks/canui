@@ -78,7 +78,7 @@ export function useStyle({color}: Required<Pick<InputBaseProps<any>, 'color'>>) 
                 }
 
                 &:not(:has([data-read-only=true]))[data-focused=true],
-                &:not(:has([data-read-only=true])):has(:focus) {
+                &:not(:has([data-read-only=true])):focus-within {
                     &::before, &::after {
                         display: block;
                         animation: ${borderAnim} .4s ${easing.easeOut} forwards;

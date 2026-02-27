@@ -51,7 +51,7 @@ export interface PopperProps extends Omit<DivProps, 'content' | 'children'> {
     sizeAdaptable?: boolean
     /** trigger{@link trigger}包含"hover"时，鼠标移入移的延迟时间，默认为`150(ms)` */
     mouseEnterDelay?: number
-    /**默认为`150(ms)` */
+    /** 默认为`150(ms)` */
     mouseLeaveDelay?: number
 
     defaultOpen?: boolean
@@ -67,6 +67,8 @@ export interface PopperProps extends Omit<DivProps, 'content' | 'children'> {
      * @enum {undefined} 第一次打开时渲染，跟随父组件销毁。
      */
     forceRender?: boolean
+    /** 打开与关闭是否渲染过度动画，默认为`true` */
+    animation?: boolean
 
     children?: ReactElement<any>
 }
@@ -101,6 +103,7 @@ export function Popper({
     disabled,
     autoClose = false,
     forceRender,
+    animation = true,
     children,
     ...props
 }: PopperProps) {
@@ -143,6 +146,8 @@ export function Popper({
         if (newOpen || openHolding.current === 0) {
             _setInnerOpen(newOpen)
         }
+        // 不渲染动画时，需要手动触发onTransitionEnd
+        !animation && transitionEndHandler()
     }
 
     const {onChildrenOpenChange: tellParentOpenChange} = usePopperContext()
@@ -183,6 +188,10 @@ export function Popper({
 
     const onTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
         props.onTransitionEnd?.(e)
+        transitionEndHandler()
+    }
+
+    const transitionEndHandler = () => {
         onOpenChangeEnd?.(innerOpen.current)
         if (forceRender === false && !innerOpen.current) {
             renderedOnce.current = false
@@ -714,6 +723,7 @@ export function Popper({
                         data-variant={variant}
                         data-place-a={placeA.current}
                         data-place-b={placeB.current}
+                        data-animation={animation}
                         onTransitionEnd={onTransitionEnd}
                     >
                         <PopperContext value={contextValue}>

@@ -1,4 +1,4 @@
-import React, {ReactElement, useMemo, memo, ReactNode, Children, isValidElement, cloneElement, useRef} from 'react'
+import React, {ReactElement, useMemo, memo, ReactNode, isValidElement, cloneElement, useRef} from 'react'
 import {Highlight} from '../highlight'
 import {MenuItemProps, MenuItem} from '../menuItem'
 import {Placeholder} from '../placeholder'
@@ -8,6 +8,7 @@ import {Loading, LoadingProps} from '../loading'
 import {usePopperContext, useScrollToTarget} from '../popper'
 import {OptionType} from '../selectionContext'
 import {Id} from '../../types'
+import {useFilterOptions} from './filterOptions'
 
 export interface MenuOptionType<V extends Id = Id> extends Omit<MenuItemProps, 'children'>, Omit<OptionType<V>, 'children'> {
     /**
@@ -35,6 +36,12 @@ export interface OptionsBaseProps<O extends MenuOptionType<V>, V extends Id = Id
     searchValue?: string
     selectedValue?: V | V[]
     onToggleSelected?(value: V, e: KeyboardEvent | React.MouseEvent<HTMLDivElement>): void
+
+    /**
+     * @private
+     * 内部使用，传入的选项是否已经经过筛选
+     */
+    _optionsAlreadyFilter?: boolean
 }
 
 export const OptionsBase = memo(<O extends MenuOptionType<V>, V extends Id = Id>({
@@ -51,36 +58,12 @@ export const OptionsBase = memo(<O extends MenuOptionType<V>, V extends Id = Id>
     searchValue,
     selectedValue,
     onToggleSelected,
+    _optionsAlreadyFilter,
     ...props
 }: OptionsBaseProps<O, V>) => {
     const {open, setOpen} = usePopperContext()
 
-    const filteredOptions: (O | ReactNode)[] = useMemo(() => {
-        const trimmedSearchValue = searchValue?.trim()
-        if (!trimmedSearchValue) {
-            return options || Children.toArray(children)
-        }
-        const splitedValue = trimmedSearchValue.split(' ')
-        const filterFn = (opt: O, index: number) => {
-            let ret = false
-            if (filterPredicate) {
-                ret = filterPredicate(trimmedSearchValue!, opt, index)
-            } else {
-                const searchToken = typeof opt[labelKey] === 'string' ? opt[labelKey] : opt[searchTokenKey]
-                if (typeof searchToken === 'string') {
-                    ret = splitedValue.some(k => {
-                        return k && searchToken.toLowerCase().includes(k.toLowerCase())
-                    })
-                }
-            }
-            return ret
-        }
-        return options
-            ? options.filter(filterFn)
-            : Children.toArray(children).filter((c, index) => {
-                return isValidElement(c) && filterFn(c.props as O, index)
-            })
-    }, [searchValue, filterPredicate, options, children, labelKey, searchTokenKey])
+    const filteredOptions = useFilterOptions({searchValue, filterPredicate, options, children, labelKey, searchTokenKey, _optionsAlreadyFilter})
 
     /**
      * ------------------------------------------------------------------

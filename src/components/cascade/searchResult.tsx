@@ -62,9 +62,9 @@ export const SearchResult = memo(<O extends OptionType<V>, V extends Id = Id>({
         if (!searchValue) {
             return flattedOptions
         }
-        const splited = searchValue.split(' ')
+        const split = searchValue.split(' ')
         return flattedOptions.filter(({searchToken}) => {
-            return splited.some(k => {
+            return split.some(k => {
                 return k && searchToken.toLowerCase().includes(k.toLowerCase())
             })
         })

@@ -1,4 +1,4 @@
-import React, {Children, ReactElement, ReactNode, Ref, SetStateAction, isValidElement, memo, useCallback, useMemo, useRef, useState} from 'react'
+import React, {ReactElement, ReactNode, Ref, SetStateAction, isValidElement, memo, useCallback, useMemo, useRef, useState} from 'react'
 import {Popper, PopperProps, PopperRef} from '../popper'
 import {MenuOptionType, OptionsBase} from '../optionsBase'
 import {Input, InputProps} from '../input'
@@ -7,6 +7,7 @@ import {classes} from './autocomplete.style'
 import {popperStyle} from '../popper/popper.style'
 import {Id} from '../../types'
 import {MenuItem} from '../menuItem'
+import {useFilterOptions} from '../optionsBase/filterOptions'
 
 export interface AutocompleteProps<O extends MenuOptionType> extends Omit<InputProps, 'onSelect'> {
     children?: ReactNode
@@ -46,7 +47,7 @@ export const Autocomplete = memo(<O extends MenuOptionType>({
         !props.disabled && !props.readOnly && _setFocused(focused)
     }
 
-    const [innerValue, setInnerValue] = useControlled(defaultValue, value)
+    const [innerValue, setInnerValue] = useControlled<any>(defaultValue, value)
 
     const changedBySelect = useRef(false)
 
@@ -78,7 +79,12 @@ export const Autocomplete = memo(<O extends MenuOptionType>({
      * 合并最终选项
      */
 
-    const actualOptions = innerOptions || options || Children.map(children, c => isValidElement(c) ? c.props : c) as O[] || void 0
+    const actualOptions = useFilterOptions({
+        searchValue: innerValue.current,
+        options: innerOptions || options,
+        children,
+        labelKey
+    }).map(opt => isValidElement(opt) ? opt.props : opt) as O[]
 
     const optionsMap = useMemo(() => {
         const map = new Map<Id, O>()
@@ -93,7 +99,7 @@ export const Autocomplete = memo(<O extends MenuOptionType>({
 
     const [open, _setOpen] = useDerivedState(() => {
         return focused && !!optionsMap.size
-    }, [focused, optionsMap.size])
+    }, [focused, optionsMap])
 
     const setOpen = (open: boolean) => {
         if (!props.disabled && !props.readOnly && (!open || optionsMap.size)) {
@@ -126,11 +132,10 @@ export const Autocomplete = memo(<O extends MenuOptionType>({
             loading: innerLoading.current,
             value: innerValue.current,
             onChange: changeHandler,
-            onInput: () => setOpen(true),
-            onClick: () => setOpen(true),
             onFocus: () => setFocused(true),
             onBlur: () => setFocused(false)
-        })
+        }
+    )
 
     return (
         <Popper
@@ -139,6 +144,7 @@ export const Autocomplete = memo(<O extends MenuOptionType>({
                     placement: 'bottom',
                     variant: 'collapse',
                     trigger: false,
+                    animation: false,
                     content: (
                         <OptionsBase
                             onToggleSelected={optionSelectHandler}
@@ -146,6 +152,8 @@ export const Autocomplete = memo(<O extends MenuOptionType>({
                             options={actualOptions}
                             labelKey={labelKey}
                             primaryKey={primaryKey}
+                            searchValue={innerValue.current}
+                            _optionsAlreadyFilter
                         >
                             {children}
                         </OptionsBase>

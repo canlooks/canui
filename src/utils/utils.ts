@@ -457,11 +457,12 @@ export function mergeComponentProps(...props: any[]) {
                         target.style = {...source.style, ...target.style}
                         continue
                     default:
-                        const v = source[p]
-                        if (typeof v === 'function') {
+                        const sourceFn = source[p]
+                        if (typeof sourceFn === 'function') {
+                            const targetFn = target[p]
                             target[p] = (...args: any[]) => {
-                                target[p](...args)
-                                v(...args)
+                                targetFn(...args)
+                                sourceFn(...args)
                             }
                             continue
                         }
