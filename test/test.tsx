@@ -1,6 +1,6 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable, ContextMenu, useAppContext, Select, TreeSelect, Typography, Accordion, useDraggable, OptionsBase, useFlatSelection, usePopperContext, useFormContext, Autocomplete} from '../src'
+import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable, ContextMenu, useAppContext, Select, TreeSelect, Typography, Accordion, useDraggable, OptionsBase, useFlatSelection, usePopperContext, useFormContext, Autocomplete, Input} from '../src'
 import React, {cloneElement, ReactNode, StrictMode, useDeferredValue, useEffect, useMemo, useState} from 'react'
 import {RC, useReactive} from '@canlooks/reactive/react'
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
@@ -14,6 +14,9 @@ const Root = RC(() => {
                     {
                         title: '状态',
                         field: 'state',
+                        form: {
+                            children: <Input/>
+                        },
                         filterInline: {
                             options: [
                                 {value: '1', label: '选项1'},

@@ -559,16 +559,16 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
                         _noRenderFormTag
                     />
                 </div>
-
-                {(creatable || updatable) &&
-                    <CurdDialog
-                        {...dialogProps}
-                        ref={curdDialogRef}
-                        onFinish={finishHandler}
-                        curdProps={props}
-                    />
-                }
             </Form>
+
+            {(creatable || updatable) &&
+                <CurdDialog
+                    {...dialogProps}
+                    ref={curdDialogRef}
+                    onFinish={finishHandler}
+                    curdProps={props}
+                />
+            }
         </div>
     )
 }) as any as {
