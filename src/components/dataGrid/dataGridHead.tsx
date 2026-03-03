@@ -131,7 +131,8 @@ export const DataGridHead = memo(<R extends RowType, V extends Id = Id>({
                     const sortable = sorter && !children?.length
                     const isOrderingColumn = orderColumn === _key
                     const currentOrderType = isOrderingColumn ? orderType : 'descend'
-                    const isFilteredColumn = !isUnset(formValue?.[_key!])
+                    const filteredValue = formValue?.[_key!]
+                    const isFilteredColumn = !isUnset(filteredValue) && !(Array.isArray(filteredValue) && !filteredValue.length)
 
                     const filterButton = (
                         <Button

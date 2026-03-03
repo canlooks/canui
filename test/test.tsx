@@ -9,11 +9,19 @@ import {Id} from '../src/types'
 const Root = RC(() => {
     return (
         <>
-            <Autocomplete
-                options={[
-                    {value: '1', label: '选项1'},
-                    {value: '2', label: '选项2'},
-                    {value: '3', label: '选项3'},
+            <Curd
+                columns={[
+                    {
+                        title: '状态',
+                        field: 'state',
+                        filterInline: {
+                            options: [
+                                {value: '1', label: '选项1'},
+                                {value: '2', label: '选项2'},
+                                {value: '3', label: '选项3'},
+                            ]
+                        }
+                    }
                 ]}
             />
         </>

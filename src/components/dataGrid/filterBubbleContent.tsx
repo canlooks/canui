@@ -4,7 +4,7 @@ import {useFlatSelection} from '../selectionContext'
 import {Flex} from '../flex'
 import {Button} from '../button'
 import {usePopperContext} from '../popper'
-import {memo, useDeferredValue, useEffect, useState} from 'react'
+import {memo, useDeferredValue, useEffect, useRef, useState} from 'react'
 import {FormItem, FormItemChildren, useFormContext} from '../form'
 import {filterOptionsStyle} from './filterBubbleContent.style'
 import {Input} from '../input'
@@ -25,6 +25,8 @@ export interface FilterOptionsProps extends FilterSharedProps, OptionsBaseProps<
 
 export interface FilterControlProps extends FilterSharedProps {
     control: FormItemChildren
+    /** 关闭弹框时触发筛选，默认为`false` */
+    triggerFilterOnClose?: boolean
 }
 
 export const FilterBubbleContent = memo(({
@@ -38,10 +40,19 @@ export const FilterBubbleContent = memo(({
 
     const {open, setOpen} = usePopperContext()
 
+    const hasChanged = useRef(false)
+
     useEffect(() => {
-        if (!open) {
-            // 关闭弹框触发筛选
+        if (open) {
+            return
+        }
+        // 关闭弹框时，如果已经onChange，或使用control自定义渲染+triggerFilterOnClose，则触发筛选
+        if (
+            hasChanged.current
+            || ('control' in columnFilterProps && columnFilterProps.triggerFilterOnClose)
+        ) {
             formRef!.current!.submit().then()
+            hasChanged.current = false
         }
     }, [open])
 
@@ -53,7 +64,8 @@ export const FilterBubbleContent = memo(({
                     : <FilterOptions
                         {...columnFilterProps}
                         onChange={() => {
-                            !columnFilterProps.multiple && setOpen(false)
+                            hasChanged.current = true
+                            columnFilterProps.multiple === false && setOpen(false)
                         }}
                     />
                 }
