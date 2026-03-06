@@ -1,17 +1,28 @@
 import {Ref, ReactNode, ElementType, ComponentProps} from 'react'
 import {Id, Obj} from '../types'
 
+let randomIdAlphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-'
+
 /**
- * 获取UUID
+ * 获取随机ID
  */
-export function getRandomId() {
+export function getRandomId(length = 21) {
     if (typeof crypto.randomUUID === 'function') {
         return crypto.randomUUID()
     }
-    // polyfill for uuid v4
-    return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, c =>
-        (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
-    )
+    const {length: poolLength} = randomIdAlphabet
+    const values = crypto.getRandomValues(new Uint32Array(length))
+    const maxAllowed = Math.floor(0xffffffff / poolLength) * poolLength
+
+    let id = ''
+    for (let i = 0; i < length; i++) {
+        let value = values[i]
+        while (value >= maxAllowed) {
+            value = crypto.getRandomValues(new Uint32Array(1))[0]
+        }
+        id += randomIdAlphabet[value % poolLength]
+    }
+    return id
 }
 
 /**
