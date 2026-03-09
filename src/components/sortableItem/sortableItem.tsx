@@ -3,13 +3,12 @@ import {useSortable} from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
 import {cloneRef, clsx, useSync} from '../../utils'
 import {Arguments} from '@dnd-kit/sortable/dist/hooks/useSortable'
-import {OverridableComponent, OverridableProps} from '../../types'
+import {Id, OverridableComponent, OverridableProps} from '../../types'
 import {Global} from '@emotion/react'
-import {globalGrabbingStyle} from '../tree/treeDnd.style'
-import {classes, style} from './sortableItem.style'
+import {classes, globalGrabbingStyle, style} from './sortableItem.style'
 
 export type SortableItemOwnProps = {
-    id: string | number
+    id: Id
     disabled?: boolean
     sortableArguments?: Arguments
 }
@@ -70,6 +69,7 @@ export const SortableItem = (
                     }}
                     onTouchStart={disabled ? void 0 : onTouchStart}
                     data-dragging={isDragging}
+                    data-draggable={!disabled}
                 />
                 {isDragging && <Global styles={globalGrabbingStyle}/>}
             </>

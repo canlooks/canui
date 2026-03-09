@@ -4,10 +4,12 @@ import {defineInnerClasses} from '../../utils'
 export const classes = defineInnerClasses('sortable-item')
 
 export const style = css`
-    cursor: grab;
-    
-    &:active {
-        cursor: grabbing;
+    &[data-draggable=true] {
+        cursor: grab;
+
+        &:active {
+            cursor: grabbing;
+        }
     }
 `
 

@@ -9,18 +9,18 @@ export function LineIndicator({
     value,
     position,
     getActiveTab,
-    onTransitionEnd
 }: {
     value?: Id
     position: 'top' | 'bottom' | 'left' | 'right'
     getActiveTab(): HTMLDivElement | undefined
-    onTransitionEnd(): void
 }) {
     const context = useTabsContext()
 
     const [color, setColor] = useState<string>(context.color!)
 
     const [boundingRect, setBoundingRect] = useState<CSSProperties>()
+
+    const {setAnimating} = useTabsContext()
 
     useEffect(() => {
         const activeTab = getActiveTab()
@@ -55,7 +55,7 @@ export function LineIndicator({
     return (
         <div
             className={classes.indicator}
-            onTransitionEnd={onTransitionEnd}
+            onTransitionEnd={() => setAnimating(false)}
             style={{
                 ...boundingRect,
                 backgroundColor: colorTransfer(color, theme)

@@ -5,6 +5,7 @@ import {defaultMonospaceFontFamily, Theme} from '../theme'
 export const classes = defineInnerClasses('app')
 
 export const appStyleCallback = (theme: Theme) => css`
+    @layer reset, override;
     @layer reset {
         line-height: ${20 / 14};
         font-size: ${theme.fontSize}px;

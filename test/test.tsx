@@ -1,33 +1,37 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable, ContextMenu, useAppContext, Select, TreeSelect, Typography, Accordion, useDraggable, OptionsBase, useFlatSelection, usePopperContext, useFormContext, Autocomplete, Input} from '../src'
+import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable, ContextMenu, useAppContext, Select, TreeSelect, Typography, Accordion, useDraggable, OptionsBase, useFlatSelection, usePopperContext, useFormContext, Autocomplete, Input, Tabs, Flex, TouchRipple} from '../src'
 import React, {cloneElement, ReactNode, StrictMode, useDeferredValue, useEffect, useMemo, useState} from 'react'
 import {RC, useReactive} from '@canlooks/reactive/react'
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import {Id} from '../src/types'
 
 const Root = RC(() => {
+    const state = useReactive({
+        activeTab: '1' as Id,
+        tabs: [
+            {
+                prefix: 'A', value: '1', label: '标签1', suffix: 'suffix', closable: true, onClose: () => {
+                    state.tabs.splice(0, 1)
+                    state.tabs = [...state.tabs]
+                }
+            },
+            {value: '2', label: '标签2'},
+            {value: '3', label: '标签3'}
+        ]
+    })
+
     return (
-        <>
-            <Curd
-                columns={[
-                    {
-                        title: '状态',
-                        field: 'state',
-                        form: {
-                            children: <Input/>
-                        },
-                        filterInline: {
-                            options: [
-                                {value: '1', label: '选项1'},
-                                {value: '2', label: '选项2'},
-                                {value: '3', label: '选项3'},
-                            ]
-                        }
-                    }
-                ]}
+        <Flex direction="column" gap={24}>
+            <Tabs
+                variant="card"
+                tabs={state.tabs}
+                value={state.activeTab}
+                onChange={activeTab => state.activeTab = activeTab}
+                sortable
             />
-        </>
+            <Button onClick={() => state.tabs = [...state.tabs, {value: Math.random().toString(), label: '标签'}]}>Button</Button>
+        </Flex>
     )
 })
 

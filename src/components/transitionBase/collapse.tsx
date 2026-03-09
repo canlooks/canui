@@ -58,10 +58,21 @@ const Sweeping: <T extends HTMLElement = HTMLElement, C extends ElementType = 'd
 
     const [isEntered, setIsEntered] = useState(_in && !appear)
 
+    const styleProperty = orientation === 'vertical' ? 'height' : 'width'
+
     const expand = () => {
-        requestAnimationFrame(() => {
-            innerRef.current && setSize(innerRef.current[orientation === 'vertical' ? 'scrollHeight' : 'scrollWidth'])
-        })
+        const el = innerRef.current
+        if (el) {
+            el.style.transition = 'none'
+            el.style[styleProperty] = 'auto'
+            const newSize = el[orientation === 'vertical' ? 'offsetHeight' : 'offsetWidth']
+            el.style[styleProperty] = size + 'px'
+            el.style.transition = ''
+
+            requestAnimationFrame(() => {
+                setSize(newSize)
+            })
+        }
     }
 
     const collapse = () => {
@@ -95,8 +106,8 @@ const Sweeping: <T extends HTMLElement = HTMLElement, C extends ElementType = 'd
             in={_in}
             ref={cloneRef(ref, innerRef)}
             style={{
-                [orientation === 'vertical' ? 'height' : 'width']: isEntered ? 'auto' : size,
-                ...!isEntered ? {overflow: 'hidden'} : {},
+                [styleProperty]: isEntered ? 'auto' : size,
+                ...!isEntered && {overflow: 'hidden'},
                 ...props.style
             }}
             onEntered={() => setIsEntered(true)}

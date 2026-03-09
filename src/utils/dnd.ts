@@ -24,7 +24,7 @@ export function useDndSensors() {
  * @param prevState 传入需要排序的数组
  * @param primaryKey 索引用的主键，默认为`id`
  */
-export function onDndDragEnd<S extends Obj>(e: DragEndEvent, prevState: S[], primaryKey = 'id'): S[] | undefined {
+export function onDndDragEnd<S extends Obj>(e: DragEndEvent, prevState: S[], primaryKey: keyof S = 'id'): S[] | undefined {
     const {active, over} = e
     if (!over || active.id === over.id) {
         // 并未产生顺序的改变，返回undefined
