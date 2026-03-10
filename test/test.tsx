@@ -18,19 +18,16 @@ const Root = RC(() => {
             },
             {value: '2', label: '标签2'},
             {value: '3', label: '标签3'}
-        ]
+        ],
+        in: true
     })
 
     return (
         <Flex direction="column" gap={24}>
-            <Tabs
-                variant="card"
-                tabs={state.tabs}
-                value={state.activeTab}
-                onChange={activeTab => state.activeTab = activeTab}
-                sortable
-            />
-            <Button onClick={() => state.tabs = [...state.tabs, {value: Math.random().toString(), label: '标签'}]}>Button</Button>
+            <Collapse in={state.in}>
+                <div style={{height: 400, background: 'pink'}}/>
+            </Collapse>
+            <Button onClick={() => state.in = !state.in}>Button</Button>
         </Flex>
     )
 })
