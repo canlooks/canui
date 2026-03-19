@@ -7,28 +7,10 @@ import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import {Id} from '../src/types'
 
 const Root = RC(() => {
-    const state = useReactive({
-        activeTab: '1' as Id,
-        tabs: [
-            {
-                prefix: 'A', value: '1', label: '标签1', suffix: 'suffix', closable: true, onClose: () => {
-                    state.tabs.splice(0, 1)
-                    state.tabs = [...state.tabs]
-                }
-            },
-            {value: '2', label: '标签2'},
-            {value: '3', label: '标签3'}
-        ],
-        in: true
-    })
-
     return (
-        <Flex direction="column" gap={24}>
-            <Collapse in={state.in}>
-                <div style={{height: 400, background: 'pink'}}/>
-            </Collapse>
-            <Button onClick={() => state.in = !state.in}>Button</Button>
-        </Flex>
+        <Dialog open>
+
+        </Dialog>
     )
 })
 

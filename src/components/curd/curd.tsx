@@ -57,7 +57,7 @@ export type CurdRef<R extends RowType = RowType, F extends FormValue = FormValue
 }
 
 export interface CurdBaseProps<R extends RowType = RowType, F extends FormValue = FormValue>
-    extends Omit<DataGridBaseProps<R>, 'ref' | 'columns' | 'filterPredicate'> {
+    extends Omit<DataGridBaseProps<R>, 'ref' | 'columns' | 'filterPredicate' | 'onLoad'> {
     ref?: Ref<CurdRef<R, F>>
 
     /** 默认属性会传递给DataGrid组件，外层包裹元素的属性使用wrapperProps */
@@ -74,6 +74,7 @@ export interface CurdBaseProps<R extends RowType = RowType, F extends FormValue 
             type: OrderType;
         }): LoadRowsReturn<R> | Promise<LoadRowsReturn<R>>
     }['bivarianceHack']
+    onLoad?(rowsReturn: LoadRowsReturn<R>): void
 
     columns?: (CurdColumn<R> | symbol)[]
 
@@ -129,10 +130,10 @@ export interface CurdBaseProps<R extends RowType = RowType, F extends FormValue 
     formRef?: Ref<FormRef<F>>
 }
 
-interface CurdSingleProps<R extends RowType, F extends FormValue = FormValue, V extends Id = Id> extends Omit<DataGridSingleProps<R, V>, 'ref' | 'columns'>, CurdBaseProps<R, F> {
+interface CurdSingleProps<R extends RowType, F extends FormValue = FormValue, V extends Id = Id> extends Omit<DataGridSingleProps<R, V>, 'ref' | 'columns' | 'onLoad'>, CurdBaseProps<R, F> {
 }
 
-interface CurdMultipleProps<R extends RowType, F extends FormValue = FormValue, V extends Id = Id> extends Omit<DataGridMultipleProps<R, V>, 'ref' | 'columns'>, CurdBaseProps<R, F> {
+interface CurdMultipleProps<R extends RowType, F extends FormValue = FormValue, V extends Id = Id> extends Omit<DataGridMultipleProps<R, V>, 'ref' | 'columns' | 'onLoad'>, CurdBaseProps<R, F> {
 }
 
 export type CurdProps<R extends RowType, F extends FormValue = FormValue, V extends Id = Id> = CurdSingleProps<R, F, V> | CurdMultipleProps<R, F, V>
@@ -143,6 +144,7 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
         wrapperProps,
         variant = 'standard',
         loadRows,
+        onLoad,
         columns,
 
         toolbarLeft,
@@ -399,6 +401,13 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
         onReload?.()
         innerLoadRows().then()
     }
+
+    useEffect(() => {
+        onLoad?.({
+            rows: innerRows.current!,
+            total: innerTotal.current
+        })
+    }, [innerRows.current, innerTotal.current])
 
     /**
      * -------------------------------------------------------------
