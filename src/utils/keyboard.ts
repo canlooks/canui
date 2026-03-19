@@ -126,7 +126,7 @@ export function useEscapeClosable({escapeClosable, close}: {
         if (escapeClosable) {
             const keydown = (e: KeyboardEvent) => {
                 if (e.key === 'Escape') {
-                    const {nextSibling} = overlayRef.current!
+                    const nextSibling = overlayRef.current?.nextSibling
                     if (!nextSibling || (nextSibling as HTMLElement).dataset.open !== 'true') {
                         // 后面无元素，或后一个元素已关闭，才能关闭当前
                         e.preventDefault()
