@@ -38,12 +38,11 @@
   },
   "scripts": {
     "clean": "npx shx rm -rf dist documentation/bootstrap.mjs documentation/vite.config.mjs",
-    "build:core": "tsc -m esnext --outDir dist/esm & tsc -m commonjs --outDir dist/cjs",
-    "build:documentation": "vite build -c documentation/vite.config.mts && tsc -p documentation/tsconfig.bootstrap.json",
-    "rebuild": "npm run clean && npm run build:core",
+    "build": "tsc -m esnext --outDir dist/esm & tsc -m commonjs --outDir dist/cjs",
+    "build:alias": "tsc-alias --outDir dist/esm",
+    "rebuild": "npm run clean && npm run build && npm run build:alias",
     "dev": "vite -c test/vite.config.mts",
     "dev:ssr": "next dev test",
-    "dev:documentation": "vite -c documentation/vite.config.mts --host",
     "test:unit": "npx ts-node test/unit.ts"
   },
   "dependencies": {
@@ -79,6 +78,7 @@
     "react-markdown": "^10.1.0",
     "react-syntax-highlighter": "^16.1.1",
     "remark-gfm": "^4.0.1",
+    "tsc-alias": "^1.8.16",
     "typescript": "^5.9.3",
     "vite": "^7.3.1"
   }
