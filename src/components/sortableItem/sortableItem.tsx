@@ -11,6 +11,7 @@ export type SortableItemOwnProps = {
     id: Id
     disabled?: boolean
     sortableArguments?: Arguments
+    noStyle?: boolean
 }
 
 export type SortableItemProps<C extends ElementType = 'div'> = OverridableProps<SortableItemOwnProps, C>
@@ -21,6 +22,7 @@ export const SortableItem = (
         id,
         disabled,
         sortableArguments,
+        noStyle,
         ...props
     }: SortableItemProps) => {
         const {attributes, isDragging, listeners, setNodeRef, transform, transition} = useSortable({
@@ -68,10 +70,11 @@ export const SortableItem = (
                         ...props.style
                     }}
                     onTouchStart={disabled ? void 0 : onTouchStart}
+                    data-no-style={noStyle}
                     data-dragging={isDragging}
                     data-draggable={!disabled}
                 />
-                {isDragging && <Global styles={globalGrabbingStyle}/>}
+                {!noStyle && isDragging && <Global styles={globalGrabbingStyle}/>}
             </>
         )
     }

@@ -31,8 +31,8 @@ export const style = defineCss(({spacing, text}) => css`
             }
 
             .${classes.item} {
-                cursor: move;
-
+                    cursor: pointer;
+                
                 &[data-dragging=true] {
                     position: relative;
                     z-index: 1;

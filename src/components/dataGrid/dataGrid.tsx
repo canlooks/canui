@@ -21,6 +21,8 @@ export type RowType = Obj
 export interface ColumnType<R extends RowType = RowType> extends Omit<ComponentProps<'td'>, 'key' | 'ref' | 'title' | 'children'>,
     Omit<ComponentProps<'th'>, 'key' | 'ref' | 'title' | 'children'> {
     title?: ReactNode
+    /** 当`title`非字符串时，可指定该属性，用于渲染在 “列设置” 中 */
+    titleText?: string
     /** 若不指定key，默认使用{@link field}作为key */
     key?: string | number
     children?: ColumnType<R>[]
@@ -36,7 +38,7 @@ export interface ColumnType<R extends RowType = RowType> extends Omit<ComponentP
      */
     sorter?: boolean | ((a: R, b: R) => number)
     /**
-     * @enum true 不会弹出气泡框，需配合{@link DataGridBaseProps.onFilterClick}实现筛选逻辑
+     * @enum true 不会弹出气泡框，需配合{@link DataGridBaseProp['onFilterClick']}实现筛选逻辑
      * @enum FilterOptionsProps 传递至`OptionsBase`组件
      * @example FilterOptionsProps
      * {

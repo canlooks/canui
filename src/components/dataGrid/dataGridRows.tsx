@@ -98,7 +98,7 @@ export const DataGridRows = memo(<R extends RowType, V extends Id = Id>({
                         // 排除无需加入dom节点的属性
                         // width属性只需加入thead列中，普通列需排除
                         // rowSpan与colSpan需排除
-                        title, key, children, field, render, sorter, filter,
+                        title, titleText, key, children, field, render, sorter, filter,
                         width,
                         _key, _negativeRowSpan, rowSpan, colSpan,
                         ..._colProps

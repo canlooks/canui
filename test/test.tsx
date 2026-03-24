@@ -8,9 +8,20 @@ import {Id} from '../src/types'
 
 const Root = RC(() => {
     return (
-        <Dialog open>
-
-        </Dialog>
+        <Curd
+            columns={[
+                {
+                    field: 'v',
+                    title: (
+                        <Flex>
+                            <div>当前值</div>
+                            <span>?</span>
+                        </Flex>
+                    ),
+                    titleText: '当前值'
+                }
+            ]}
+        />
     )
 })
 

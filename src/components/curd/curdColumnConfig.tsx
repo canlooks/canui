@@ -14,7 +14,7 @@ import {Icon} from '../icon'
 import {faGear} from '@fortawesome/free-solid-svg-icons/faGear'
 import {Id} from '../../types'
 
-type CurdColumnConfigProps<R extends RowType> = {
+export type CurdColumnConfigProps<R extends RowType> = {
     columns?: CurdColumn<R>[]
     innerVisible: Id[]
     setInnerVisible: Dispatch<SetStateAction<Id[]>>
@@ -25,7 +25,7 @@ export const CurdColumnConfig = memo(<R extends RowType>({
     columns,
     innerVisible,
     setInnerVisible,
-    setInnerOrder,
+    setInnerOrder
 }: CurdColumnConfigProps<R>) => {
     columns ||= []
 
@@ -40,8 +40,8 @@ export const CurdColumnConfig = memo(<R extends RowType>({
         return new Set(innerVisible)
     }, [innerVisible])
 
-    const toggleVisible = (key: Id, checked: boolean) => {
-        setInnerVisible(o => checked
+    const toggleVisible = (key: Id | undefined, checked: boolean) => {
+        !isUnset(key) && setInnerVisible(o => checked
             ? [...o, key]
             : o.filter(k => k !== key)
         )
@@ -59,22 +59,32 @@ export const CurdColumnConfig = memo(<R extends RowType>({
                                 <div className={classes.titleText}>列设置</div>
                                 <div className={classes.description}>拖拽调整顺序</div>
                             </div>
-                            {columns?.map((col, i) =>
-                                <SortableItem
-                                    id={col._key ?? i}
-                                    component={MenuItem}
-                                    key={col._key ?? i}
-                                    className={classes.item}
-                                    prefix={
-                                        <Checkbox
-                                            className={classes.checkbox}
-                                            checked={!isUnset(col._key) && visibleSet.has(col._key)}
-                                            onChange={e => !isUnset(col._key) && toggleVisible(col._key, e.target.checked)}
-                                        />
-                                    }
-                                    label={col.title}
-                                />
-                            )}
+                            {columns?.map((col, i) => {
+                                const id = col._key
+                                const checked = !isUnset(id) && visibleSet.has(id)
+
+                                return (
+                                    <SortableItem
+                                        id={id ?? i}
+                                        component={MenuItem}
+                                        key={id ?? i}
+                                        className={classes.item}
+                                        prefix={
+                                            <Checkbox
+                                                className={classes.checkbox}
+                                                checked={checked}
+                                                onChange={e => {
+                                                    e.stopPropagation()
+                                                    toggleVisible(id, e.target.checked)
+                                                }}
+                                            />
+                                        }
+                                        onClick={() => toggleVisible(id, !checked)}
+                                        label={col.titleText ?? col.title}
+                                        noStyle
+                                    />
+                                )
+                            })}
                         </div>
                     </SortableContext>
                 </DndContext>

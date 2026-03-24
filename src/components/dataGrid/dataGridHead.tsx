@@ -124,7 +124,7 @@ export const DataGridHead = memo(<R extends RowType, V extends Id = Id>({
                     }
                     const {
                         // 排除无需加入dom节点的属性
-                        title, key, children, field, render, sorter, filter,
+                        title, titleText, key, children, field, render, sorter, filter,
                         _key, _negativeRowSpan = 0,
                         ...colProps
                     } = col
