@@ -47,8 +47,11 @@ type EachRowType<R extends RowType, T> = T | ((row: R) => T)
 export type CurdRef<R extends RowType = RowType, F extends FormValue = FormValue> = {
     reload(): Promise<void>
     setPage(page: number): void
+    getPage(): number
     setPageSize(size: number): void
+    getPageSize(): number
     setFilterValue(filterValue: FormValue): void
+    getFilterValue(): FormValue
     resetFilter(): void
     openCreateDialog(defaultValue?: F): Promise<F> | undefined
     openUpdateDialog(row: R, defaultValue?: F): Promise<F> | undefined
@@ -72,7 +75,7 @@ export interface CurdBaseProps<R extends RowType = RowType, F extends FormValue 
         }, filterValue?: FormValue, sorter?: {
             field: FieldPath;
             type: OrderType;
-        }): LoadRowsReturn<R> | Promise<LoadRowsReturn<R>>
+        }): LoadRowsReturn<R> | null | Promise<LoadRowsReturn<R> | null>
     }['bivarianceHack']
     onLoad?(rowsReturn: LoadRowsReturn<R>): void
 
@@ -201,13 +204,16 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
         setPage(page) {
             setInnerPage(page)
         },
+        getPage: () => innerPage.current,
         setPageSize(size) {
             setInnerPageSize(size)
         },
+        getPageSize: () => innerPageSize.current,
         setFilterValue(filterValue) {
             innerFilterRef.current!.setFormValue(filterValue)
             innerLoadRows().then()
         },
+        getFilterValue: () => innerFilterRef.current!.getFormValue(),
         resetFilter() {
             innerFilterRef.current!.resetForm()
             innerLoadRows().then()
@@ -369,7 +375,13 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
 
     const [innerTotal, setInnerTotal] = useDerivedState(props.paginationProps?.total || 0)
 
+    const suppressReload = useRef(false)
+
     const [innerLoading, innerLoadRows] = useLoading(async () => {
+        if (suppressReload.current) {
+            suppressReload.current = false
+            return
+        }
         if (loadRows) {
             const res = await loadRows(
                 props.paginatable !== false
@@ -387,8 +399,15 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
                     : void 0
             )
             if (typeof res === 'object' && res !== null) {
-                setInnerRows(res.rows)
-                setInnerTotal(res.total)
+                const {rows, total = 0} = res
+                setInnerRows(rows)
+                setInnerTotal(total)
+
+                const maxPage = Math.max(Math.ceil(total / innerPageSize.current), 1)
+                if (maxPage < innerPage.current) {
+                    suppressReload.current = true
+                    setInnerPage(maxPage)
+                }
             }
         }
     }, props.loading)
