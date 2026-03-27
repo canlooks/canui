@@ -66,6 +66,7 @@ export interface ColumnType<R extends RowType = RowType> extends Omit<ComponentP
 
 // props与context共享的属性
 interface DataGridSharedProps<R extends RowType = RowType> extends SlotsAndProps<{
+    container: ComponentProps<'div'>
     tr: ComponentProps<'tr'>
 }> {
     rowProps?(row: R, index: number, rows: R[]): ComponentProps<'tr'>
@@ -364,10 +365,25 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
         return orderedRows?.slice((page! - 1) * pageSize!, page! * pageSize!)
     }, [orderedRows, _paginationProps.page, _paginationProps.pageSize, paginatable])
 
+    const {
+        container: Container = TableContainer
+    } = slots || {}
+
+    const {
+        container: containerProps
+    } = slotProps || {}
+
     const renderedContent = (
         <ColumnResizeContext columnResizable={columnResizable}>
             {({scrollerRef, tableRef}) =>
-                <TableContainer ref={scrollerRef} className={classes.container}>
+                <Container
+                    {
+                        ...mergeComponentProps(containerProps, {
+                            ref: scrollerRef,
+                            className: classes.container
+                        })
+                    }
+                >
                     <Table
                         size={size}
                         bordered={bordered}
@@ -425,7 +441,7 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
                     {!paginatedRows?.length && (
                         emptyPlaceholder ?? <Placeholder className={classes.empty}/>
                     )}
-                </TableContainer>
+                </Container>
             }
         </ColumnResizeContext>
     )

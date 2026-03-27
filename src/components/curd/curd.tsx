@@ -1,10 +1,10 @@
 import React, {ReactElement, ReactNode, Ref, memo, useCallback, useEffect, useMemo, useRef, useImperativeHandle} from 'react'
-import {DivProps, Id, Obj} from '../../types'
+import {DivProps, Id, Obj, Size} from '../../types'
 import {ColumnType, DataGrid, DataGridBaseProps, DataGridMultipleProps, DataGridSingleProps, OrderType, RowType} from '../dataGrid'
 import {Form, FormItemProps, FormProps, FormRef, FormValue} from '../form'
 import {CurdFilterable, CurdFilterableProps} from './curdFilterable'
 import {classes, style} from './curd.style'
-import {FieldPath, clsx, useControlled, useCurdColumns, useDerivedState, useLoading, useSync, mergeComponentProps, CONTROL_COLUMN_KEY, useStrictEffect} from '../../utils'
+import {FieldPath, clsx, useControlled, useCurdColumns, useDerivedState, useLoading, useSync, mergeComponentProps, CONTROL_COLUMN_KEY, useStrictEffect, cloneRef} from '../../utils'
 import {Button, ButtonProps} from '../button'
 import {Tooltip} from '../tooltip'
 import {CurdColumnConfig} from './curdColumnConfig'
@@ -94,6 +94,8 @@ export interface CurdBaseProps<R extends RowType = RowType, F extends FormValue 
         order?: Id[]
         onOrderChange?(order: Id[]): void
     }
+    defaultSize?: Size
+    onSizeChange?(size: Size): void
 
     filterableProps?: Omit<CurdFilterableProps, 'columns'>
     renderFilterable?(filterableProps: CurdFilterableProps): ReactNode
@@ -156,6 +158,8 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
         onReload,
         resizable = true,
         columnConfigurable = true,
+        defaultSize = 'medium',
+        onSizeChange,
 
         filterProps,
         initialFilterValue,
@@ -331,7 +335,7 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
      * 表格设置
      */
 
-    const [innerSize, setInnerSize] = useDerivedState(props.size || props.tableProps?.size || 'medium')
+    const [innerSize, setInnerSize] = useControlled(defaultSize, props.size || props.tableProps?.size, onSizeChange)
 
     const [innerPage, setInnerPage] = useControlled(
         props.paginationProps?.defaultPage ?? 1,
@@ -360,6 +364,8 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
      * 行数据
      */
 
+    const containerRef = useRef<HTMLDivElement>(null)
+
     const {setOptions} = useSelectionContext()
 
     const [innerRows, _setInnerRows] = useDerivedState(props.rows)
@@ -371,6 +377,7 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
     const setInnerRows = (data: R[]) => {
         setOptions?.(data)
         _setInnerRows(data)
+        containerRef.current!.scrollTop = 0
     }
 
     const [innerTotal, setInnerTotal] = useDerivedState(props.paginationProps?.total || 0)
@@ -557,12 +564,15 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
                 <div className={classes.card}>
                     <DataGrid
                         {...dataGridProps}
-                        columns={actualColumns}
+                        slotProps={{
+                            container: {ref: cloneRef(containerRef, dataGridProps?.slotProps?.container?.ref)}
+                        }}
                         tableProps={{
                             ...props.tableProps,
                             ...resizable && {size: innerSize.current}
                         }}
 
+                        columns={actualColumns}
                         loading={innerLoading.current}
                         rows={innerRows.current}
 
