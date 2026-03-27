@@ -1,38 +1,66 @@
-import {DragEndEvent, PointerSensor, useSensor, useSensors} from '@dnd-kit/core'
-import {arrayMove} from '@dnd-kit/sortable'
 import {Id, Obj} from '../types'
 import {NodeType, SortInfo} from '../components/tree'
 import {range} from './utils'
 import {BezierFunc, cubicBezier} from './bezier'
+import {Customizable, DragDropEvents, Sensors} from '@dnd-kit/abstract'
+import {PointerSensor} from '@dnd-kit/react'
+import {PointerActivationConstraints} from '@dnd-kit/dom'
 
 /**
- * 默认提供给@dnd-kit的sensors属性
+ * 默认提供给@dnd-kit<DragDropProvider/>的sensors属性
  */
-export function useDndSensors() {
-    return useSensors(
-        useSensor(PointerSensor, {
-            activationConstraint: {
-                distance: 5
+export const defaultSensors: Customizable<Sensors> = defaults => [
+    ...defaults,
+    PointerSensor.configure({
+        activationConstraints: [
+            new PointerActivationConstraints.Distance({value: 5})
+        ]
+    })
+]
+
+/**
+ * <DragDropProvider>组件通用的onDragEnd方法
+ * @param e 事件
+ * @param items 传入需要排序的数组
+ * @param primaryKey 索引用的主键，默认为`id`
+ * @return 返回新的数组，但如果顺序未改变，会得到null
+ */
+export function onDndDragEnd<T extends Obj>({operation}: Parameters<DragDropEvents<any, any, any>['dragend']>[0], items: T[], primaryKey: keyof T = 'id'): T[] | null {
+    const {source, target, canceled} = operation
+    if (!source || !target || canceled) {
+        return null
+    }
+    const sourceIndex = items.findIndex(item => item[primaryKey] === source.id)
+    const targetIndex = items.findIndex(item => item[primaryKey] === target.id)
+
+    if (sourceIndex === -1 || targetIndex === -1) {
+        if (typeof source.initialIndex === 'number' && typeof source.index === 'number') {
+            const from = source.initialIndex
+            const to = source.index
+            if (from === to || from < 0 || from >= items.length) {
+                return null
             }
-        })
-    )
+            return arrayMove(items, from, to)
+        }
+        return null
+    }
+
+    if (typeof source.index === 'number') {
+        if (source.index !== sourceIndex) {
+            return arrayMove(items, sourceIndex, source.index)
+        }
+    }
+
+    return arrayMove(items, sourceIndex, targetIndex)
 }
 
-/**
- * <DndContext>组件通用的onDragEnd方法
- * @param e 事件
- * @param prevState 传入需要排序的数组
- * @param primaryKey 索引用的主键，默认为`id`
- */
-export function onDndDragEnd<S extends Obj>(e: DragEndEvent, prevState: S[], primaryKey: keyof S = 'id'): S[] | undefined {
-    const {active, over} = e
-    if (!over || active.id === over.id) {
-        // 并未产生顺序的改变，返回undefined
-        return
+export function arrayMove<T>(array: T[], from: number, to: number) {
+    if (from === to) {
+        return array
     }
-    const oldIndex = prevState!.findIndex(v => v[primaryKey] === active.id)
-    const newIndex = prevState!.findIndex(v => v[primaryKey] === over.id)
-    return arrayMove(prevState!, oldIndex, newIndex)
+    const newArray = [...array]
+    newArray.splice(to, 0, newArray.splice(from, 1)[0])
+    return newArray
 }
 
 /**

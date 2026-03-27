@@ -1,14 +1,14 @@
 import {CSSProperties, Children, ReactElement, ReactNode, cloneElement, createContext, isValidElement, memo, useContext, useEffect, useMemo, useRef, useState, SetStateAction, Dispatch} from 'react'
 import {ColorPropsValue, DivProps, Id, Obj, Size} from '../../types'
 import {classes, useStyle} from './tabs.style'
-import {clsx, cloneRef, isUnset, useControlled, useDerivedState, useDndSensors, onDndDragEnd} from '../../utils'
+import {clsx, cloneRef, isUnset, useControlled, useDerivedState, defaultSensors, onDndDragEnd} from '../../utils'
 import {useTheme} from '../theme'
 import {Tab, TabProps} from './tab'
 import {TabsEllipsis} from './tabsEllipsis'
 import {LineIndicator} from './lineIndicator'
-import {DndContext, DragEndEvent} from '@dnd-kit/core'
-import {SortableContext} from '@dnd-kit/sortable'
 import {TransitionGroup} from 'react-transition-group'
+import {DragDropProvider} from '@dnd-kit/react'
+import {DragDropEvents} from '@dnd-kit/abstract'
 
 export type TabType = TabProps & Obj
 
@@ -45,7 +45,7 @@ export interface TabsProps<T extends TabType = TabType> extends TabsSharedProps,
      * @param e
      * @param tabs 仅{@link tabs}模式支持，使用children时，该参数为`undefined`
      */
-    onSort?(e: DragEndEvent, tabs?: T[]): void
+    onSort?(e: Parameters<DragDropEvents<any, any, any>['dragend']>[0], tabs?: T[]): void
     /** 触发change事件的事件，默认为`click` */
     changeEvent?: 'click' | 'pointerDown'
 }
@@ -222,16 +222,12 @@ export const Tabs = memo(<T extends TabType = TabType>({
      * 拖拽
      */
 
-    const tabKeys = tabs
-        ? tabs.map(tab => tab[primaryKey])
-        : Children.map(props.children as ReactElement<TabProps>, c => isValidElement(c) ? c.props.value : c)
-
-    const dragEndHandler = (e: DragEndEvent) => {
+    const dragEndHandler: DragDropEvents<any, any, any>['dragend'] = e => {
         if (props.onSort) {
             const newTabs = tabs
                 ? onDndDragEnd(e, tabs, primaryKey!)
                 : void 0
-            props.onSort(e, newTabs)
+            newTabs && props.onSort(e, newTabs)
         }
     }
 
@@ -258,32 +254,30 @@ export const Tabs = memo(<T extends TabType = TabType>({
                 onScroll={setShadow}
             >
                 <div className={classes.scrollWrap} style={{justifyContent}}>
-                    <DndContext sensors={useDndSensors()} onDragEnd={dragEndHandler}>
-                        <SortableContext items={tabKeys} disabled={!sortable}>
-                            <TabsContext
-                                value={
-                                    useMemo(() => ({
-                                        color, variant, closable, onClose, sortable,
-                                        animating: animating.current, setAnimating
-                                    }), [
-                                        color, variant, closable, onClose, sortable,
-                                        animating.current
-                                    ])
-                                }
-                            >
-                                <TransitionGroup component={null}>
-                                    {renderTabs()}
-                                </TransitionGroup>
-                                {variant === 'line' &&
-                                    <LineIndicator
-                                        value={innerValue.current}
-                                        position={position}
-                                        getActiveTab={getActiveTab}
-                                    />
-                                }
-                            </TabsContext>
-                        </SortableContext>
-                    </DndContext>
+                    <DragDropProvider sensors={defaultSensors} onDragEnd={dragEndHandler}>
+                        <TabsContext
+                            value={
+                                useMemo(() => ({
+                                    color, variant, closable, onClose, sortable,
+                                    animating: animating.current, setAnimating
+                                }), [
+                                    color, variant, closable, onClose, sortable,
+                                    animating.current
+                                ])
+                            }
+                        >
+                            <TransitionGroup component={null}>
+                                {renderTabs()}
+                            </TransitionGroup>
+                            {variant === 'line' &&
+                                <LineIndicator
+                                    value={innerValue.current}
+                                    position={position}
+                                    getActiveTab={getActiveTab}
+                                />
+                            }
+                        </TabsContext>
+                    </DragDropProvider>
                 </div>
             </div>
             <div className={classes.end} data-show={shadowEnd}>

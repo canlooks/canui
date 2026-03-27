@@ -1,16 +1,15 @@
-import React, {ElementType, useCallback, useEffect, useRef} from 'react'
-import {useSortable} from '@dnd-kit/sortable'
-import {CSS} from '@dnd-kit/utilities'
-import {cloneRef, clsx, useSync} from '../../utils'
-import {Arguments} from '@dnd-kit/sortable/dist/hooks/useSortable'
+import {ElementType} from 'react'
+import {cloneRef, clsx} from '../../utils'
 import {Id, OverridableComponent, OverridableProps} from '../../types'
 import {Global} from '@emotion/react'
 import {classes, globalGrabbingStyle, style} from './sortableItem.style'
+import {useSortable, UseSortableInput} from '@dnd-kit/react/sortable'
 
 export type SortableItemOwnProps = {
     id: Id
+    index: number
     disabled?: boolean
-    sortableArguments?: Arguments
+    sortableArguments?: UseSortableInput
     noStyle?: boolean
 }
 
@@ -20,60 +19,58 @@ export const SortableItem = (
     ({
         component: Component = 'div',
         id,
+        index,
         disabled,
         sortableArguments,
         noStyle,
         ...props
     }: SortableItemProps) => {
-        const {attributes, isDragging, listeners, setNodeRef, transform, transition} = useSortable({
+        const {ref, isDragging} = useSortable({
             ...sortableArguments,
-            disabled,
-            id
+            id,
+            index,
+            disabled
         })
 
-        const preventDefaultCallback = useRef<(e: TouchEvent) => void>(void 0)
+        // TODO 换成新的@dnd-kit后，是否还需要手动处理touchmove事件
 
-        const removeListener = () => {
-            if (preventDefaultCallback.current) {
-                removeEventListener('touchmove', preventDefaultCallback.current)
-                preventDefaultCallback.current = void 0
-            }
-            removeEventListener('pointerup', onPointerUp)
-        }
-
-        const onPointerUp = useCallback(removeListener, [])
-
-        const syncOnTouchStart = useSync(props.onTouchStart)
-
-        const onTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
-            syncOnTouchStart.current?.(e)
-            addEventListener('touchmove', preventDefaultCallback.current = e => {
-                e.cancelable && e.preventDefault()
-            }, {passive: false})
-            addEventListener('pointerup', onPointerUp)
-        }, [])
-
-        useEffect(() => removeListener, [])
+        // const preventDefaultCallback = useRef<(e: TouchEvent) => void>(void 0)
+        //
+        // const removeListener = () => {
+        //     if (preventDefaultCallback.current) {
+        //         removeEventListener('touchmove', preventDefaultCallback.current)
+        //         preventDefaultCallback.current = void 0
+        //     }
+        //     removeEventListener('pointerup', onPointerUp)
+        // }
+        //
+        // const onPointerUp = useCallback(removeListener, [])
+        //
+        // const syncOnTouchStart = useSync(props.onTouchStart)
+        //
+        // const onTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+        //     syncOnTouchStart.current?.(e)
+        //     addEventListener('touchmove', preventDefaultCallback.current = e => {
+        //         e.cancelable && e.preventDefault()
+        //     }, {passive: false})
+        //     addEventListener('pointerup', onPointerUp)
+        // }, [])
+        //
+        // useEffect(() => removeListener, [])
 
         return (
             <>
                 <Component
-                    {...attributes}
-                    {...listeners}
                     {...props}
-                    ref={cloneRef(setNodeRef, props.ref)}
+                    ref={cloneRef(ref, props.ref)}
                     css={style}
                     className={clsx(classes.root, props.className)}
-                    style={{
-                        transform: CSS.Transform.toString(transform),
-                        transition,
-                        ...props.style
-                    }}
-                    onTouchStart={disabled ? void 0 : onTouchStart}
+                    // onTouchStart={disabled ? void 0 : onTouchStart}
                     data-no-style={noStyle}
                     data-dragging={isDragging}
                     data-draggable={!disabled}
                 />
+                {/*TODO 测试新的@dnd-kit是否还需要手动处理grab样式*/}
                 {!noStyle && isDragging && <Global styles={globalGrabbingStyle}/>}
             </>
         )

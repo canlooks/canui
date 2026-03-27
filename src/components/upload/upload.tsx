@@ -1,20 +1,20 @@
 import React, {Dispatch, ReactElement, ReactNode, SetStateAction, memo, useImperativeHandle, useRef, ComponentProps} from 'react'
 import {DivProps} from '../../types'
 import {classes, style} from './upload.style'
-import {clsx, getRandomId, onDndDragEnd, useControlled, useDndSensors, mergeComponentProps} from '../../utils'
+import {clsx, getRandomId, onDndDragEnd, useControlled, mergeComponentProps, defaultSensors} from '../../utils'
 import {Button, ButtonProps} from '../button'
 import {FileItem} from './fileItem'
 import {TransitionGroup} from 'react-transition-group'
 import {Collapse, Grow} from '../transitionBase'
 import {ItemRef} from './itemStatus'
 import {ImageItem} from './imageItem'
-import {DndContext, DragEndEvent} from '@dnd-kit/core'
-import {SortableContext} from '@dnd-kit/sortable'
 import {SortableItem} from '../sortableItem'
 import {DropArea} from './dropArea'
 import {Icon} from '../icon'
 import {faPlus} from '@fortawesome/free-solid-svg-icons/faPlus'
 import {faUpload} from '@fortawesome/free-solid-svg-icons/faUpload'
+import {DragDropEvents} from '@dnd-kit/abstract'
+import {DragDropProvider} from '@dnd-kit/react'
 
 export type UploadStatus = 'default' | 'uploading' | 'success' | 'error'
 
@@ -161,7 +161,7 @@ export const Upload = memo(<R = any, A extends any[] = any[]>({
         setInnerValue(o => o.filter(f => f.id !== id))
     }
 
-    const dragEndHandler = (e: DragEndEvent) => {
+    const dragEndHandler: DragDropEvents<any, any, any>['dragend'] = e => {
         const newValue = onDndDragEnd(e, innerValue.current)
         newValue && setInnerValue(newValue)
     }
@@ -190,71 +190,39 @@ export const Upload = memo(<R = any, A extends any[] = any[]>({
                 )}
                 data-hidden="true"
             />
-            <DndContext sensors={useDndSensors()} onDragEnd={dragEndHandler}>
-                <SortableContext items={innerValue.current} disabled={!sortable}>
-                    {type === 'file'
-                        ? <>
-                            {droppable
-                                ? <DropArea
-                                    onClick={() => innerInputRef.current!.click()}
-                                    onDrop={changeFn}
-                                />
-                                : showButton &&
-                                <Button
-                                    variant="outlined"
-                                    prefix={<Icon icon={faUpload}/>}
-                                    {...buttonProps}
-                                    onClick={buttonClick}
-                                >
-                                    {buttonText}
-                                </Button>
-                            }
-                            <TransitionGroup className={classes.files}>
-                                {innerValue.current.map(file =>
-                                    <SortableItem
-                                        key={file.id}
-                                        component={Collapse}
-                                        className={classes.sortable}
-                                        id={file.id}
-                                    >
-                                        <FileItem<R, A>
-                                            ref={r => {
-                                                r
-                                                    ? itemRefs.current.set(file.id!, r)
-                                                    : itemRefs.current.delete(file.id!)
-                                            }}
-                                            file={file}
-                                            onRemove={() => removeHandler(file.id!)}
-                                            onUpload={onUpload}
-                                        />
-                                    </SortableItem>
-                                )}
-                            </TransitionGroup>
-                        </>
-                        : <TransitionGroup className={classes.images}>
-                            <Grow>
-                                <div className={classes.imageWrap} data-clickable="true">
-                                    <div className={classes.image} onClick={() => innerInputRef.current!.click()}>
-                                        <Icon icon={faPlus}/>
-                                    </div>
-                                </div>
-                            </Grow>
-                            {innerValue.current.map(file =>
+            <DragDropProvider sensors={defaultSensors} onDragEnd={dragEndHandler}>
+                {type === 'file'
+                    ? <>
+                        {droppable
+                            ? <DropArea
+                                onClick={() => innerInputRef.current!.click()}
+                                onDrop={changeFn}
+                            />
+                            : showButton &&
+                            <Button
+                                variant="outlined"
+                                prefix={<Icon icon={faUpload}/>}
+                                {...buttonProps}
+                                onClick={buttonClick}
+                            >
+                                {buttonText}
+                            </Button>
+                        }
+                        <TransitionGroup className={classes.files}>
+                            {innerValue.current.map((file, index) =>
                                 <SortableItem
                                     key={file.id}
                                     component={Collapse}
                                     className={classes.sortable}
                                     id={file.id}
-                                    orientation="horizontal"
+                                    index={index}
                                 >
-                                    <ImageItem<R, A>
-                                        key={file.id}
+                                    <FileItem<R, A>
                                         ref={r => {
                                             r
                                                 ? itemRefs.current.set(file.id!, r)
                                                 : itemRefs.current.delete(file.id!)
                                         }}
-                                        type={type}
                                         file={file}
                                         onRemove={() => removeHandler(file.id!)}
                                         onUpload={onUpload}
@@ -262,9 +230,41 @@ export const Upload = memo(<R = any, A extends any[] = any[]>({
                                 </SortableItem>
                             )}
                         </TransitionGroup>
-                    }
-                </SortableContext>
-            </DndContext>
+                    </>
+                    : <TransitionGroup className={classes.images}>
+                        <Grow>
+                            <div className={classes.imageWrap} data-clickable="true">
+                                <div className={classes.image} onClick={() => innerInputRef.current!.click()}>
+                                    <Icon icon={faPlus}/>
+                                </div>
+                            </div>
+                        </Grow>
+                        {innerValue.current.map((file, index) =>
+                            <SortableItem
+                                key={file.id}
+                                component={Collapse}
+                                className={classes.sortable}
+                                id={file.id}
+                                index={index}
+                                orientation="horizontal"
+                            >
+                                <ImageItem<R, A>
+                                    key={file.id}
+                                    ref={r => {
+                                        r
+                                            ? itemRefs.current.set(file.id!, r)
+                                            : itemRefs.current.delete(file.id!)
+                                    }}
+                                    type={type}
+                                    file={file}
+                                    onRemove={() => removeHandler(file.id!)}
+                                    onUpload={onUpload}
+                                />
+                            </SortableItem>
+                        )}
+                    </TransitionGroup>
+                }
+            </DragDropProvider>
         </div>
     )
 }) as any as {
