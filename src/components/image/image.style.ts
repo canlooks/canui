@@ -43,6 +43,7 @@ export const style = defineCss(({background, easing, spacing}) => {
                 align-items: center;
                 justify-content: center;
                 opacity: 0;
+                z-index: -1;
                 transition: opacity .25s ${easing.easeOut};
 
                 .${classes.previewButton} {
@@ -59,6 +60,7 @@ export const style = defineCss(({background, easing, spacing}) => {
             &:hover {
                 .${classes.mask} {
                     opacity: 1;
+                    z-index: 0;
                 }
             }
         }

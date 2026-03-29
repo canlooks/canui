@@ -31,7 +31,7 @@ const Root = RC(() => {
             {/*        {value: '3', label: '标签页3'}*/}
             {/*    ]}*/}
             {/*/>*/}
-            {/*<Upload sortable/>*/}
+            {/*<Upload sortable type="image"/>*/}
         </>
     )
 })

@@ -213,7 +213,7 @@ export const Upload = memo(<R = any, A extends any[] = any[]>({
                                 <SortableItem
                                     key={file.id}
                                     component={Collapse}
-                                    className={classes.sortable}
+                                    className={classes.sortableItem}
                                     id={file.id}
                                     index={index}
                                     disabled={!sortable}
@@ -244,7 +244,7 @@ export const Upload = memo(<R = any, A extends any[] = any[]>({
                             <SortableItem
                                 key={file.id}
                                 component={Collapse}
-                                className={classes.sortable}
+                                className={classes.sortableItem}
                                 id={file.id}
                                 index={index}
                                 disabled={!sortable}

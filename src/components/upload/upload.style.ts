@@ -14,7 +14,7 @@ export const classes = defineInnerClasses('upload', [
     'images',
     'imageWrap',
     'image',
-    'sortable'
+    'sortableItem'
 ])
 
 export const style = defineCss(({spacing, mode, text, gray, borderRadius, colors, divider, easing, background}) => {
@@ -149,13 +149,15 @@ export const style = defineCss(({spacing, mode, text, gray, borderRadius, colors
                 }
             }
 
-            .${classes.sortable}[data-dragging=true] {
-                position: relative;
-                z-index: 1;
-            }
+            &[data-sortable=true] {
+                .${classes.sortableItem}[data-dragging=true] {
+                    position: relative;
+                    z-index: 1;
+                }
 
-            .${classes.file}, .${classes.imageWrap} {
-                cursor: default;
+                .${classes.file}, .${classes.imageWrap} {
+                    cursor: default;
+                }
             }
         }
     `
