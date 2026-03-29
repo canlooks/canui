@@ -216,6 +216,7 @@ export const Upload = memo(<R = any, A extends any[] = any[]>({
                                     className={classes.sortable}
                                     id={file.id}
                                     index={index}
+                                    disabled={!sortable}
                                 >
                                     <FileItem<R, A>
                                         ref={r => {
@@ -246,6 +247,7 @@ export const Upload = memo(<R = any, A extends any[] = any[]>({
                                 className={classes.sortable}
                                 id={file.id}
                                 index={index}
+                                disabled={!sortable}
                                 orientation="horizontal"
                             >
                                 <ImageItem<R, A>

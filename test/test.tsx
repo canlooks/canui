@@ -8,20 +8,31 @@ import {Id} from '../src/types'
 
 const Root = RC(() => {
     return (
-        <Curd
-            columns={[
-                {
-                    field: 'v',
-                    title: (
-                        <Flex>
-                            <div>当前值</div>
-                            <span>?</span>
-                        </Flex>
-                    ),
-                    titleText: '当前值'
-                }
-            ]}
-        />
+        <>
+            <Curd
+                columns={[
+                    {
+                        field: 'v',
+                        title: (
+                            <Flex>
+                                <div>当前值</div>
+                                <span>?</span>
+                            </Flex>
+                        ),
+                        titleText: '当前值'
+                    }
+                ]}
+            />
+            {/*<Tabs*/}
+            {/*    sortable*/}
+            {/*    tabs={[*/}
+            {/*        {value: '1', label: '标签页1'},*/}
+            {/*        {value: '2', label: '标签页2'},*/}
+            {/*        {value: '3', label: '标签页3'}*/}
+            {/*    ]}*/}
+            {/*/>*/}
+            {/*<Upload sortable/>*/}
+        </>
     )
 })
 

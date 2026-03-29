@@ -154,16 +154,8 @@ export const style = defineCss(({spacing, mode, text, gray, borderRadius, colors
                 z-index: 1;
             }
 
-            &[data-sortable=true] {
-                .${classes.file}, .${classes.imageWrap} {
-                    cursor: grab;
-                }
-            }
-
-            &:not([data-sortable=true]) {
-                .${classes.file}, .${classes.imageWrap} {
-                    cursor: default;
-                }
+            .${classes.file}, .${classes.imageWrap} {
+                cursor: default;
             }
         }
     `

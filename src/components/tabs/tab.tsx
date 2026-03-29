@@ -29,6 +29,8 @@ export interface TabProps extends Omit<DivProps, 'prefix'> {
 
     /** @private 内部使用，用于表示改选项卡是否为激活状态 */
     _active?: boolean
+    /** @private */
+    _index?: number
 }
 
 export const Tab = memo(({
@@ -43,6 +45,7 @@ export const Tab = memo(({
     onClose,
     sortable,
     _active,
+    _index,
     ...props
 }: TabProps) => {
     const context = useTabsContext()
@@ -65,6 +68,7 @@ export const Tab = memo(({
             component={Collapse}
             orientation="horizontal"
             id={value}
+            index={_index!}
             disabled={!_sortable}
         >
             <div

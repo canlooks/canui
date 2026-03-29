@@ -134,12 +134,13 @@ export const Tabs = memo(<T extends TabType = TabType>({
                             }
                         }}
                         _active={active}
+                        _index={i}
                     />
                 )
             })
         }
 
-        return Children.map(props.children as ReactElement<TabProps>, c => {
+        return Children.map(props.children as ReactElement<TabProps>, (c, _index) => {
             if (isValidElement(c)) {
                 const {value} = c.props
                 const active = !isUnset(value) && value === innerValue.current
@@ -158,7 +159,8 @@ export const Tabs = memo(<T extends TabType = TabType>({
                             !isUnset(value) && setInnerValue(value)
                         }
                     },
-                    _active: active
+                    _active: active,
+                    _index
                 } as TabProps)
             }
             return c
@@ -254,30 +256,30 @@ export const Tabs = memo(<T extends TabType = TabType>({
                 onScroll={setShadow}
             >
                 <div className={classes.scrollWrap} style={{justifyContent}}>
-                    <DragDropProvider sensors={defaultSensors} onDragEnd={dragEndHandler}>
-                        <TabsContext
-                            value={
-                                useMemo(() => ({
-                                    color, variant, closable, onClose, sortable,
-                                    animating: animating.current, setAnimating
-                                }), [
-                                    color, variant, closable, onClose, sortable,
-                                    animating.current
-                                ])
-                            }
-                        >
+                    <TabsContext
+                        value={
+                            useMemo(() => ({
+                                color, variant, closable, onClose, sortable,
+                                animating: animating.current, setAnimating
+                            }), [
+                                color, variant, closable, onClose, sortable,
+                                animating.current
+                            ])
+                        }
+                    >
+                        <DragDropProvider sensors={defaultSensors} onDragEnd={dragEndHandler}>
                             <TransitionGroup component={null}>
                                 {renderTabs()}
                             </TransitionGroup>
-                            {variant === 'line' &&
-                                <LineIndicator
-                                    value={innerValue.current}
-                                    position={position}
-                                    getActiveTab={getActiveTab}
-                                />
-                            }
-                        </TabsContext>
-                    </DragDropProvider>
+                        </DragDropProvider>
+                        {variant === 'line' &&
+                            <LineIndicator
+                                value={innerValue.current}
+                                position={position}
+                                getActiveTab={getActiveTab}
+                            />
+                        }
+                    </TabsContext>
                 </div>
             </div>
             <div className={classes.end} data-show={shadowEnd}>
