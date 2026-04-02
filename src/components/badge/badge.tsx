@@ -6,6 +6,7 @@ import {clsx} from '../../utils'
 export interface BadgeProps extends DivProps {
     color?: ColorPropsValue
     placement?: Placement
+    /** 默认为`standard` */
     variant?: 'dot' | 'standard'
     /** 角标的任容 */
     count?: ReactNode

@@ -1,14 +1,16 @@
 import React, {ReactNode, useEffect, useRef} from 'react'
 import {classes, useStyle} from './drawer.style'
-import {clsx, useControlled} from '../../utils'
+import {clsx, mergeComponentProps, useControlled} from '../../utils'
 import {OverlayBase, OverlayBaseProps} from '../overlayBase'
 import {Button} from '../button'
-import {ResponsiveProp} from '../../types'
+import {DivProps, ResponsiveProp, SlotsAndProps} from '../../types'
 import {Slide, TransitionBaseProps} from '../transitionBase'
 import {Icon} from '../icon'
 import {faAnglesRight} from '@fortawesome/free-solid-svg-icons/faAnglesRight'
 
-export interface DrawerProps extends Omit<OverlayBaseProps, 'title'> {
+export interface DrawerProps extends Omit<OverlayBaseProps, 'title'>, SlotsAndProps<{
+    scroller: DivProps
+}> {
     title?: ReactNode
     footer?: ReactNode
     showClose?: ReactNode
@@ -41,6 +43,8 @@ const placementToDirection = {
 }
 
 export function Drawer({
+    slots = {},
+    slotProps = {},
     title,
     footer,
     showClose = true,
@@ -91,15 +95,18 @@ export function Drawer({
     }
 
     useEffect(() => {
-        if (innerOpen.current) {
+        if (innerOpen.current && bodyWrapRef.current) {
             const resizeObserver = new ResizeObserver(onScroll)
-            resizeObserver.observe(bodyWrapRef.current!)
+            resizeObserver.observe(bodyWrapRef.current)
             return () => {
                 resizeObserver.disconnect()
             }
         }
         return
     }, [innerOpen.current])
+
+    const {scroller: Scroller = 'div'} = slots
+    const {scroller: scrollerProps} = slotProps
 
     return (
         <OverlayBase
@@ -143,11 +150,17 @@ export function Drawer({
                             }
                         </div>
                     }
-                    <div ref={bodyRef} className={classes.body} onScroll={onScroll}>
+                    <Scroller
+                        {...mergeComponentProps(scrollerProps, {
+                            ref: bodyRef,
+                            className: classes.body,
+                            onScroll
+                        })}
+                    >
                         <div ref={bodyWrapRef} className={classes.bodyWrap}>
                             {props.children}
                         </div>
-                    </div>
+                    </Scroller>
                 </div>
             </Slide>
         </OverlayBase>
