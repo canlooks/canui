@@ -30,6 +30,7 @@ export const fadeStyle = defineCss(({easing}) => css`
         transition-property: opacity;
         transition-timing-function: ${easing.easeOut};
 
+        &,
         &.appear,
         &.enter {
             opacity: 0;
