@@ -13,13 +13,14 @@ const Root = RC(() => {
 
     return (
         <>
-            <Button onClick={() => state.open = !state.open}>Button</Button>
-            <Collapse in={state.open} timeout={2000} collapsedSize={24}>
-                <div style={{height: 500, background: 'pink'}}/>
-            </Collapse>
-            <Slide in={state.open} timeout={2000} direction="left">
-                <div style={{height: 500, background: 'pink'}}/>
-            </Slide>
+            <Tabs
+                sortable
+                tabs={[
+                    {value: '1', label: '这是报表名称1'},
+                    {value: '2', label: '这是报表名称2'},
+                    {value: '3', label: '这是报表名称3'},
+                ]}
+            />
         </>
     )
 })

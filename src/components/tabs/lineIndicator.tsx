@@ -1,19 +1,19 @@
-import {CSSProperties, useEffect, useState} from 'react'
+import {CSSProperties, memo, useEffect, useState} from 'react'
 import {classes, indicatorWidth} from './tabs.style'
 import {colorTransfer} from '../../utils'
 import {useTheme} from '../theme'
 import {useTabsContext} from './tabs'
 import {Id} from '../../types'
 
-export function LineIndicator({
+export const LineIndicator = memo(({
     value,
     position,
-    getActiveTab,
+    getActiveTab
 }: {
-    value?: Id
+    value: Id | undefined
     position: 'top' | 'bottom' | 'left' | 'right'
-    getActiveTab(): HTMLDivElement | undefined
-}) {
+    getActiveTab(): HTMLElement | undefined
+})=> {
     const context = useTabsContext()
 
     const [color, setColor] = useState<string>(context.color!)
@@ -50,16 +50,20 @@ export function LineIndicator({
         activeTab.dataset.color && setColor(activeTab.dataset.color)
     }, [value])
 
+    const onTransitionEnd = () => {
+        setAnimating(false)
+    }
+
     const theme = useTheme()
 
     return (
         <div
             className={classes.indicator}
-            onTransitionEnd={() => setAnimating(false)}
+            onTransitionEnd={onTransitionEnd}
             style={{
                 ...boundingRect,
                 backgroundColor: colorTransfer(color, theme)
             }}
         />
     )
-}
+})

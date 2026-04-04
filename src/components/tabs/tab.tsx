@@ -1,13 +1,13 @@
 import React, {ReactNode, memo} from 'react'
 import {ColorPropsValue, DivProps, Id} from '../../types'
-import {clsx, useColor} from '../../utils'
+import {mergeComponentProps, useColor} from '../../utils'
 import {classes} from './tabs.style'
 import {useTabsContext} from './tabs'
 import {Button} from '../button'
 import {faXmark} from '@fortawesome/free-solid-svg-icons/faXmark'
 import {Icon} from '../icon'
-import {SortableItem} from '../sortableItem'
 import {Collapse} from '../transitionBase'
+import {useSortable} from '@dnd-kit/react/sortable'
 
 export interface TabProps extends Omit<DivProps, 'prefix'> {
     prefix?: ReactNode
@@ -61,49 +61,48 @@ export const Tab = memo(({
 
     const _sortable = sortable ?? context.sortable
 
+    const {ref} = useSortable({
+        id: value,
+        index: _index!,
+        disabled: !_sortable
+    })
+
     return (
-        <SortableItem
-            {...props}
-            className={clsx(classes.tabWrapper, props.className)}
-            component={Collapse}
+        <Collapse
             orientation="horizontal"
-            id={value}
-            index={_index!}
-            disabled={!_sortable}
-        >
-            <div
-                className={classes.tab}
-                style={{
+            {...mergeComponentProps<'div'>(props, {
+                ref,
+                className: classes.tab,
+                style: {
                     borderColor: context.variant === 'line' && !context.animating && _active ? colorValue : void 0,
-                    color: _active ? colorValue : void 0,
-                    ...props.style
-                }}
-                data-color={colorValue}
-                data-disabled={disabled}
-                data-orientation={orientation}
-                data-active={_active}
-                onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+                    color: _active ? colorValue : void 0
+                },
+                onClick: e => {
                     !disabled && props.onClick?.(e)
-                }}
-            >
-                {!!prefix &&
-                    <div className={classes.tabPrefix}>{prefix}</div>
                 }
-                <div className={classes.label}>{label}</div>
-                {!!suffix &&
-                    <div className={classes.tabSuffix}>{suffix}</div>
-                }
-                {_closable &&
-                    <Button
-                        className={classes.tabClose}
-                        variant="text"
-                        color="text.secondary"
-                        onClick={closeHandler}
-                    >
-                        <Icon icon={faXmark}/>
-                    </Button>
-                }
-            </div>
-        </SortableItem>
+            })}
+            data-color={colorValue}
+            data-disabled={disabled}
+            data-orientation={orientation}
+            data-active={_active}
+        >
+            {!!prefix &&
+                <div className={classes.tabPrefix}>{prefix}</div>
+            }
+            <div className={classes.label}>{label}</div>
+            {!!suffix &&
+                <div className={classes.tabSuffix}>{suffix}</div>
+            }
+            {_closable &&
+                <Button
+                    className={classes.tabClose}
+                    variant="text"
+                    color="text.secondary"
+                    onClick={closeHandler}
+                >
+                    <Icon icon={faXmark}/>
+                </Button>
+            }
+        </Collapse>
     )
 })

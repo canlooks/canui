@@ -1,4 +1,4 @@
-import {CSSProperties, Children, ReactElement, ReactNode, cloneElement, createContext, isValidElement, memo, useContext, useEffect, useMemo, useRef, useState, SetStateAction, Dispatch} from 'react'
+import {CSSProperties, Children, ReactElement, ReactNode, cloneElement, createContext, isValidElement, memo, useContext, useEffect, useMemo, useRef, useState, SetStateAction, Dispatch, useCallback} from 'react'
 import {ColorPropsValue, DivProps, Id, Obj, Size} from '../../types'
 import {classes, useStyle} from './tabs.style'
 import {clsx, cloneRef, isUnset, useControlled, useDerivedState, defaultSensors, onDndDragEnd} from '../../utils'
@@ -92,6 +92,7 @@ export const Tabs = memo(<T extends TabType = TabType>({
     const setInnerValue = (value: Id) => {
         if (!readOnly && !disabled) {
             _setInnerValue(value)
+            variant === 'line' && setAnimating(true)
         }
     }
 
@@ -103,10 +104,6 @@ export const Tabs = memo(<T extends TabType = TabType>({
     }
 
     const tabRefs = useRef(new Map<Id, HTMLDivElement>())
-
-    const getActiveTab = (): HTMLDivElement | undefined => {
-        return isUnset(innerValue.current) ? void 0 : tabRefs.current.get(innerValue.current)
-    }
 
     const eventName = changeEvent === 'click' ? 'onClick' : 'onPointerDown'
 
@@ -209,6 +206,10 @@ export const Tabs = memo(<T extends TabType = TabType>({
             resizeObserver.disconnect()
         }
     }, [position])
+
+    const getActiveTab = useCallback(() => {
+        return tabRefs.current.get(innerValue.current!)
+    }, [])
 
     const shouldScroll = useRef(true)
 

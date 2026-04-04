@@ -127,7 +127,7 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
                         background-color: ${divider};
                         position: absolute;
                     }
-
+                    
                     .${classes.tab} {
                         display: flex;
                         align-items: center;
@@ -139,7 +139,7 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
                         overflow: hidden;
                         z-index: 1;
                         -webkit-tap-highlight-color: transparent;
-                        transition: all .25s ${easing.easeOut};
+                        transition: background-color, color .25s ${easing.easeOut};
 
                         &[data-orientation=vertical] {
                             flex-direction: column;
