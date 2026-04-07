@@ -13,13 +13,12 @@ export const LineIndicator = memo(({
     value: Id | undefined
     position: 'top' | 'bottom' | 'left' | 'right'
     getActiveTab(): HTMLElement | undefined
-})=> {
+}) => {
     const context = useTabsContext()
 
     const [color, setColor] = useState<string>(context.color!)
 
     const [boundingRect, setBoundingRect] = useState<CSSProperties>()
-
     const {setAnimating} = useTabsContext()
 
     useEffect(() => {

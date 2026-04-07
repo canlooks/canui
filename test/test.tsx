@@ -8,18 +8,25 @@ import {Id} from '../src/types'
 
 const Root = RC(() => {
     const state = useReactive({
-        open: true
+        open: true,
+        value: void 0
     })
+
+    useEffect(() => {
+            state.value = '1'
+    }, [])
 
     return (
         <>
+            <Button onClick={() => state.value = '1'}>Button</Button>
             <Tabs
                 sortable
                 tabs={[
                     {value: '1', label: '这是报表名称1'},
-                    {value: '2', label: '这是报表名称2'},
-                    {value: '3', label: '这是报表名称3'},
+                    // {value: '2', label: '这是报表名称2'},
+                    // {value: '3', label: '这是报表名称3'},
                 ]}
+                value={state.value}
             />
         </>
     )
