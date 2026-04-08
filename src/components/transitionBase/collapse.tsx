@@ -1,6 +1,6 @@
-import {ElementType, ReactElement, useRef, useState} from 'react'
+import { ElementType, ReactElement, useLayoutEffect, useRef, useState} from 'react'
 import {TransitionBase, TransitionBaseProps} from './transitionBase'
-import {cloneRef, useStrictEffect} from '../../utils'
+import {cloneRef, useUpdateEffect} from '../../utils'
 import {MergeProps} from '../../types'
 
 export type CollapseOwnProps = {
@@ -14,7 +14,7 @@ export type CollapseOwnProps = {
     /**
      * 设定折叠后的尺寸
      * {@link transitionType}为"`sweeping"`时有效
-     * 默认为0
+     * 默认为`0`
      */
     collapsedSize?: number | (() => number)
 }
@@ -38,61 +38,73 @@ export const Collapse: <T extends HTMLElement = HTMLElement, C extends ElementTy
 const Sweeping: <T extends HTMLElement = HTMLElement, C extends ElementType = 'div'>(props: CollapseProps<T, C>) => ReactElement = ({
     ref,
     in: _in = false,
-    appear = true,
     orientation = 'vertical',
     collapsedSize = 0,
+    appear = true,
     ...props
 }: CollapseProps) => {
     const innerRef = useRef<HTMLElement>(null)
+
+    const styleProperty = orientation === 'vertical' ? 'height' : 'width'
 
     const getCollapsedSize = () => {
         return typeof collapsedSize === 'function' ? collapsedSize() : collapsedSize
     }
 
-    const [size, setSize] = useState(() => {
-        if (_in && !appear) {
-            return 'auto'
-        }
-        return getCollapsedSize()
-    })
+    const [size, setSize] = useState(() => !_in ? getCollapsedSize() : 'auto')
 
-    const [isEntered, setIsEntered] = useState(_in && !appear)
-
-    const styleProperty = orientation === 'vertical' ? 'height' : 'width'
-
-    const expand = () => {
+    const getFullSize = () => {
         const el = innerRef.current
+        let size: number | undefined
         if (el) {
             el.style.transition = 'none'
+            const originalSize = el.style[styleProperty]
             el.style[styleProperty] = 'auto'
-            const newSize = el[orientation === 'vertical' ? 'offsetHeight' : 'offsetWidth']
-            el.style[styleProperty] = size + 'px'
+            size = el[orientation === 'vertical' ? 'offsetHeight' : 'offsetWidth']
+            el.style[styleProperty] = originalSize
             el.style.transition = ''
+        }
+        return size
+    }
 
+    const expand = (fromSize?: number) => {
+        const fullSize = getFullSize()
+        if (typeof fullSize !== 'undefined') {
+            if (typeof fromSize !== 'undefined') {
+                const el = innerRef.current!
+                el.style[styleProperty] = fromSize + 'px'
+            }
             requestAnimationFrame(() => {
-                setSize(newSize)
+                setSize(fullSize)
             })
         }
     }
 
-    const collapse = () => {
-        setIsEntered(false)
-        requestAnimationFrame(() => {
-            setSize(getCollapsedSize())
-        })
+    const getCurrentSize = () => {
+        const el = innerRef.current
+        if (el) {
+            return el[orientation === 'vertical' ? 'offsetHeight' : 'offsetWidth']
+        }
     }
 
-    const mounted = useRef(false)
-
-    useStrictEffect(() => {
-        if (!mounted.current) {
-            // 首次渲染
-            mounted.current = true
-            if (!appear) {
-                // 若appear为false，则跳过首次动画
-                return
-            }
+    const collapse = () => {
+        const currentSize = getCurrentSize()
+        if (typeof currentSize !== 'undefined') {
+            const el = innerRef.current!
+            el.style[styleProperty] = currentSize + 'px'
+            requestAnimationFrame(() => {
+                setSize(getCollapsedSize())
+            })
         }
+    }
+
+    useLayoutEffect(() => {
+        if (_in && appear) {
+            expand(getCollapsedSize())
+        }
+    }, [])
+
+    useUpdateEffect(() => {
         _in
             ? expand()
             : collapse()
@@ -101,16 +113,14 @@ const Sweeping: <T extends HTMLElement = HTMLElement, C extends ElementType = 'd
     return (
         <TransitionBase
             {...props}
-            appear={appear}
-            orientation={orientation}
-            in={_in}
             ref={cloneRef(ref, innerRef)}
+            in={_in}
+            orientation={orientation}
+            appear={appear}
             style={{
-                [styleProperty]: isEntered ? 'auto' : size,
-                ...!isEntered && {overflow: 'hidden'},
+                [styleProperty]: size,
                 ...props.style
             }}
-            onEntered={() => setIsEntered(true)}
         />
     )
 }

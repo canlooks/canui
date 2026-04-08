@@ -10,6 +10,7 @@ export const classes = defineInnerClasses('tabs', [
     'ellipsis',
     'prefix',
     'suffix',
+    'tabTransition',
     'tabWrapper',
     'tab',
     'label',
@@ -37,6 +38,7 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
                         display: flex;
                         scrollbar-width: none;
                         position: relative;
+                        overflow: auto;
 
                         &::-webkit-scrollbar {
                             display: none;
@@ -128,6 +130,10 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
                         position: absolute;
                     }
                     
+                    .${classes.tabTransition} { {
+                        z-index: 1;
+                    }}
+                    
                     .${classes.tab} {
                         display: flex;
                         align-items: center;
@@ -137,7 +143,6 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
                         white-space: nowrap;
                         text-overflow: ellipsis;
                         overflow: hidden;
-                        z-index: 1;
                         -webkit-tap-highlight-color: transparent;
                         transition: background-color, color .25s ${easing.easeOut};
 
@@ -230,8 +235,8 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
             variant === 'line'
                 ? css`
                         @layer reset {
-                            .${classes.scrollWrap} {
-                                gap: 0 ${spacing[10]}px;
+                            .${classes.tabWrapper} {
+                                padding: 0 ${spacing[5]}px;
                             }
 
                             &[data-position=top],
@@ -314,10 +319,6 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
                 // variant === 'card'
                 : css`
                         @layer reset {
-                            .${classes.scrollWrap} {
-                                gap: ${spacing[1]}px;
-                            }
-
                             .${classes.tab} {
                                 border: 1px solid ${gray(.1)};
                                 background-color: ${background.body};
@@ -329,6 +330,10 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
 
                             &[data-position=top],
                             &[data-position=bottom] {
+                                .${classes.tabWrapper} {
+                                    padding: 0 2px;
+                                }
+                                
                                 .${classes.tab} {
                                     padding: 10px 15px;
                                 }
@@ -368,6 +373,10 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
 
                             &[data-position=left],
                             &[data-position=right] {
+                                .${classes.tabWrapper} {
+                                    padding: 2px 0;
+                                }
+                                
                                 .${classes.tab} {
                                     padding: 9px 18px;
                                 }

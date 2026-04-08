@@ -1,7 +1,7 @@
 import {CSSProperties, Children, ReactElement, ReactNode, cloneElement, createContext, isValidElement, memo, useContext, useEffect, useMemo, useRef, useState, SetStateAction, Dispatch, useCallback} from 'react'
 import {ColorPropsValue, DivProps, Id, Obj, Size} from '../../types'
 import {classes, useStyle} from './tabs.style'
-import {clsx, cloneRef, isUnset, useControlled, useDerivedState, defaultSensors, onDndDragEnd} from '../../utils'
+import {clsx, cloneRef, isUnset, useControlled, defaultSensors, onDndDragEnd} from '../../utils'
 import {useTheme} from '../theme'
 import {Tab, TabProps} from './tab'
 import {TabsEllipsis} from './tabsEllipsis'
@@ -90,13 +90,14 @@ export const Tabs = memo(<T extends TabType = TabType>({
 
     const [innerValue, _setInnerValue] = useControlled(defaultValue, value, onChange)
     const setInnerValue = (value: Id) => {
-        if (!readOnly && !disabled) {
+        if (!readOnly && !disabled && value !== innerValue.current) {
             _setInnerValue(value)
+            console.log(96, value)
             variant === 'line' && setAnimating(true)
         }
     }
 
-    const [animating, setAnimating] = useDerivedState<boolean>(prev => typeof prev !== 'undefined', [innerValue.current])
+    const [animating, setAnimating] = useState(false)
 
     const setValueInEllipsis = (value: Id) => {
         shouldScroll.current = true
@@ -114,25 +115,25 @@ export const Tabs = memo(<T extends TabType = TabType>({
                 const active = !isUnset(value) && value === innerValue.current
 
                 return (
-                    <Tab
-                        {...p}
-                        key={p.key ?? value ?? i}
-                        ref={el => {
-                            el
-                                ? tabRefs.current.set(value, el)
-                                : tabRefs.current.delete(value)
-                        }}
-                        value={value}
-                        label={p[labelKey]}
-                        {...{
-                            [eventName]: (e: any) => {
-                                p[eventName]?.(e)
-                                setInnerValue(value)
-                            }
-                        }}
-                        _active={active}
-                        _index={i}
-                    />
+                        <Tab
+                            {...p}
+                            key={p.key ?? value ?? i}
+                            _tabRef={el => {
+                                el
+                                    ? tabRefs.current.set(value, el)
+                                    : tabRefs.current.delete(value)
+                            }}
+                            value={value}
+                            label={p[labelKey]}
+                            {...{
+                                [eventName]: (e: any) => {
+                                    p[eventName]?.(e)
+                                    setInnerValue(value)
+                                }
+                            }}
+                            _active={active}
+                            _index={i}
+                        />
                 )
             })
         }
@@ -241,7 +242,7 @@ export const Tabs = memo(<T extends TabType = TabType>({
             className={clsx(classes.root, props.className)}
             data-size={size}
             data-position={position}
-            data-animating={animating.current}
+            data-animating={animating}
             data-full-width={fullWidth}
             data-read-only={readOnly}
             data-disabled={disabled}
@@ -261,10 +262,10 @@ export const Tabs = memo(<T extends TabType = TabType>({
                         value={
                             useMemo(() => ({
                                 color, variant, closable, onClose, sortable,
-                                animating: animating.current, setAnimating
+                                animating, setAnimating
                             }), [
                                 color, variant, closable, onClose, sortable,
-                                animating.current
+                                animating
                             ])
                         }
                     >

@@ -83,27 +83,6 @@ export function useCurdColumns<R extends RowType, V extends Id = Id>({
         defaultOrder, order, onOrderChange
     } = columnConfigurable
 
-    if (!defaultVisible || !defaultOrder) {
-        let hasControlColumn = false
-        const defaultKeys = columns?.flatMap((col: any) => {
-            if (col.hideInTable) {
-                return []
-            }
-            if (col._key) {
-                if (col._key === CONTROL_COLUMN_KEY) {
-                    hasControlColumn = true
-                }
-                return col._key
-            }
-            return []
-        }) || []
-
-        !hasControlColumn && defaultKeys.push(CONTROL_COLUMN_KEY)
-
-        defaultVisible ||= defaultKeys
-        defaultOrder ||= defaultKeys
-    }
-
     const [innerOrder, setInnerOrder] = useControlled(defaultOrder, order, onOrderChange)
     const [innerVisible, setInnerVisible] = useControlled(defaultVisible, visible, onVisibleChange)
 
@@ -132,7 +111,7 @@ export function useCurdColumns<R extends RowType, V extends Id = Id>({
 
     // 只排序不筛选，用于设置项
     const orderedColumns = useMemo(() => {
-        if (!innerOrder.current.length) {
+        if (!innerOrder.current?.length) {
             return pureColumns
         }
         const set = new Set(pureColumns)
@@ -150,13 +129,13 @@ export function useCurdColumns<R extends RowType, V extends Id = Id>({
     }, [innerOrder.current, pureColumns])
 
     const visibleSet = useMemo(() => {
-        return new Set(innerVisible.current)
+        return innerVisible.current && new Set(innerVisible.current)
     }, [innerVisible.current])
 
     // 筛选表格上可见的列，并将symbol回填
     const actualColumns = useMemo(() => {
         return orderedColumns!.flatMap(col => {
-            if (!isUnset(col._key) && visibleSet.has(col._key)) {
+            if (!isUnset(col._key) && (!visibleSet || visibleSet.has(col._key))) {
                 const symbolArr = symbolBoundToNext.current.get(col) || []
                 // 移除DataGrid不需要的属性
                 const {

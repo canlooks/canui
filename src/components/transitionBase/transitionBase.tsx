@@ -1,9 +1,9 @@
-import {ElementType, ReactElement, useRef} from 'react'
+import {ElementType, ReactElement, useLayoutEffect, useRef} from 'react'
 import {CSSTransition} from 'react-transition-group'
 import {TimeoutProps} from 'react-transition-group/Transition'
-import {classes, fadeStyle, sweepingStyle, useGrowAndCollapseStyle, useSlideStyle, useTransitionBaseStyle} from './transitionBase.style'
+import {classes, fadeStyle, useGrowAndCollapseStyle, useSlideStyle, useSweepingStyle, useTransitionBaseStyle} from './transitionBase.style'
 import {SerializedStyles} from '@emotion/react'
-import {clsx, cloneRef} from '../../utils'
+import {clsx, cloneRef, useUpdateEffect} from '../../utils'
 import {OverridableProps} from '../../types'
 
 export interface TransitionBaseOwnProps<T extends HTMLElement = HTMLElement> extends Omit<Partial<TimeoutProps<T>>, 'children'> {
@@ -38,7 +38,7 @@ export const TransitionBase = (({
         cssArr.push(fadeStyle)
         switch (_mode) {
             case '_sweeping':
-                cssArr.push(sweepingStyle)
+                cssArr.push(useSweepingStyle({orientation}))
                 break
             case 'collapse':
             case 'grow':
@@ -49,14 +49,24 @@ export const TransitionBase = (({
         }
     }
 
-    const innerRef = useRef(null)
+    const innerRef = useRef<HTMLElement>(null)
+
+    const firstOpenChanged = useRef(false)
+
+    useUpdateEffect(() => {
+        firstOpenChanged.current = true
+    }, [props.in])
+
+    useLayoutEffect(() => {
+        !firstOpenChanged.current && !props.in && innerRef.current?.classList.add('exit-done')
+    }, [props.in])
 
     return (
         <CSSTransition
             {...props}
             css={cssArr}
-            nodeRef={innerRef}
             className={clsx(classes.root, props.className)}
+            nodeRef={innerRef}
             timeout={timeout}
             appear={appear}
         >

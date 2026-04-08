@@ -15,10 +15,10 @@ import {DragDropProvider, useDragDropMonitor} from '@dnd-kit/react'
 import {DragDropEvents} from '@dnd-kit/abstract'
 
 export type CurdColumnConfigProps<R extends RowType> = {
-    columns?: CurdColumn<R>[]
-    innerVisible: Id[]
-    setInnerVisible: Dispatch<SetStateAction<Id[]>>
-    setInnerOrder: Dispatch<SetStateAction<Id[]>>
+    columns: CurdColumn<R>[] | undefined
+    innerVisible: Id[] | undefined
+    setInnerVisible: Dispatch<SetStateAction<Id[] | undefined>>
+    setInnerOrder: Dispatch<SetStateAction<Id[] | undefined>>
 }
 
 export const CurdColumnConfig = memo(<R extends RowType>(props: CurdColumnConfigProps<R>) => {
@@ -57,11 +57,11 @@ const CurdColumnConfigContent = memo(({
     }
 
     const visibleSet = useMemo(() => {
-        return new Set(innerVisible)
+        return innerVisible && new Set(innerVisible)
     }, [innerVisible])
 
     const toggleVisible = (key: Id | undefined, checked: boolean) => {
-        !isUnset(key) && setInnerVisible(o => checked
+        !isUnset(key) && setInnerVisible((o = []) => checked
             ? [...o, key]
             : o.filter(k => k !== key)
         )
@@ -82,7 +82,7 @@ const CurdColumnConfigContent = memo(({
                     </div>
                     {columns?.map((col, i) => {
                         const id = col._key
-                        const checked = !isUnset(id) && visibleSet.has(id)
+                        const checked = !isUnset(id) && (!visibleSet || visibleSet.has(id))
 
                         return (
                             <SortableItem

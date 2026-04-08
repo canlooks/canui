@@ -1,6 +1,6 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable, ContextMenu, useAppContext, Select, TreeSelect, Typography, Accordion, useDraggable, OptionsBase, useFlatSelection, usePopperContext, useFormContext, Autocomplete, Input, Tabs, Flex, TouchRipple, Slide} from '../src'
+import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable, ContextMenu, useAppContext, Select, TreeSelect, Typography, Accordion, useDraggable, OptionsBase, useFlatSelection, usePopperContext, useFormContext, Autocomplete, Input, Tabs, Flex, TouchRipple, Slide, Fade, Grow} from '../src'
 import React, {cloneElement, ReactNode, StrictMode, useDeferredValue, useEffect, useMemo, useState} from 'react'
 import {RC, useReactive} from '@canlooks/reactive/react'
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
@@ -8,32 +8,27 @@ import {Id} from '../src/types'
 
 const Root = RC(() => {
     const state = useReactive({
-        open: true,
-        value: void 0
+        open: false,
+        count: 1
     })
-
-    useEffect(() => {
-            state.value = '1'
-    }, [])
 
     return (
         <>
-            <Button onClick={() => state.value = '1'}>Button</Button>
-            <Tabs
-                sortable
-                tabs={[
-                    {value: '1', label: '这是报表名称1'},
-                    // {value: '2', label: '这是报表名称2'},
-                    // {value: '3', label: '这是报表名称3'},
-                ]}
-                value={state.value}
+            <Button onClick={() => state.open = !state.open}>Button</Button>
+            <Button onClick={() => state.count++}>Count: {state.count}</Button>
+            {/*<Grow in={state.open}>*/}
+            {/*    <div style={{height: 400, background: 'pink'}}/>*/}
+            {/*</Grow>*/}
+            <Dialog
+                open={state.open}
+                onClose={() => state.open = false}
             />
         </>
     )
 })
 
 createRoot(document.getElementById('app')!).render(
-    <>
+    <StrictMode>
         <Global styles={css`
             html, body, #app {
                 margin: 0;
@@ -47,5 +42,5 @@ createRoot(document.getElementById('app')!).render(
         >
             <Root/>
         </App>
-    </>
+    </StrictMode>
 )

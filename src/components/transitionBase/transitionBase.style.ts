@@ -10,6 +10,7 @@ export function useTransitionBaseStyle({timeout}: Required<Pick<TransitionBasePr
     return useCss(() => css`
         @layer reset {
             ${timeoutIsNumber ? `transition-duration: ${timeout}ms;` : ''}
+            
             &.appear-active {
                 ${!timeoutIsNumber ? `transition-duration: ${timeout.appear}ms;` : ''}
             }
@@ -27,131 +28,104 @@ export function useTransitionBaseStyle({timeout}: Required<Pick<TransitionBasePr
 
 export const fadeStyle = defineCss(({easing}) => css`
     @layer reset {
-        transition-property: opacity;
-        transition-timing-function: ${easing.easeOut};
-
-        &,
+        transition-property: opacity, transform, width, height;
+        transition-timing-function: ${easing.easeOut}, ${easing.bounce}, ${easing.bounce}, ${easing.bounce};
+        
         &.appear,
-        &.enter {
+        &.exit,
+        &.exit-done {
             opacity: 0;
         }
-
+        
         &.appear-active,
-        &.enter-active,
-        &.enter-done,
-        &.exit {
+        &.enter,
+        &.enter-done {
             opacity: 1;
         }
 
-        &.exit-active,
-        &.exit-done {
-            opacity: 0;
-        }
-    }
-`)
-
-export const sweepingStyle = defineCss(({easing}) => css`
-    @layer reset {
-        transition-property: opacity, width, height;
-
-        &.appear-active,
-        &.enter-active,
-        &.enter-done {
-            transition-timing-function: ${easing.easeOut}, ${easing.bounce}, ${easing.bounce};
-        }
-
-        &.exit-active,
-        &.exit-done {
+        &.exit {
             transition-timing-function: ${easing.easeOut};
         }
     }
 `)
 
-export function useGrowAndCollapseStyle({orientation, _mode}: Required<Pick<TransitionBaseProps<any>, 'orientation' | '_mode'>>) {
-    return useCss(({easing}) => {
-        let transformMethod = _mode === 'grow'
-            ? 'scale'
-            : orientation === 'vertical'
-                ? 'scaleY'
-                : 'scaleX'
-
-        return css`
-            @layer reset {
-                transition-property: opacity, transform;
-                ${_mode === 'collapse' ? `transform-origin: ${orientation === 'vertical' ? 'top' : 'left'};` : ''}
-                &,
-                &.appear,
-                &.enter {
-                    transform: ${transformMethod}(0);
-                }
-
-                &.appear-active,
-                &.enter-active,
-                &.enter-done,
-                &.exit {
-                    transform: scale(1);
-                }
-
-                &.exit-active,
-                &.exit-done {
-                    transform: ${transformMethod}(0);
-                }
-
-                &.appear-active,
-                &.enter-active {
-                    transition-timing-function: ${easing.easeOut}, ${easing.bounce};
-                }
-
-                &.exit-active {
-                    transition-timing-function: ${easing.easeOut};
-                }
+export function useSweepingStyle({orientation}: Required<Pick<TransitionBaseProps, 'orientation'>>) {
+    return useCss(() => css`
+        @layer reset {
+            &.appear,
+            &.appear-active,
+            &.enter-active,
+            &.exit,
+            &.exit-active,
+            &.exit-done {
+                overflow: hidden;
             }
-        `
-    }, [orientation, _mode])
+            
+            &.appear-active,
+            &.enter-active,
+            &.exit-active {
+                transition-property: opacity, width, height;
+            }
+        }
+    `, [orientation])
 }
 
-export function useSlideStyle({direction, offset}: Required<Pick<TransitionBaseProps<any>, 'direction' | 'offset'>>) {
-    return useCss(({easing}) => {
-        const transformMethod = direction === 'up' || direction === 'down' ? 'translateY' : 'translateX'
-        let offsetValue = typeof offset === 'number' ? `${offset}px` : offset
-        if (direction === 'down' || direction === 'right') {
-            offsetValue = '-' + offsetValue
-        }
+export function useGrowAndCollapseStyle({orientation, _mode}: Required<Pick<TransitionBaseProps, 'orientation' | '_mode'>>) {
+    let transformMethod = _mode === 'grow'
+        ? 'scale'
+        : orientation === 'vertical'
+            ? 'scaleY'
+            : 'scaleX'
 
-        return css`
-            @layer reset {
-                transition-property: opacity, transform;
+    return useCss(({easing}) => css`
+        @layer reset {
+            ${_mode === 'collapse' ? `transform-origin: ${orientation === 'vertical' ? 'top' : 'left'};` : ''}
 
-                &,
-                &.appear,
-                &.enter {
-                    pointer-events: none;
-                    transform: ${transformMethod}(${offsetValue});
-                }
-
-                &.appear-active,
-                &.enter-active,
-                &.enter-done,
-                &.exit {
-                    pointer-events: inherit;
-                    transform: translate(0);
-                }
-
-                &.exit-active,
-                &.exit-done {
-                    pointer-events: none;
-                    transform: ${transformMethod}(${offsetValue});
-                }
-
-                &.appear-active,
-                &.enter-active {
-                    transition-timing-function: ${easing.easeOut}, ${easing.bounce};
-                }
-
-                &.exit-active {
-                    transition-timing-function: ${easing.easeOut};
-                }
+            &.appear,
+            &.exit,
+            &.exit-done {
+                transform: ${transformMethod}(0);
             }
-        `
-    }, [direction, offset])
+
+            &.appear-active,
+            &.enter,
+            &.enter-done {
+                transform: scale(1);
+            }
+        }
+    `, [orientation, _mode])
+}
+
+export function useSlideStyle({direction, offset}: Required<Pick<TransitionBaseProps, 'direction' | 'offset'>>) {
+    const transformMethod = direction === 'up' || direction === 'down' ? 'translateY' : 'translateX'
+    let offsetValue = typeof offset === 'number' ? `${offset}px` : offset
+    if (direction === 'down' || direction === 'right') {
+        offsetValue = '-' + offsetValue
+    }
+
+    return useCss(() => css`
+        @layer reset {
+            transition-property: opacity, transform;
+
+            &.appear,
+            &.exit,
+            &.exit-done {
+                pointer-events: none;
+                transform: ${transformMethod}(${offsetValue});
+            }
+
+            &.appear-active,
+            &.enter,
+            &.enter-done {
+                pointer-events: inherit;
+                transform: translate(0);
+            }
+
+            &.appear-active,
+            &.enter-active,
+            &.exit-active {
+                transition-property: opacity, transform;
+            }
+        }
+    `, [direction, offset])
 }
