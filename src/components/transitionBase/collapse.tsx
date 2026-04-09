@@ -1,6 +1,6 @@
-import { ElementType, ReactElement, useLayoutEffect, useRef, useState} from 'react'
+import {ElementType, ReactElement, useLayoutEffect, useRef, useState} from 'react'
 import {TransitionBase, TransitionBaseProps} from './transitionBase'
-import {cloneRef, useUpdateEffect} from '../../utils'
+import {cloneRef, useDerivedState, useUpdateEffect} from '../../utils'
 import {MergeProps} from '../../types'
 
 export type CollapseOwnProps = {
@@ -52,6 +52,8 @@ const Sweeping: <T extends HTMLElement = HTMLElement, C extends ElementType = 'd
     }
 
     const [size, setSize] = useState(() => !_in ? getCollapsedSize() : 'auto')
+
+    const [transiting, setTransiting] = useDerivedState(true, [_in])
 
     const getFullSize = () => {
         const el = innerRef.current
@@ -118,8 +120,16 @@ const Sweeping: <T extends HTMLElement = HTMLElement, C extends ElementType = 'd
             orientation={orientation}
             appear={appear}
             style={{
-                [styleProperty]: size,
+                ...(transiting.current || !_in) && {[styleProperty]: size},
                 ...props.style
+            }}
+            onEntered={() => {
+                props.onEntered?.()
+                setTransiting(false)
+            }}
+            onExited={() => {
+                props.onExited?.()
+                setTransiting(false)
             }}
         />
     )

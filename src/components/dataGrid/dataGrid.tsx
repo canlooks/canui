@@ -317,7 +317,7 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
 
     const syncOnExpandedChange = useSync(onExpandedChange)
 
-    const toggleExpanded = useCallback((key: Id) => {
+    const toggleExpanded = (key: Id) => {
         const currentExpanded = expandedSet.has(key)
         setInnerExpanded(o => {
             const newExpanded = currentExpanded
@@ -326,7 +326,7 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
             syncOnExpandedChange.current?.(newExpanded, key, !currentExpanded)
             return newExpanded
         })
-    }, [])
+    }
 
     /**
      * ---------------------------------------------------------------

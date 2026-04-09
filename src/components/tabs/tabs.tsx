@@ -92,7 +92,6 @@ export const Tabs = memo(<T extends TabType = TabType>({
     const setInnerValue = (value: Id) => {
         if (!readOnly && !disabled && value !== innerValue.current) {
             _setInnerValue(value)
-            console.log(96, value)
             variant === 'line' && setAnimating(true)
         }
     }

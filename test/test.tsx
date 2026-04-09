@@ -1,6 +1,6 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable, ContextMenu, useAppContext, Select, TreeSelect, Typography, Accordion, useDraggable, OptionsBase, useFlatSelection, usePopperContext, useFormContext, Autocomplete, Input, Tabs, Flex, TouchRipple, Slide, Fade, Grow} from '../src'
+import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable, ContextMenu, useAppContext, Select, TreeSelect, Typography, Accordion, useDraggable, OptionsBase, useFlatSelection, usePopperContext, useFormContext, Autocomplete, Input, Tabs, Flex, TouchRipple, Slide, Fade, Grow, DataGrid} from '../src'
 import React, {cloneElement, ReactNode, StrictMode, useDeferredValue, useEffect, useMemo, useState} from 'react'
 import {RC, useReactive} from '@canlooks/reactive/react'
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
@@ -14,14 +14,20 @@ const Root = RC(() => {
 
     return (
         <>
-            <Button onClick={() => state.open = !state.open}>Button</Button>
-            <Button onClick={() => state.count++}>Count: {state.count}</Button>
-            {/*<Grow in={state.open}>*/}
-            {/*    <div style={{height: 400, background: 'pink'}}/>*/}
-            {/*</Grow>*/}
-            <Dialog
-                open={state.open}
-                onClose={() => state.open = false}
+            <Collapse in appear={false}>
+                <div style={{height: 400, background: 'pink'}}/>
+            </Collapse>
+            <DataGrid
+                childrenKey="children"
+                columns={[
+                    {
+                        title: 'Name',
+                        field: 'name'
+                    }
+                ]}
+                rows={[
+                    {id: '1', name: 'abc', children: () => 123}
+                ]}
             />
         </>
     )
