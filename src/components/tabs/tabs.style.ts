@@ -58,7 +58,6 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
                     .${classes.start}, .${classes.end} {
                         display: flex;
                         z-index: 2;
-                        border-bottom: 1px solid ${divider};
                         transition: box-shadow .25s ${easing.easeOut};
 
                         &[data-show=true] {
@@ -235,12 +234,16 @@ export function useStyle({color, variant}: Required<Pick<TabsProps, 'color' | 'v
             variant === 'line'
                 ? css`
                         @layer reset {
-                            .${classes.tabWrapper} {
-                                padding: 0 ${spacing[5]}px;
-                            }
-
                             &[data-position=top],
                             &[data-position=bottom] {
+                                .${classes.start}, .${classes.end} {
+                                    border-bottom: 1px solid ${divider};
+                                }
+                                
+                                .${classes.tabWrapper} {
+                                    padding: 0 ${spacing[5]}px;
+                                }
+                                
                                 .${classes.tab} {
                                     padding: 10px 0;
                                 }

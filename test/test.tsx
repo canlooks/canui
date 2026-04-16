@@ -14,19 +14,12 @@ const Root = RC(() => {
 
     return (
         <>
-            <Collapse in appear={false}>
-                <div style={{height: 400, background: 'pink'}}/>
-            </Collapse>
-            <DataGrid
-                childrenKey="children"
-                columns={[
-                    {
-                        title: 'Name',
-                        field: 'name'
-                    }
-                ]}
-                rows={[
-                    {id: '1', name: 'abc', children: () => 123}
+            <Tabs
+                position="left"
+                tabs={[
+                    {value: '1', label: '视图1'},
+                    {value: '2', label: '视图2'},
+                    {value: '3', label: '视图3'},
                 ]}
             />
         </>

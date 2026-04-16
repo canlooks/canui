@@ -377,7 +377,9 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
     const setInnerRows = (data: R[]) => {
         setOptions?.(data)
         _setInnerRows(data)
-        containerRef.current!.scrollTop = containerRef.current!.scrollLeft = 0
+        if (containerRef.current) {
+            containerRef.current.scrollTop = containerRef.current.scrollLeft = 0
+        }
     }
 
     const [innerTotal, setInnerTotal] = useDerivedState(props.paginationProps?.total || 0)
