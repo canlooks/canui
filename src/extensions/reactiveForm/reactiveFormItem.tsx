@@ -49,6 +49,10 @@ function InnerFormItem<I>({
             (props.children as any).props?.onChange?.(e)
             onChange?.(e)
             context.onChange?.()
+        },
+        onkeydown(e: KeyboardEvent) {
+            e.preventDefault()
+            ;(props.children as any).props?.onkeydown?.(e)
         }
     }
 

@@ -24,7 +24,7 @@ interface FormOwnProps<V extends FormValue = FormValue> extends FormSharedProps,
     wrapperRef?: Ref<HTMLFormElement>
     initialValue?: V
     onChange?(field: FieldPath, value: any, formValue: V): void
-    onFinish?(value: V): void
+    onFinish?(value: V): any
     items?: (FormItemProps & Obj)[]
     descriptionsProps?: DescriptionsProps
 }
@@ -61,8 +61,7 @@ export function useFormStyleContext() {
 }
 
 export type FormRef<V extends FormValue = FormValue> = {
-    /** 存在校验不通过的字段时会得到`null` */
-    submit(): Promise<V | null>
+    submit(): Promise<V>
 
     getFieldValue<T = any>(field: FieldPath): T
     getFormValue(): V
@@ -193,19 +192,15 @@ export const Form = (
 
         const itemsContainer = useRef(new Map<string, FormItemRef>())
 
-        const submitHandler = async (e?: React.FormEvent<HTMLFormElement>) => {
+        const submitHandler = async (e?: React.SubmitEvent<HTMLFormElement>) => {
             e?.preventDefault()
-            try {
-                await Promise.all(
-                    [...itemsContainer.current].map(async ([, item]) => {
-                        return await item.validate() || Promise.reject()
-                    })
-                )
-                onFinish?.(formValue.current)
-                return formValue.current
-            } catch (e) {
-                return null
-            }
+            await Promise.all(
+                [...itemsContainer.current].map(async ([field, item]) => {
+                    return await item.validate() || Promise.reject(new TypeError(`Invalid field: "${field}"`))
+                })
+            )
+            await onFinish?.(formValue.current)
+            return formValue.current
         }
 
         const formRef = useRef<FormRef>(null)
