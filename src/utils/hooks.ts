@@ -51,7 +51,7 @@ export function useDerivedState(referredState: any, deps?: any[]) {
     const derivedState = useRef(void 0)
 
     useMemo(() => {
-        // StrictMode下，derivedState会重置2次
+        // StrictMode下，需要重置2次，使prevState保持正确
         derivedState.current = void 0
     }, [])
 
@@ -84,15 +84,23 @@ export function useMounted() {
 }
 
 /**
- * 组件卸载后得到{current: true}
- * @returns
+ * 得到一个RefObject，用于判断组件是否卸载
+ * @param onUnmount 回调函数，卸载时触发
  */
-export function useUnmounted() {
+export function useUnmounted(onUnmount?: () => void) {
     const isUnmounted = useRef(false)
+    const mountTimes = useRef(0)
 
-    useExternalClass(() => void 0, () => {
-        isUnmounted.current = true
-    })
+    useMemo(() => {
+        mountTimes.current++
+    }, [])
+
+    useEffect(() => () => {
+        if (!--mountTimes.current) {
+            isUnmounted.current = true
+            onUnmount?.()
+        }
+    }, [])
 
     return isUnmounted
 }
@@ -190,36 +198,40 @@ export function useContainer<T extends HTMLElement | null>(
 /**
  * 使用外部类，该方法可避免`StrictMode`下，React渲染行为与外部类实例生命周期不同步的问题
  */
-export function useExternalClass<T>(setup: () => T, cleanup?: (instance: T) => void): T {
-    const mountTimes = useRef(0)
-    const prevInstance = useRef<T>(void 0)
+export function useExternalClass<T>(setup: () => T, cleanup?: (instance: T) => void): RefObject<T> {
+    const instance = useRef<T>(void 0)
+    instance.current ||= setup()
 
-    const [instance] = useState(() => {
-        if (!mountTimes.current++) {
-            prevInstance.current = setup()
-        }
-        return prevInstance.current as T
+    useUnmounted(() => {
+        cleanup?.(instance.current!)
+        instance.current = void 0
     })
 
-    useEffect(() => () => {
-        !--mountTimes.current && cleanup?.(instance)
-    }, [])
-
-    return instance
+    return instance as RefObject<T>
 }
 
 /**
  * 用法同{@link useEffect}，但StrictMode下不会执行两次
  */
 export function useStrictEffect(effect: EffectCallback, deps?: DependencyList) {
-    const prevDeps = useRef<any[]>(void 0)
+    const hasRun = useRef(false)
+    const prevDeps = useRef(deps as any[])
+    const prevCleanup = useRef<(() => void) | void>(void 0)
 
     useEffect(() => {
-        const isDepsChanged = prevDeps.current ? !arrayShallowEqual(prevDeps.current!, deps as any[]) : true
-        if (isDepsChanged) {
+        const isDepsChanged = !arrayShallowEqual(prevDeps.current, deps as any[])
+
+        if (!hasRun.current || isDepsChanged) {
+            prevCleanup.current?.()
+            prevCleanup.current = effect()
+            hasRun.current = true
             prevDeps.current = deps as any[]
-            return effect()
         }
+    })
+
+    useUnmounted(() => {
+        prevCleanup.current?.()
+        prevCleanup.current = void 0
     })
 }
 
@@ -241,14 +253,14 @@ export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
 /**
  * 用法同{@link useMemo}，但StrictMode下不会执行两次
  */
-export function useStrictMemo<T>(factory: () => T, deps?: DependencyList) {
+export function useStrictMemo<T>(factory: () => T, deps: DependencyList) {
     const prevDeps = useRef<any[]>(void 0)
     const memoizedValue = useRef<T>(void 0)
 
     const isDepsChanged = prevDeps.current ? !arrayShallowEqual(prevDeps.current!, deps as any[]) : true
     if (isDepsChanged) {
         prevDeps.current = deps as any[]
-        return memoizedValue.current = factory()
+        memoizedValue.current = factory()
     }
 
     return memoizedValue.current

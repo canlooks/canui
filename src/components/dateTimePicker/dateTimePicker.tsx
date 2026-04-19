@@ -1,4 +1,4 @@
-import {ComponentProps, createContext, memo, useContext, useMemo, useRef} from 'react'
+import {ComponentProps, createContext, memo, useContext, useMemo} from 'react'
 import {classes, datePickerPopperStyle, style} from './dateTimePicker.style'
 import dayjs, {Dayjs} from 'dayjs'
 import {InputBase, InputBaseProps} from '../inputBase'
@@ -66,18 +66,12 @@ export const DateTimePicker = memo(({
 
     ...props
 }: DateTimePickerProps) => {
-    const focused = useRef(false)
-
-    const [innerOpen, _setInnerOpen] = useControlled(defaultOpen, open, onOpenChange)
-    const setInnerOpen = (open: boolean) => {
-        // 如果仍聚焦在输入框，则不用关闭弹框
-        (open || !focused.current) && _setInnerOpen(open)
-    }
+    const [innerOpen, setInnerOpen] = useControlled(defaultOpen, open, onOpenChange)
 
     const [dateValue, _setDateValue] = useControlled(defaultValue, value, onChange)
     const setDateValue = (date: Dayjs | null) => {
         _setDateValue(date)
-        autoClose && _setInnerOpen(false)
+        autoClose && setInnerOpen(false)
     }
 
     const contextValue = useMemo(() => ({

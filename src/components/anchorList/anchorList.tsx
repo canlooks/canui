@@ -1,5 +1,5 @@
 import {classes, style} from './anchorList.style'
-import {clsx, listenAllPredecessorsScroll, useDerivedState, useExternalClass, useSyncState} from '../../utils'
+import {clsx, listenAllPredecessorsScroll, useDerivedState, useSyncState} from '../../utils'
 import React, {memo, ReactNode, useEffect, useRef} from 'react'
 import {Flex, FlexProps} from '../flex'
 import {ActiveIndicator} from './activeIndicator'
@@ -48,7 +48,7 @@ export const AnchorList = memo(({
 
     const mounted = useRef(false)
 
-    useExternalClass(() => {
+    useEffect(() => {
         if (routeMode === 'history') {
             mounted.current ||= scrollToId(location.hash.slice(1))
         }

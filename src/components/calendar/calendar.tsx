@@ -1,8 +1,8 @@
 import {Size} from '../../types'
 import dayjs, {Dayjs} from 'dayjs'
-import {clsx, useControlled} from '../../utils'
+import {clsx, useControlled, useDerivedState} from '../../utils'
 import {PanelDates} from './panelDates'
-import {Dispatch, ReactNode, SetStateAction, useState} from 'react'
+import {Dispatch, ReactNode, SetStateAction} from 'react'
 import {classes, style} from './calendar.style'
 import {Flex, FlexProps} from '../flex'
 import {PanelYear} from './panelYear'
@@ -60,14 +60,14 @@ export const Calendar = ({
 }: CalendarProps) => {
     const [innerValue, setInnerValue] = useControlled(defaultValue, value, onChange)
 
-    const [viewType, setViewType] = useState<'date' | 'month' | 'year'>(viewLevel)
+    const [viewType, setViewType] = useDerivedState<'date' | 'month' | 'year'>(viewLevel)
 
-    const [innerD, setInnerD] = useState(() => innerValue.current ?? dayjs().startOf('date'))
+    const [innerD, setInnerD] = useDerivedState(() => innerValue.current ?? dayjs().startOf('date'), [innerValue.current])
 
     const commonProps: PanelProps = {
         value: innerValue.current,
         setValue: setInnerValue,
-        innerD,
+        innerD: innerD.current,
         setInnerD,
         setViewType,
         min,
@@ -75,6 +75,7 @@ export const Calendar = ({
         disabledDates,
         onSelected: (newValue: Dayjs) => {
             if (viewLevel === 'date') {
+                // 视图等级为`date`时，选中年或月跳转回`date`视图
                 setViewType('date')
             } else {
                 // 视图等级不为`date`时，选中年或月即完成
@@ -89,7 +90,7 @@ export const Calendar = ({
     }
 
     const renderPanel = () => {
-        switch (viewType) {
+        switch (viewType.current) {
             case 'date':
                 return <PanelDates {...commonProps}/>
             case 'month':

@@ -1,6 +1,6 @@
 import {createContext, ElementType, useContext} from 'react'
 import {OverridableComponent, OverridableProps} from '../../types'
-import {clsx, defineCss, useExternalClass} from '../../utils'
+import {clsx, defineCss} from '../../utils'
 import {classes, style} from './app.style'
 import {ThemeProvider, ThemeProviderProps} from '../theme'
 import {AppDialog, AppDialogMethods} from './appDialog'
@@ -27,6 +27,13 @@ export function useAppContext() {
     return useContext(AppContext)
 }
 
+export type AppMethods = {
+    dialog: AppDialogMethods
+    message: AppMessageMethods
+    notification: AppNotificationMethods
+    actionSheet: AppActionSheetMethods
+}
+
 export const App = (
     ({
         theme,
@@ -40,12 +47,7 @@ export const App = (
             </GlobalEventDelegation>
         )
     }
-) as OverridableComponent<AppOwnProps> & {
-    dialog: AppDialogMethods
-    message: AppMessageMethods
-    notification: AppNotificationMethods
-    actionSheet: AppActionSheetMethods
-}
+) as OverridableComponent<AppOwnProps> & AppMethods
 
 export function InnerApp({
     component: Component = 'div',
@@ -54,20 +56,15 @@ export function InnerApp({
     fill = true,
     ...props
 }: OverridableProps<AppProps, 'div'>) {
-    const appValue = useExternalClass(() => ({
-        dialog: new AppDialogMethods(),
-        message: new AppMessageMethods(),
-        notification: new AppNotificationMethods(),
-        actionSheet: new AppActionSheetMethods()
-    }))
+    const appContext = useAppContext()
 
-    App.dialog ||= appValue.dialog
-    App.message ||= appValue.message
-    App.notification ||= appValue.notification
-    App.actionSheet ||= appValue.actionSheet
+    App.dialog = appContext.dialog
+    App.message = appContext.message
+    App.notification = appContext.notification
+    App.actionSheet = appContext.actionSheet
 
     return (
-        <AppContext value={appValue}>
+        <AppContext value={appContext}>
             {Component
                 ? <Component
                     {...props}
@@ -88,10 +85,10 @@ export function InnerApp({
                 </Component>
                 : children
             }
-            <AppDialog methods={appValue.dialog}/>
-            <AppMessage methods={appValue.message}/>
-            <AppNotification methods={appValue.notification}/>
-            <AppActionSheet methods={appValue.actionSheet}/>
+            <AppDialog methods={appContext.dialog}/>
+            <AppMessage methods={appContext.message}/>
+            <AppNotification methods={appContext.notification}/>
+            <AppActionSheet methods={appContext.actionSheet}/>
         </AppContext>
     )
 }

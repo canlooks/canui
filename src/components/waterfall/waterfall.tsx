@@ -2,7 +2,7 @@ import {Children, isValidElement, useLayoutEffect, useRef} from 'react'
 import {classes, useStyle} from './waterfall.style'
 import {WaterfallItem} from './waterfallItem'
 import {DivProps, ResponsiveProp} from '../../types'
-import {cloneRef, clsx, toResponsiveValue, useExternalClass, useResponsiveValue, useUpdateEffect} from '../../utils'
+import {cloneRef, clsx, toResponsiveValue, useResponsiveValue, useUnmounted, useUpdateEffect} from '../../utils'
 
 export interface WaterfallProps extends DivProps {
     /** 布局列数，默认为`{xs: 4}` */
@@ -54,7 +54,7 @@ export const Waterfall = ({
 
     useUpdateEffect(computeItemOrder, [columnCountNum.current])
 
-    useExternalClass(() => void 0, () => {
+    useUnmounted(() => {
         resizeObserver.current!.disconnect()
     })
 

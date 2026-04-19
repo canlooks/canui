@@ -51,7 +51,7 @@ export const Autocomplete = memo(<O extends MenuOptionType>({
 
     const changedBySelect = useRef(false)
 
-    const changeHandler = (e: React.ChangeEvent<HTMLInputElement>, isSelect = false) => {
+    const changeHandler = (e: React.ChangeEvent<HTMLInputElement>, isSelect: boolean) => {
         changedBySelect.current = isSelect
         onChange?.(e)
         setInnerValue(e.target.value)
@@ -131,7 +131,7 @@ export const Autocomplete = memo(<O extends MenuOptionType>({
             className: classes.root,
             loading: innerLoading.current,
             value: innerValue.current,
-            onChange: changeHandler,
+            onChange: e => changeHandler(e, false),
             onFocus: () => setFocused(true),
             onBlur: () => setFocused(false)
         }
