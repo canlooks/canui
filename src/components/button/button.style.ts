@@ -53,6 +53,10 @@ export function useStyle({color}: { color: ColorPropsValue }) {
                 &:active {
                     transition-duration: 0s;
                 }
+                
+                .${classes.content} {
+                    display: flex;
+                }
             }
         `
         const sizeStyle = css`

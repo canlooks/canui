@@ -5,9 +5,9 @@ import {clsx, mergeComponentProps, useControlled} from '../../utils'
 import {DatePickerSharedProps, DateTimePicker, DateTimePickerProps} from '../dateTimePicker'
 import {Dayjs} from 'dayjs'
 
-type DateValueType = [Dayjs | null, Dayjs | null] | null
+export type DateValueType = [Dayjs | null, Dayjs | null] | null
 
-type PickerType = 'start' | 'end'
+export type PickerType = 'start' | 'end'
 
 export interface DateTimeRangePickerProps extends DatePickerSharedProps, Omit<DivProps, 'defaultValue' | 'onChange'> {
     startPickerProps?: DateTimePickerProps
