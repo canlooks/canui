@@ -1,6 +1,6 @@
 import {Dispatch, ReactElement, SetStateAction, memo, useMemo, useState, useRef} from 'react'
 import {Button} from '../button'
-import {Bubble} from '../bubble'
+import {Bubble, BubbleProps} from '../bubble'
 import {classes, style} from './curdColumnConfig.style'
 import {CurdColumn} from './curd'
 import {RowType} from '../dataGrid'
@@ -19,6 +19,7 @@ export type CurdColumnConfigProps<R extends RowType> = {
     innerVisible: Id[] | undefined
     setInnerVisible: Dispatch<SetStateAction<Id[] | undefined>>
     setInnerOrder: Dispatch<SetStateAction<Id[] | undefined>>
+    columnConfigBubbleProps?: BubbleProps
 }
 
 export const CurdColumnConfig = memo(<R extends RowType>(props: CurdColumnConfigProps<R>) => {
@@ -39,7 +40,8 @@ export const CurdColumnConfig = memo(<R extends RowType>(props: CurdColumnConfig
 const CurdColumnConfigContent = memo(({
     columns,
     innerVisible,
-    setInnerVisible
+    setInnerVisible,
+    columnConfigBubbleProps
 }: CurdColumnConfigProps<any>) => {
     const isDragging = useRef(false)
 
@@ -51,6 +53,7 @@ const CurdColumnConfigContent = memo(({
     const [open, setOpen] = useState(false)
 
     const openChangeHandler = (open: boolean) => {
+        columnConfigBubbleProps?.onOpenChange?.(open)
         if (open || !isDragging.current) {
             setOpen(open)
         }
@@ -69,11 +72,12 @@ const CurdColumnConfigContent = memo(({
 
     return (
         <Bubble
+            placement="bottomRight"
+            trigger={['hover', 'click']}
+            {...columnConfigBubbleProps}
             css={style}
             open={open}
             onOpenChange={openChangeHandler}
-            placement="bottomRight"
-            trigger={['hover', 'click']}
             content={
                 <div className={classes.content}>
                     <div className={classes.title}>

@@ -20,6 +20,7 @@ import {faTrashCan} from '@fortawesome/free-regular-svg-icons/faTrashCan'
 import {faPenToSquare} from '@fortawesome/free-regular-svg-icons/faPenToSquare'
 import {faPlus} from '@fortawesome/free-solid-svg-icons/faPlus'
 import {faRotateRight} from '@fortawesome/free-solid-svg-icons/faRotateRight'
+import {BubbleProps} from '../bubble'
 
 export type CurdFormItemProps<I = any> = FormItemProps<I> & {
     /** 对filter或form内的字段单独排序，数字越大越靠后，默认为`0` */
@@ -86,6 +87,8 @@ export interface CurdBaseProps<R extends RowType = RowType, F extends FormValue 
     reloadable?: boolean
     onReload?(): void
     resizable?: boolean
+    defaultSize?: Size
+    onSizeChange?(size: Size): void
     columnConfigurable?: boolean | {
         defaultVisible?: Id[]
         visible?: Id[]
@@ -94,8 +97,8 @@ export interface CurdBaseProps<R extends RowType = RowType, F extends FormValue 
         order?: Id[]
         onOrderChange?(order: Id[]): void
     }
-    defaultSize?: Size
-    onSizeChange?(size: Size): void
+    resizeBubbleProps?: BubbleProps
+    columnConfigBubbleProps?: BubbleProps
 
     filterableProps?: Omit<CurdFilterableProps, 'columns'>
     renderFilterable?(filterableProps: CurdFilterableProps): ReactNode
@@ -157,9 +160,11 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
         reloadable = true,
         onReload,
         resizable = true,
-        columnConfigurable = true,
         defaultSize = 'medium',
         onSizeChange,
+        columnConfigurable = true,
+        resizeBubbleProps,
+        columnConfigBubbleProps,
 
         filterProps,
         initialFilterValue,
@@ -549,6 +554,7 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
                                 <CurdResizable
                                     innerSize={innerSize.current}
                                     setInnerSize={setInnerSize}
+                                    resizeBubbleProps={resizeBubbleProps}
                                 />
                             }
                             {columnConfigurable &&
@@ -557,6 +563,7 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
                                     innerVisible={innerVisible.current}
                                     setInnerVisible={setInnerVisible}
                                     setInnerOrder={setInnerOrder}
+                                    columnConfigBubbleProps={columnConfigBubbleProps}
                                 />
                             }
                         </div>

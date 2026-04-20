@@ -10,7 +10,7 @@ export interface ClickAwayProps extends DivProps {
     disabled?: boolean
     children?: ReactElement<any>
     /** 用于参考的目标元素，若为数组，需要点击数组外的元素才会触发clickAway */
-    targets?: () => Element | undefined | (Element | undefined)[]
+    targets?: () => Element | null | undefined | (Element | null | undefined)[]
 }
 
 export function ClickAway({
@@ -47,9 +47,9 @@ export function ClickAway({
         }
         const containerEl = typeof container === 'function' ? container() : container
         const standardEventType = eventType.toLowerCase().replace(/^on/, '')
-        containerEl.addEventListener(standardEventType, onClick)
+        containerEl?.addEventListener(standardEventType, onClick)
         return () => {
-            containerEl.removeEventListener(standardEventType, onClick)
+            containerEl?.removeEventListener(standardEventType, onClick)
         }
     }, [disabled])
 

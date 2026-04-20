@@ -178,12 +178,12 @@ export function useContainer<T extends HTMLElement | null>(
     container?: DefineElement<T>,
     effectContainer?: DefineElement<T>,
     defaultContainer?: DefineElement<T>
-): RefObject<T | null> {
-    const [containerEl, setContainerEl] = useDerivedState<T | null>(prev => {
+): RefObject<T | null | undefined> {
+    const [containerEl, setContainerEl] = useDerivedState<T | null | undefined>(prev => {
         if (container) {
             return typeof container === 'function' ? container() : container
         }
-        return prev || null
+        return prev
     }, [container])
 
     useEffect(() => {

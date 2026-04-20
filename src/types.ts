@@ -34,7 +34,7 @@ export type BlockPlacement = CornerPlacement | 'top' | 'bottom'
 
 export type Placement = BlockPlacement | 'left' | 'right'
 
-export type DefineElement<T = Element | null | undefined> = T | (() => T)
+export type DefineElement<T = Element> = T | null | undefined | (() => T | null | undefined)
 
 /**
  * ----------------------------------------------------------------------------------

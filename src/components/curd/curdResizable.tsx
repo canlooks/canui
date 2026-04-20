@@ -1,21 +1,27 @@
 import {Dispatch, SetStateAction, memo} from 'react'
 import {Tooltip} from '../tooltip'
-import {Bubble} from '../bubble'
+import {Bubble, BubbleProps} from '../bubble'
 import {MenuItem} from '../menuItem'
 import {Button} from '../button'
 import {Size} from '../../types'
 import {Icon} from '../icon'
 import {faArrowsUpDown} from '@fortawesome/free-solid-svg-icons/faArrowsUpDown'
 
-export const CurdResizable = memo(({innerSize, setInnerSize}: {
+export const CurdResizable = memo(({
+    innerSize,
+    setInnerSize,
+    resizeBubbleProps
+}: {
     innerSize: Size
     setInnerSize: Dispatch<SetStateAction<Size>>
+    resizeBubbleProps?: BubbleProps
 }) => {
     return (
         <Tooltip title="表格尺寸" clickToClose>
             <Bubble
                 placement="bottom"
                 trigger="click"
+                {...resizeBubbleProps}
                 content={
                     <>
                         <MenuItem
