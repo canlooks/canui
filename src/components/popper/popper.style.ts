@@ -104,26 +104,26 @@ export const popperArrowStyle = (colorValue: string, arrowSize = 10) => css`
         }
     }
 
-    &[data-place-b=Left] {
+    &[data-place-b=left] {
         [data-show-arrow=true]::before {
             left: 9px;
         }
     }
 
-    &[data-place-b=Right] {
+    &[data-place-b=right] {
         [data-show-arrow=true]::before {
             left: auto;
             right: 9px;
         }
     }
 
-    &[data-place-b=Top] {
+    &[data-place-b=top] {
         [data-show-arrow=true]::before {
             top: 9px;
         }
     }
 
-    &[data-place-b=Bottom] {
+    &[data-place-b=bottom] {
         [data-show-arrow=true]::before {
             top: auto;
             bottom: 9px;

@@ -196,8 +196,7 @@ export function SelectBase({
                 {
                     popperRef,
                     onOpenChange: openChangeHandler,
-                    onOpenChangeEnd: openChangeEnd,
-                    onPointerDown: e => e.preventDefault()
+                    onOpenChangeEnd: openChangeEnd
                 }
             )}
         >

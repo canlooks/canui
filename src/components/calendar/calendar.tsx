@@ -62,7 +62,22 @@ export const Calendar = ({
 
     const [viewType, setViewType] = useDerivedState<'date' | 'month' | 'year'>(viewLevel)
 
-    const [innerD, setInnerD] = useDerivedState(() => innerValue.current ?? dayjs().startOf('date'), [innerValue.current])
+    const [innerD, setInnerD] = useDerivedState(() => {
+        if (innerValue.current) {
+            return innerValue.current
+        }
+        const today = dayjs().startOf('date')
+
+        const _min = min?.add(1, 'day')
+        if (_min?.isAfter(today, 'month')) {
+            return _min
+        }
+        const _max = max?.subtract(1, 'day')
+        if (_max?.isBefore(today, 'month')) {
+            return _max
+        }
+        return today
+    }, [innerValue.current, min, max])
 
     const commonProps: PanelProps = {
         value: innerValue.current,

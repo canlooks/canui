@@ -88,11 +88,9 @@ export const DateTimeRangePicker = memo(({
                             autoFocus,
                             autoClose: false,
                             placeholder: showTimer ? '开始时间' : '开始日期',
-                            max: innerValue.current?.[1] || void 0,
                             open: innerOpen.current === 'start'
                         }
                         : {
-                            autoClose,
                             placeholder: showTimer ? '结束时间' : '结束日期',
                             min: innerValue.current?.[0] || void 0,
                             open: innerOpen.current === 'end'
@@ -104,12 +102,21 @@ export const DateTimeRangePicker = memo(({
                         ? {
                             onOpenChange: open => setInnerOpen(open ? 'start' : 'closed'),
                             value: innerValue.current?.[0],
-                            onChange: value => {
-                                setInnerValue(o => [value, o?.[1] || null])
-                                if (value && !showTimer) {
+                            onChange: start => {
+                                setInnerValue(o => {
+                                    const end = o?.[1]
+                                        ? start?.isAfter(o[1], 'date') ? null : o[1]
+                                        : null
+                                    return [start, end]
+                                })
+                                if (start && !showTimer) {
                                     requestAnimationFrame(() => {
-                                        endPickerInputRef.current!.focus()
-                                        innerOpen.current === 'start' && setInnerOpen('end')
+                                        if (!innerValue.current?.[1]) {
+                                            endPickerInputRef.current!.focus()
+                                            innerOpen.current === 'start' && setInnerOpen('end')
+                                        } else {
+                                            setInnerOpen('closed')
+                                        }
                                     })
                                 }
                             }

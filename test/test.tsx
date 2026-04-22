@@ -15,14 +15,12 @@ const Root = RC(() => {
 
     return (
         <>
-                <div style={{
-                    height: 300,
-                    background: 'pink',
-                    position: 'relative',
-                }}>
-                    <TouchRipple/>
-                </div>
-            {/*<DateTimeRangePicker/>*/}
+            <Select multiple options={[
+                {value: '1', label: '1'},
+                {value: '2', label: '2'},
+            ]}/>
+            <DateTimePicker autoClose={false}/>
+            <DateTimeRangePicker/>
             {/*<Select/>*/}
             {/*<Bubble*/}
             {/*    open={state.open}*/}

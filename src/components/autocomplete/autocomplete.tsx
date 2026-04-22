@@ -164,8 +164,7 @@ export const Autocomplete = memo(<O extends MenuOptionType>({
                     css: popperStyle,
                     open: open.current,
                     popperRef,
-                    onOpenChange: setOpen,
-                    onPointerDown: e => e.preventDefault()
+                    onOpenChange: setOpen
                 }
             )}
         >

@@ -394,9 +394,11 @@ export function Popper({
                         // pB === undefined
                         if (pA === 'top' || pA === 'bottom') {
                             left = leftEdge + (anchorRect.width - popperWidth) / 2
+                            right = void 0
                             originX = '50%'
                         } else {
                             top = topEdge + (anchorRect.height - popperHeight) / 2
+                            bottom = void 0
                             originY = '50%'
                         }
                 }
@@ -743,6 +745,10 @@ export function Popper({
                             data-place-a={placeA.current}
                             data-place-b={placeB.current}
                             data-animation={animation}
+                            onPointerDown={e => {
+                                props.onPointerDown?.(e)
+                                e.preventDefault()
+                            }}
                             onTransitionEnd={onTransitionEnd}
                         >
                             <PopperContext value={contextValue}>

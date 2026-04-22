@@ -1,6 +1,6 @@
 import {ComponentProps, createContext, memo, useContext, useMemo} from 'react'
 import {classes, datePickerPopperStyle, style} from './dateTimePicker.style'
-import dayjs, {Dayjs} from 'dayjs'
+import {Dayjs} from 'dayjs'
 import {InputBase, InputBaseProps} from '../inputBase'
 import {mergeComponentProps, useControlled} from '../../utils'
 import {Popper, PopperProps} from '../popper'
@@ -68,9 +68,9 @@ export const DateTimePicker = memo(({
 }: DateTimePickerProps) => {
     const [innerOpen, setInnerOpen] = useControlled(defaultOpen, open, onOpenChange)
 
-    const [dateValue, _setDateValue] = useControlled(defaultValue, value, onChange)
-    const setDateValue = (date: Dayjs | null) => {
-        _setDateValue(date)
+    const [innerValue, _setInnerValue] = useControlled(defaultValue, value, onChange)
+    const setInnerValue = (date: Dayjs | null) => {
+        _setInnerValue(date)
         autoClose && setInnerOpen(false)
     }
 
@@ -83,9 +83,6 @@ export const DateTimePicker = memo(({
     const showCalendar = /[YMD]/.test(format)
 
     const showTimer = /[Hms]/.test(format)
-
-    // 若外部没有值，内部需要“现在”作为默认值
-    const innerValue = dateValue.current || dayjs()
 
     return (
         <Popper
@@ -104,9 +101,9 @@ export const DateTimePicker = memo(({
                                         : format.includes('M') ? 'month'
                                             : 'year'
                                     }
-                                    _defaultNull={!dateValue.current}
-                                    value={innerValue}
-                                    onChange={setDateValue}
+                                    _defaultNull={!innerValue.current}
+                                    value={innerValue.current}
+                                    onChange={setInnerValue}
                                     min={min}
                                     max={max}
                                     disabledDates={disabledDates}
@@ -119,8 +116,8 @@ export const DateTimePicker = memo(({
                                         showHours={format.includes('H')}
                                         showMinutes={format.includes('m')}
                                         showSeconds={format.includes('s')}
-                                        value={dateValue.current}
-                                        onChange={setDateValue}
+                                        value={innerValue.current}
+                                        onChange={setInnerValue}
                                     />
                                 </DateTimePickerContext>
                             }
@@ -129,8 +126,7 @@ export const DateTimePicker = memo(({
                 },
                 popperProps,
                 {
-                    onOpenChange: setInnerOpen,
-                    onPointerDown: e => e.preventDefault()
+                    onOpenChange: setInnerOpen
                 }
             )}
         >
@@ -140,9 +136,9 @@ export const DateTimePicker = memo(({
                     {
                         css: style,
                         className: classes.root,
-                        value: dateValue.current as any,
+                        value: innerValue.current as any,
                         onClear() {
-                            setDateValue(null)
+                            setInnerValue(null)
                         }
                     }
                 )}
@@ -150,10 +146,10 @@ export const DateTimePicker = memo(({
             >
                 {inputBaseProps =>
                     <div className={classes.container}>
-                        {!dateValue.current
+                        {!innerValue.current
                             ? <div className={classes.placeholder}>{props.placeholder ?? '请选择'}</div>
                             : <div className={classes.backfill}>
-                                {dateValue.current.format(format)}
+                                {innerValue.current.format(format)}
                             </div>
                         }
                         <input

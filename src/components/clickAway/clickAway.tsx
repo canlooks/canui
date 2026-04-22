@@ -16,7 +16,7 @@ export interface ClickAwayProps extends DivProps {
 export function ClickAway({
     ref,
     container = self,
-    eventType = 'click',
+    eventType = 'pointerdown',
     onClickAway,
     disabled,
     children,

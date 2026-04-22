@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "..",
     "noUnusedLocals": false,
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
