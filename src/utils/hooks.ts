@@ -183,6 +183,14 @@ export function useContainer<T extends HTMLElement | null>(
         if (container) {
             return typeof container === 'function' ? container() : container
         }
+        if (!prev) {
+            if (typeof defaultContainer !== 'undefined') {
+                return typeof defaultContainer === 'function' ? defaultContainer() : defaultContainer
+            }
+            if (typeof document !== 'undefined') {
+                return document.body as T
+            }
+        }
         return prev
     }, [container])
 

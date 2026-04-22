@@ -188,19 +188,6 @@ export function isElementOverflowed(target: Element, container?: Element): Overf
 }
 
 /**
- * 下一个事件循环
- * @param callback
- */
-export function nextTick(callback?: () => void): Promise<void> {
-    return new Promise(resolve => {
-        queueMicrotask(() => {
-            callback?.()
-            resolve()
-        })
-    })
-}
-
-/**
  * 克隆Ref
  * @param refs
  */

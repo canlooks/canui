@@ -189,7 +189,6 @@ export const DataGridHead = memo(<R extends RowType, V extends Id = Id>({
                                                     {...mergeComponentProps<BubbleProps>({
                                                         style: {maxWidth: 360},
                                                         trigger: 'click',
-                                                        placement: 'bottomRight',
                                                         autoClose: false,
                                                         content: (
                                                             <FilterBubbleContent

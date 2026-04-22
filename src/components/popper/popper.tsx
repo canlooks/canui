@@ -23,6 +23,21 @@ const getAttemptOrder = (placement: Placement) => {
     return order
 }
 
+const splitPlacement = {
+    top: ['top'],
+    bottom: ['bottom'],
+    left: ['left'],
+    right: ['right'],
+    topLeft: ['top', 'left'],
+    topRight: ['top', 'right'],
+    bottomLeft: ['bottom', 'left'],
+    bottomRight: ['bottom', 'right'],
+    leftTop: ['left', 'top'],
+    leftBottom: ['left', 'bottom'],
+    rightTop: ['right', 'top'],
+    rightBottom: ['right', 'bottom']
+}
+
 export interface PopperProps extends Omit<DivProps, 'content' | 'children'> {
     /** 默认的ref会传递至`children` */
     popperRef?: Ref<PopperRef | null>
@@ -231,12 +246,11 @@ export function Popper({
         openAnimation?: boolean
     }, beforeOpen?: () => void) => {
         const containerRect = containerEl.current!.getBoundingClientRect()
-
         const popperEl = innerPopperRef.current!
         let {offsetWidth: popperWidth, offsetHeight: popperHeight} = popperEl
 
         let pA: string, pB: string
-        let left: number, top: number
+        let top: number | undefined, bottom: number | undefined, left: number | undefined, right: number | undefined
         let width: number | undefined, height: number | undefined
         let originX: string, originY: string
 
@@ -246,78 +260,79 @@ export function Popper({
             // 右键菜单
             const mouseX = contextMenuEvent.current.clientX - containerRect.left
             const mouseY = contextMenuEvent.current.clientY - containerRect.top
+
             attempt = placement => {
-                [, pA, pB] = placement.match(/^(top|bottom|left|right)(Top|Bottom|Left|Right)?/)!
-                if (pB) {
-                    switch (placement) {
-                        case 'topLeft':
-                        case 'leftTop':
-                            left = mouseX - popperWidth
-                            top = mouseY - popperHeight
-                            originX = '100%'
-                            originY = '100%'
-                            break
-                        case 'topRight':
-                        case 'rightTop':
-                            left = mouseX
-                            top = mouseY - popperHeight
-                            originX = '0%'
-                            originY = '100%'
-                            break
-                        case 'bottomLeft':
-                        case 'leftBottom':
-                            left = mouseX - popperWidth
-                            top = mouseY
-                            originX = '100%'
-                            originY = '0%'
-                            break
-                        case 'bottomRight':
-                        case 'rightBottom':
-                            left = mouseX
-                            top = mouseY
-                            originX = '0%'
-                            originY = '0%'
-                            break
-                    }
-                } else {
-                    switch (pA) {
-                        case 'top':
-                            top = mouseY - popperHeight
-                            originY = '100%'
-                            break
-                        case 'bottom':
-                            top = mouseY
-                            originY = '0%'
-                            break
-                        case 'left':
-                            left = mouseX - popperWidth
-                            originX = '100%'
-                            break
-                        case 'right':
-                            left = mouseX
-                            originX = '0%'
-                            break
-                    }
-                    if (pA === 'top' || pA === 'bottom') {
+                switch (placement) {
+                    case 'topLeft':
+                    case 'leftTop':
+                        bottom = -mouseY
+                        right = containerRect.width - mouseX
+                        originX = '100%'
+                        originY = '100%'
+                        break
+                    case 'topRight':
+                    case 'rightTop':
+                        bottom = -mouseY
+                        left = mouseX
+                        originX = '0%'
+                        originY = '100%'
+                        break
+                    case 'bottomLeft':
+                    case 'leftBottom':
+                        top = mouseY
+                        right = containerRect.width - mouseX
+                        originX = '100%'
+                        originY = '0%'
+                        break
+                    case 'bottomRight':
+                    case 'rightBottom':
+                        top = mouseY
+                        left = mouseX
+                        originX = '0%'
+                        originY = '0%'
+                        break
+                    case 'top':
+                        top = mouseY - popperHeight
                         left = mouseX - popperWidth / 2
                         originX = '50%'
-                    } else {
+                        originY = '100%'
+                        break
+                    case 'bottom':
+                        top = mouseY
+                        left = mouseX - popperWidth / 2
+                        originX = '50%'
+                        originY = '0%'
+                        break
+                    case 'left':
                         top = mouseY - popperHeight / 2
+                        left = mouseX - popperWidth
+                        originX = '100%'
                         originY = '50%'
-                    }
+                        break
+                    case 'right':
+                        top = mouseY - popperHeight / 2
+                        left = mouseX
+                        originX = '0%'
+                        originY = '50%'
+                        break
                 }
-                popperEl.style.left = left + 'px'
-                popperEl.style.top = top + 'px'
+
+                popperEl.style.top = typeof top === 'undefined' ? '' : top + 'px'
+                popperEl.style.bottom = typeof bottom === 'undefined' ? '' : bottom + 'px'
+                popperEl.style.left = typeof left === 'undefined' ? '' : left + 'px'
+                popperEl.style.right = typeof right === 'undefined' ? '' : right + 'px'
                 return isElementOverflowed(popperEl, containerEl.current! === document.body ? void 0 : containerEl.current!)
             }
         } else {
             // 非右键菜单
             const anchorRect = getAnchorElement()!.getBoundingClientRect()
             const topEdge = anchorRect.top - containerRect.top
+            const bottomEdge = anchorRect.bottom - containerRect.top
             const leftEdge = anchorRect.left - containerRect.left
+            const rightEdge = containerRect.left + containerRect.width - anchorRect.right
 
             attempt = placement => {
-                [, pA, pB] = placement.match(/^(top|bottom|left|right)(Top|Bottom|Left|Right)?/)!
+                [pA, pB] = splitPlacement[placement]
 
                 if (sizeAdaptable) {
                     if (pA === 'top' || pA === 'bottom') {
@@ -335,39 +350,48 @@ export function Popper({
 
                 switch (pA) {
                     case 'top':
-                        top = topEdge - popperHeight - offset
+                        top = void 0
+                        bottom = -(topEdge - offset)
                         originY = '100%'
                         break
                     case 'bottom':
-                        top = topEdge + anchorRect.height + offset
+                        bottom = void 0
+                        top = bottomEdge + offset
                         originY = '0%'
                         break
                     case 'left':
-                        left = leftEdge - popperWidth - offset
+                        left = void 0
+                        right = leftEdge - offset
                         originX = '100%'
                         break
                     case 'right':
-                        left = leftEdge + anchorRect.width + offset
+                        right = void 0
+                        left = rightEdge + offset
                         originX = '0%'
                 }
                 switch (pB) {
-                    case 'Left':
+                    case 'left':
                         left = leftEdge
+                        right = void 0
                         originX = '0%'
                         break
-                    case 'Right':
-                        left = leftEdge - popperWidth + anchorRect.width
+                    case 'right':
+                        left = void 0
+                        right = rightEdge
                         originX = '100%'
                         break
-                    case 'Top':
+                    case 'top':
                         top = topEdge
+                        bottom = void 0
                         originY = '0%'
                         break
-                    case 'Bottom':
-                        top = topEdge - popperHeight + anchorRect.height
+                    case 'bottom':
+                        top = void 0
+                        bottom = bottomEdge
                         originY = '100%'
                         break
                     default:
+                        // pB === undefined
                         if (pA === 'top' || pA === 'bottom') {
                             left = leftEdge + (anchorRect.width - popperWidth) / 2
                             originX = '50%'
@@ -376,8 +400,13 @@ export function Popper({
                             originY = '50%'
                         }
                 }
-                popperEl.style.left = left + 'px'
-                popperEl.style.top = top + 'px'
+
+                popperEl.style.top = typeof top === 'undefined' ? '' : top + 'px'
+                popperEl.style.bottom = typeof bottom === 'undefined' ? '' : bottom + 'px'
+                popperEl.style.left = typeof left === 'undefined' ? '' : left + 'px'
+                popperEl.style.right = typeof right === 'undefined' ? '' : right + 'px'
+                popperEl.style.width = typeof width === 'undefined' ? '' : width + 'px'
+                popperEl.style.height = typeof height === 'undefined' ? '' : height + 'px'
                 return isElementOverflowed(popperEl, containerEl.current! === document.body ? void 0 : containerEl.current!)
             }
         }
@@ -387,28 +416,22 @@ export function Popper({
         } else {
             const attemptOrder = getAttemptOrder(placement)
             for (let i = 0; i < attemptOrder.length; i++) {
-                if (attempt(attemptOrder[i]) === false) {
+                const t = attempt(attemptOrder[i])
+                if (t === false) {
                     break
                 }
             }
         }
 
+        beforeOpen?.()
+
         const settle = () => {
             setPopperBounding({
-                left, top, width, height,
+                top, bottom, left, right, width, height,
                 transformOrigin: `${originX!} ${originY!}`
             })
             placeA.current = pA!
             placeB.current = pB!
-        }
-
-        if (beforeOpen) {
-            if (sizeAdaptable) {
-                // 自适应尺寸需要在打开前设置
-                popperEl.style.width = width ? width + 'px' : ''
-                popperEl.style.height = height ? height + 'px' : ''
-            }
-            beforeOpen()
         }
 
         if (options?.openAnimation) {
@@ -416,13 +439,9 @@ export function Popper({
                 ? pA! === 'top' || pA! === 'bottom' ? 'scaleY(0)' : 'scaleX(0)'
                 : 'scale(0)'
             animating.current = true
-            requestAnimationFrame(() => {
-                settle()
-                setOpenNextFrame(true)
-            })
-        } else {
-            settle()
+            setOpenNextFrame(true)
         }
+        settle()
     }
 
     useLayoutEffect(() => {
@@ -706,29 +725,30 @@ export function Popper({
                     targets={() => contextMenuEvent.current ? void 0 : getAnchorElement()}
                     onClickAway={onClickAway}
                 >
-                    <div
-                        {...props}
-                        ref={innerPopperRef}
-                        css={style}
-                        className={clsx(classes.root, props.className)}
-                        style={{
-                            ...popperBounding,
-                            ...!openNextFrame.current && {
-                                transition: 'none',
-                                transform: 'scale(1)'
-                            },
-                            ...props.style
-                        }}
-                        data-open={innerOpen.current}
-                        data-variant={variant}
-                        data-place-a={placeA.current}
-                        data-place-b={placeB.current}
-                        data-animation={animation}
-                        onTransitionEnd={onTransitionEnd}
-                    >
-                        <PopperContext value={contextValue}>
-                            {content}
-                        </PopperContext>
+                    <div css={style} className={classes.placeHelper}>
+                        <div
+                            {...props}
+                            ref={innerPopperRef}
+                            className={clsx(classes.root, props.className)}
+                            style={{
+                                ...popperBounding,
+                                ...!openNextFrame.current && {
+                                    transition: 'none',
+                                    transform: 'scale(1)'
+                                },
+                                ...props.style
+                            }}
+                            data-open={innerOpen.current}
+                            data-variant={variant}
+                            data-place-a={placeA.current}
+                            data-place-b={placeB.current}
+                            data-animation={animation}
+                            onTransitionEnd={onTransitionEnd}
+                        >
+                            <PopperContext value={contextValue}>
+                                {content}
+                            </PopperContext>
+                        </div>
                     </div>
                 </ClickAway>,
                 containerEl.current

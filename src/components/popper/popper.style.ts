@@ -4,7 +4,7 @@ import {appStyleCallback} from '../app/app.style'
 import {Theme, zIndex} from '../theme'
 
 export const classes = defineInnerClasses('popper', [
-    'popper',
+    'placeHelper'
 ])
 
 export const style = defineCss(theme => {
@@ -13,37 +13,43 @@ export const style = defineCss(theme => {
         appStyleCallback(theme),
         css`
             @layer reset {
+                width: 100%;
+                height: 0;
                 position: absolute;
                 top: 0;
                 left: 0;
-                z-index: ${zIndex.popper};
-                transition-property: transform, opacity;
                 
-                &[data-animation=true] {
-                    transition-duration: .25s;
-                }
+                .${classes.root} {
+                    position: absolute;
+                    z-index: ${zIndex.popper};
+                    transition-property: transform, opacity;
 
-                &[data-open=true] {
-                    transition-timing-function: ${easing.bounce}, ${easing.easeOut};
-                    opacity: 1;
-                    transform: scale(1);
-                }
-
-                &:not([data-open=true]) {
-                    transition-timing-function: ${easing.easeIn};
-                    opacity: 0;
-
-                    &[data-variant=zoom] {
-                        transform: scale(0);
+                    &[data-animation=true] {
+                        transition-duration: .25s;
                     }
 
-                    &[data-variant=collapse] {
-                        &[data-place-a=top], &[data-place-a=bottom] {
-                            transform: scaleY(0);
+                    &[data-open=true] {
+                        transition-timing-function: ${easing.bounce}, ${easing.easeOut};
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+
+                    &:not([data-open=true]) {
+                        transition-timing-function: ${easing.easeIn};
+                        opacity: 0;
+
+                        &[data-variant=zoom] {
+                            transform: scale(0);
                         }
 
-                        &[data-place-a=left], &[data-place-a=right] {
-                            transform: scaleX(0);
+                        &[data-variant=collapse] {
+                            &[data-place-a=top], &[data-place-a=bottom] {
+                                transform: scaleY(0);
+                            }
+
+                            &[data-place-a=left], &[data-place-a=right] {
+                                transform: scaleX(0);
+                            }
                         }
                     }
                 }

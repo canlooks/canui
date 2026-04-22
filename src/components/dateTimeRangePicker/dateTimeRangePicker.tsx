@@ -107,8 +107,10 @@ export const DateTimeRangePicker = memo(({
                             onChange: value => {
                                 setInnerValue(o => [value, o?.[1] || null])
                                 if (value && !showTimer) {
-                                    endPickerInputRef.current!.focus()
-                                    innerOpen.current === 'start' && setInnerOpen('end')
+                                    requestAnimationFrame(() => {
+                                        endPickerInputRef.current!.focus()
+                                        innerOpen.current === 'start' && setInnerOpen('end')
+                                    })
                                 }
                             }
                         }
