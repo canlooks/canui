@@ -16,10 +16,10 @@ export function Icon({
 }: IconProps) {
     return (
         <FontAwesomeIcon
-            {...props as FontAwesomeIconProps}
-            className={clsx(classes.root, props.className)}
             color={useColor(color)}
             fontSize={14}
+            {...props as FontAwesomeIconProps}
+            className={clsx(classes.root, props.className)}
         />
     )
 }
