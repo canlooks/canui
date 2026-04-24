@@ -7,22 +7,13 @@ import {Dayjs} from 'dayjs'
 export const PanelMonth = memo(({
     innerD,
     setInnerD,
-    onSelected,
-    min,
-    max
+    onSelected
 }: PanelProps) => {
     const currentMonth = innerD.month()
 
     const clickHandler = (d: Dayjs, i: number) => {
         currentMonth !== i && setInnerD(d)
         onSelected(d)
-    }
-
-    const isDisabled = (d: Dayjs) => {
-        if (min && min.isAfter(d)) {
-            return true
-        }
-        return max && max.isBefore(d)
     }
 
     const renderButtons = () => {
@@ -36,7 +27,6 @@ export const PanelMonth = memo(({
                     variant={currentMonth === i ? 'filled' : 'text'}
                     size="large"
                     color={currentMonth === i ? 'primary' : 'text'}
-                    disabled={isDisabled(d)}
                     onClick={() => clickHandler(d, i)}
                 >
                     {i + 1}月

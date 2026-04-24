@@ -11,9 +11,7 @@ import {Dayjs} from 'dayjs'
 export const PanelYear = memo(({
     innerD,
     setInnerD,
-    onSelected,
-    min,
-    max
+    onSelected
 }: PanelProps) => {
     const currentYear = innerD.year()
 
@@ -38,13 +36,6 @@ export const PanelYear = memo(({
         </Tooltip>
     )
 
-    const isDisabled = (d: Dayjs) => {
-        if (min && min.isAfter(d)) {
-            return true
-        }
-        return max && max.isBefore(d)
-    }
-
     const renderButtons = () => {
         const ret = []
         for (let i = 0; i < 12; i++) {
@@ -57,7 +48,6 @@ export const PanelYear = memo(({
                     variant={currentYear === yearNum ? 'filled' : 'text'}
                     size="large"
                     color={currentYear === yearNum ? 'primary' : 'text'}
-                    disabled={isDisabled(d)}
                     onClick={() => clickHandler(d, yearNum)}
                 >
                     {yearNum}

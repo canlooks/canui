@@ -9,7 +9,7 @@ export const style = defineCss(({easing}) => css`
             &[data-sticky=left], &[data-sticky=right] {
                 overflow: visible;
                 position: sticky;
-                z-index: 2;
+                z-index: 4;
 
                 &::after {
                     content: '';
