@@ -59,8 +59,11 @@ export const Select = memo(({
     return (
         <SelectBase
             {...props}
-            multiple={multiple}
-            renderBackfill={renderBackfill}
+            {...{
+                multiple,
+                renderBackfill,
+                loading
+            }}
             onClear={onClear}
             _internalProps={{
                 labelKey,

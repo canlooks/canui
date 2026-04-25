@@ -8,6 +8,43 @@ import {Id} from '../src/types'
 import {reactive} from '@canlooks/reactive'
 import dayjs from 'dayjs'
 
+function useInlineFilter({value, onChange}: {
+    value?: string
+    onChange?(value: string): void
+}): [string, (key: string) => void] {
+    const [selectedValue, toggleSelect] = useFlatSelection({value, onChange})
+
+    const {setOpen} = usePopperContext()
+
+    const {formRef} = useFormContext()
+
+    return [
+        selectedValue,
+        (key: string) => {
+            toggleSelect(key)
+            setOpen(false)
+            formRef?.current?.submit()
+        }
+    ]
+}
+
+const InlineSelect = ({value, onChange}: {
+    value?: string
+    onChange?(value: string): void
+}) => {
+    const [selectedValue, onToggleSelected] = useInlineFilter({value, onChange})
+
+    return (
+        <OptionsBase
+            options={[
+                {value: '1', label: '选项1'},
+            ]}
+            selectedValue={selectedValue}
+            onToggleSelected={onToggleSelected}
+        />
+    )
+}
+
 const Root = RC(() => {
     const state = useReactive({
         open: false
@@ -15,8 +52,21 @@ const Root = RC(() => {
 
     return (
         <>
-            <DateTimeRangePicker/>
-            {/*<Select/>*/}
+            <Curd
+                columns={[
+                    {
+                        title: 'Name',
+                        field: 'name',
+                        filterInline: {
+                            control: <InlineSelect/>
+                        }
+                    }
+                ]}
+                loadRows={(p, filterValue) => {
+                    console.log(66, filterValue)
+                    return {rows: [], total: 0}
+                }}
+            />
             {/*<Bubble*/}
             {/*    open={state.open}*/}
             {/*    onOpenChange={open => {*/}

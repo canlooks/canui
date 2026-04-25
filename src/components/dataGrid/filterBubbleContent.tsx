@@ -79,6 +79,7 @@ export const FilterBubbleContent = memo(({
                     <Button
                         variant="text"
                         onClick={() => {
+                            hasChanged.current = true
                             formRef!.current!.resetField(columnKey)
                             setOpen(false)
                         }}
