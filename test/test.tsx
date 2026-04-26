@@ -37,7 +37,7 @@ const InlineSelect = ({value, onChange}: {
     return (
         <OptionsBase
             options={[
-                {value: '1', label: '选项1'},
+                {value: '1', label: '选项1'}
             ]}
             selectedValue={selectedValue}
             onToggleSelected={onToggleSelected}
@@ -53,6 +53,10 @@ const Root = RC(() => {
     return (
         <>
             <Curd
+                loadRows={(pagination, filterValue, sorter) => {
+                    console.log('filterValue', filterValue)
+                    return {rows: [], total: 0}
+                }}
                 columns={[
                     {
                         title: 'Name',
@@ -62,21 +66,10 @@ const Root = RC(() => {
                         }
                     }
                 ]}
-                loadRows={(p, filterValue) => {
-                    console.log(66, filterValue)
-                    return {rows: [], total: 0}
+                filterableProps={{
+                    showButton: false
                 }}
             />
-            {/*<Bubble*/}
-            {/*    open={state.open}*/}
-            {/*    onOpenChange={open => {*/}
-            {/*        state.open = open*/}
-            {/*    }}*/}
-            {/*    content="123"*/}
-            {/*>*/}
-            {/*    <Button>Button</Button>*/}
-            {/*</Bubble>*/}
-            {/*<Button onClick={() => state.open = !state.open}>Toggle Open</Button>*/}
         </>
     )
 })

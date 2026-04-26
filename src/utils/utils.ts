@@ -162,7 +162,7 @@ export type OverflowEdge = 'top' | 'bottom' | 'left' | 'right'
  * @param container 容器
  * @returns 'top' | 'bottom' | 'left' | 'right' | false
  */
-export function isElementOverflowed(target: Element, container?: Element): OverflowEdge | false {
+export function isElementOverflowed(target: Element, container?: Element | null): OverflowEdge | false {
     const {left, top, right, bottom} = target.getBoundingClientRect()
     const judge = (containerBounding: Pick<DOMRectReadOnly, 'top' | 'bottom' | 'left' | 'right'>) => {
         if (left < containerBounding.left) {
@@ -179,7 +179,7 @@ export function isElementOverflowed(target: Element, container?: Element): Overf
         }
         return false
     }
-    if (container) {
+    if (container && container !== document.body) {
         return judge(container.getBoundingClientRect())
     }
     const vWidth = window.innerWidth || document.documentElement.clientWidth

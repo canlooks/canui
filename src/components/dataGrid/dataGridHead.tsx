@@ -190,6 +190,7 @@ export const DataGridHead = memo(<R extends RowType, V extends Id = Id>({
                                                         style: {maxWidth: 360},
                                                         trigger: 'click',
                                                         autoClose: false,
+                                                        placement: 'bottomLeft',
                                                         content: (
                                                             <FilterBubbleContent
                                                                 columnKey={_key!}

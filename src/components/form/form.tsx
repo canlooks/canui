@@ -77,6 +77,9 @@ export type FormRef<V extends FormValue = FormValue> = {
 
     isFormTouched(): boolean
     isFieldTouched(field: FieldPath): boolean
+
+    /** @private 用于dataGrid内的filterBubbleContent组件的"重置"功能 */
+    _resetFieldAndCallChange(field: FieldPath): void
 }
 
 export const Form = (
@@ -236,7 +239,11 @@ export const Form = (
                 setFormValue(o => ({...o}))
             },
             isFormTouched: () => [...itemsContainer.current].some(([, item]) => item.isTouched),
-            isFieldTouched: field => !!itemsContainer.current.get(stringifyField(field))?.isTouched
+            isFieldTouched: field => !!itemsContainer.current.get(stringifyField(field))?.isTouched,
+            _resetFieldAndCallChange(field) {
+                this.resetField(field)
+                syncOnChange.current?.(field, void 0, formValue.current)
+            }
         }
 
         useImperativeHandle(ref, () => formRef.current!)
