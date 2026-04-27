@@ -1,0 +1,3 @@
+self.addEventListener('message', event => {
+    console.log('Received message', event.data)
+})

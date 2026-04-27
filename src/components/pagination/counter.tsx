@@ -9,7 +9,7 @@ export interface PaginationCounterProps extends DivProps {}
 export const PaginationCounter = memo((props: PaginationCounterProps) => {
     const {total, page, pageSize} = usePaginationContext()
 
-    const start = (page - 1) * pageSize + 1
+    const start = Math.min((page - 1) * pageSize + 1, total)
     const end = Math.min(start + pageSize - 1, total)
 
     return (

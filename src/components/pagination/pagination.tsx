@@ -27,9 +27,11 @@ const PaginationContext = createContext({
     total: 0,
     pageCount: 1,
     page: 1,
-    onPageChange(page: number) {},
+    onPageChange(page: number) {
+    },
     pageSize: 10,
-    onPageSizeChange(pageSize: number) {}
+    onPageSizeChange(pageSize: number) {
+    }
 })
 
 export function usePaginationContext() {
@@ -81,10 +83,10 @@ export const Pagination = memo(({
             }}>
                 {props.children ||
                     <>
-                        <PaginationCounter />
-                        <PaginationPager />
-                        <PaginationSizer />
-                        <PaginationJumper />
+                        <PaginationCounter/>
+                        <PaginationPager/>
+                        <PaginationSizer/>
+                        <PaginationJumper/>
                     </>
                 }
             </PaginationContext>

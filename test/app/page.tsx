@@ -1,20 +1,15 @@
 'use client'
 
-import {Button, Card, Descriptions, Flex, Form, Icon, Input, Loading, TouchRipple} from '../../src'
-import {useState} from 'react'
-import {faUser} from '@fortawesome/free-solid-svg-icons'
-import {config} from '@fortawesome/fontawesome-svg-core'
-import '@fortawesome/fontawesome-svg-core/styles.css'
-import {createPortal} from 'react-dom'
-
-config.autoAddCss = false
+// import {config} from '@fortawesome/fontawesome-svg-core'
+// import '@fortawesome/fontawesome-svg-core/styles.css'
+//
+// config.autoAddCss = false
+const worker = new Worker(new URL('./worker.ts', import.meta.url))
 
 export default function AppPage() {
-    const [open, setOpen] = useState(false)
-
     return (
         <div>
-            {typeof document !== 'undefined' && createPortal(<div>In Portal</div>, document.body)}
+            <button onClick={() => worker.postMessage('hello')}>button</button>
         </div>
     )
 }
