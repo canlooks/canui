@@ -23,6 +23,9 @@ export interface CounterProps extends Omit<FlexProps, 'defaultValue' | 'onChange
     decreaseProps?: ButtonProps
     increaseProps?: ButtonProps
     inputProps?: InputProps
+
+    readOnly?: boolean
+    disabled?: boolean
 }
 
 export const Counter = memo(({
@@ -37,6 +40,8 @@ export const Counter = memo(({
     decreaseProps,
     increaseProps,
     inputProps,
+    readOnly,
+    disabled,
     ...props
 }: CounterProps) => {
     const [innerValue, setInnerValue] = useControlled(defaultValue, value, onChange)
@@ -61,7 +66,8 @@ export const Counter = memo(({
             className={clsx(classes.root, props.className)}
         >
             <Button
-                disabled={innerValue.current <= min}
+                readOnly={readOnly}
+                disabled={disabled || innerValue.current <= min}
                 {...mergeComponentProps(
                     commonButtonProps,
                     decreaseProps,
@@ -80,6 +86,8 @@ export const Counter = memo(({
                 max={max}
                 step={step}
                 precision={precision}
+                readOnly={readOnly}
+                disabled={disabled}
                 {...mergeComponentProps(
                     inputProps,
                     {
@@ -90,7 +98,8 @@ export const Counter = memo(({
                 )}
             />
             <Button
-                disabled={innerValue.current >= max}
+                readOnly={readOnly}
+                disabled={disabled || innerValue.current >= max}
                 {...mergeComponentProps(
                     commonButtonProps,
                     increaseProps,

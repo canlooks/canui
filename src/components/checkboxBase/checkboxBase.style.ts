@@ -24,6 +24,7 @@ export function useStyle({color}: Required<Pick<CheckboxBaseProps, 'color'>>) {
                 display: inline-flex;
                 align-items: center;
                 gap: 6px;
+                vertical-align: middle;
                 cursor: pointer;
                 position: relative;
                 -webkit-tap-highlight-color: transparent;

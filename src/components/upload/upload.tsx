@@ -9,7 +9,7 @@ import {Collapse, Grow} from '../transitionBase'
 import {ItemRef} from './itemStatus'
 import {ImageItem} from './imageItem'
 import {SortableItem} from '../sortableItem'
-import {DropArea} from './dropArea'
+import {DropArea, DropAreaProps} from './dropArea'
 import {Icon} from '../icon'
 import {faPlus} from '@fortawesome/free-solid-svg-icons/faPlus'
 import {faUpload} from '@fortawesome/free-solid-svg-icons/faUpload'
@@ -52,6 +52,7 @@ export interface UploadProps<R = any, A extends any[] = any[]> extends UploadSha
 
     /** 是否支持“将文件拖拽到此处” */
     droppable?: boolean
+    dropAreaProps?: DropAreaProps
     sortable?: boolean
 
     defaultValue?: UploadFile<R, A>[]
@@ -59,7 +60,7 @@ export interface UploadProps<R = any, A extends any[] = any[]> extends UploadSha
     onChange?(value: UploadFile<R, A>[]): void
 }
 
-const markFileId = (files?: FileList | (File | UploadFile<any, any[]>)[]) => {
+const markFileId = (files?: FileList | (File | UploadFile)[]) => {
     if (files) {
         for (const file of files) {
             (file as UploadFile).id ||= getRandomId()
@@ -82,6 +83,7 @@ export const Upload = memo(<R = any, A extends any[] = any[]>({
     variant = 'square',
     sortable,
     droppable,
+    dropAreaProps,
 
     defaultValue,
     value,
@@ -195,8 +197,10 @@ export const Upload = memo(<R = any, A extends any[] = any[]>({
                     ? <>
                         {droppable
                             ? <DropArea
-                                onClick={() => innerInputRef.current!.click()}
-                                onDrop={changeFn}
+                                {...mergeComponentProps(dropAreaProps, {
+                                    onClick: () => innerInputRef.current!.click(),
+                                    onDrop: changeFn
+                                })}
                             />
                             : showButton &&
                             <Button
