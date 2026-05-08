@@ -232,9 +232,7 @@ export function useStrictEffect(effect: EffectCallback, deps?: DependencyList) {
     const prevCleanup = useRef<(() => void) | void>(void 0)
 
     useEffect(() => {
-        const isDepsChanged = !arrayShallowEqual(prevDeps.current, deps as any[])
-
-        if (!hasRun.current || isDepsChanged) {
+        if (!hasRun.current || !arrayShallowEqual(prevDeps.current, deps as any[])) {
             prevCleanup.current?.()
             prevCleanup.current = effect()
             hasRun.current = true

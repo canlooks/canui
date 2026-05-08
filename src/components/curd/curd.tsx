@@ -197,7 +197,6 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
         dialogProps,
         formProps,
         formRef,
-        onChange,
         ...dataGridProps
     } = props
 

@@ -54,10 +54,6 @@ const Root = RC(() => {
         <>
             <Radio label="选项"/>文字
             <Curd
-                loadRows={(pagination, filterValue, sorter) => {
-                    console.log('filterValue', filterValue)
-                    return {rows: [], total: 0}
-                }}
                 columns={[
                     {
                         title: 'Name',
@@ -67,9 +63,16 @@ const Root = RC(() => {
                         }
                     }
                 ]}
+                rows={[
+                    {id: '1', name: 'Zhang San'},
+                    {id: '2', name: 'Li Si'},
+                ]}
                 filterableProps={{
                     showButton: false
                 }}
+                selectable
+                multiple
+                onChange={console.log}
             />
         </>
     )
