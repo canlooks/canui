@@ -8,7 +8,7 @@ export const classes = defineInnerClasses('selected-list', [
 ])
 
 export const style = defineCss(({spacing}) => css`
-    @layer reset {
+    @layer override {
         .${classes.optionWrap} {
             margin-bottom: ${spacing[3]}px;
         }
