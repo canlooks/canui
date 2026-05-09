@@ -124,6 +124,40 @@ export const Cascade = memo(<O extends OptionType<V>, V extends Id = Id>({
 
     /**
      * --------------------------------------------------------------------
+     * 控制选中状态
+     */
+
+    const [pathifiedValue, setPathifiedValue] = useControlled<undefined | V[] | V[][]>(defaultValue || [], value, onChange as any)
+
+    // 路径转单一键
+    const toStandardValue = (path?: V[] | V[][]) => {
+        if (!path) {
+            return
+        }
+        if (multiple) {
+            return (path as V[][]).map(path => path[path.length - 1])
+        }
+        return (path as V[])[path!.length - 1]
+    }
+
+    // 单一键转路径
+    const toPathifiedValue = (value?: V | V[]) => {
+        if (!value) {
+            return
+        }
+        const findParent = (v: V, path: V[] = []) => {
+            const node = optionsMap!.get(v)
+            if (node) {
+                path.unshift(v)
+                node._parentId && findParent(node._parentId, path)
+            }
+            return path
+        }
+        return multiple ? (value as V[]).map(v => findParent(v)) : findParent(value as V)
+    }
+
+    /**
+     * --------------------------------------------------------------------
      * 打开的弹框与面板
      */
 
@@ -134,7 +168,13 @@ export const Cascade = memo(<O extends OptionType<V>, V extends Id = Id>({
         searchable && !open && setInnerSearchValue('')
     }
 
-    const [openedPanels, setOpenedPanels] = useState<V[]>([])
+    const [openedPanels, setOpenedPanels] = useState<V[]>(() => {
+        const value = multiple ? pathifiedValue.current?.[0] as V[] : pathifiedValue.current as V[]
+        if (isNoValue(value)) {
+            return []
+        }
+        return value.slice(0, -1)
+    })
 
     const toggleOpenedPanels = (value: V, index: number) => {
         setOpenedPanels(o => {
@@ -172,61 +212,6 @@ export const Cascade = memo(<O extends OptionType<V>, V extends Id = Id>({
         loadOptions && innerOpen.current && innerLoadOptions(innerSearchValue.current)
     }, [innerOpen.current])
 
-    const actualOptions = innerOptions || options
-
-    /**
-     * --------------------------------------------------------------------
-     * 控制选中状态
-     */
-
-    const [pathifiedValue, setPathifiedValue] = useControlled<undefined | V[] | V[][]>(defaultValue || [], value, onChange as any)
-
-    // 路径转单一键
-    const toStandardValue = (path?: V[] | V[][]) => {
-        if (!path) {
-            return
-        }
-        if (multiple) {
-            return (path as V[][]).map(path => path[path.length - 1])
-        }
-        return (path as V[])[path!.length - 1]
-    }
-
-    // 单一键转路径
-    const toPathifiedValue = (value?: V | V[]) => {
-        if (!value) {
-            return
-        }
-        const findParent = (v: V, path: V[] = []) => {
-            const node = optionsMap!.get(v)
-            if (node) {
-                path.unshift(v)
-                node._parentId && findParent(node._parentId, path)
-            }
-            return path
-        }
-        return multiple ? (value as V[]).map(v => findParent(v)) : findParent(value as V)
-    }
-
-    const {
-        value: innerValue,
-        setValue: setInnerValue,
-        toggleSelected,
-        selectionStatus,
-        optionsMap
-    } = useSelection<O, V>({
-        options: actualOptions,
-        multiple,
-        value: toStandardValue(pathifiedValue.current) as any,
-        onChange(value?: V | V[]) {
-            setPathifiedValue(toPathifiedValue(value))
-        },
-        primaryKey,
-        childrenKey,
-        clearable,
-        integration
-    })
-
     const onClear = () => {
         setInnerValue!([])
         setOpenedPanels([])
@@ -234,6 +219,11 @@ export const Cascade = memo(<O extends OptionType<V>, V extends Id = Id>({
 
     const onOptionClick = async (option: O, index: number) => {
         const optVal = option[primaryKey]
+        if (!option.children?.length) {
+            toggleSelected!(option[primaryKey])
+            !multiple && setInnerOpen(false)
+            return
+        }
         const opened = openedPanels[index] === optVal
         if (!opened) {
             loadOptions && await innerLoadOptions(innerSearchValue.current, option)
@@ -248,6 +238,28 @@ export const Cascade = memo(<O extends OptionType<V>, V extends Id = Id>({
         toggleSelected!(option[primaryKey])
         onOptionClick(option, index)
     }
+
+    const actualOptions = innerOptions || options
+
+    const {
+        value: innerValue,
+        setValue: setInnerValue,
+        toggleSelected,
+        selectionStatus,
+        optionsMap
+    } = useSelection<O, V>({
+        standalone: true,
+        options: actualOptions,
+        multiple,
+        value: toStandardValue(pathifiedValue.current) as any,
+        onChange(value?: V | V[]) {
+            setPathifiedValue(toPathifiedValue(value))
+        },
+        primaryKey,
+        childrenKey,
+        clearable,
+        integration
+    })
 
     /**
      * --------------------------------------------------------------------
@@ -277,13 +289,6 @@ export const Cascade = memo(<O extends OptionType<V>, V extends Id = Id>({
         setOpen: setInnerOpen,
         onEnter(info) {
             keyboardPressHandler(info)
-        },
-        onKeyDown(info, e) {
-            if (e.key === 'ArrowRight' && info.horizontalIndex === info.horizontalCount - 1) {
-                // 在最后一个面板按右箭头，相当于按回车
-                e.preventDefault()
-                keyboardPressHandler(info)
-            }
         }
     })
 
@@ -317,13 +322,12 @@ export const Cascade = memo(<O extends OptionType<V>, V extends Id = Id>({
                     {joinNodes(path, v => optionsMap!.get(v)?.[labelKey] ?? v.toString())}
                 </Tag>
             )
-        } else {
-            return (
-                <div className={classes.backfillWrap}>
-                    {joinNodes(pathifiedValue.current as V[], v => optionsMap!.get(v)?.[labelKey] ?? v.toString())}
-                </div>
-            )
         }
+        return (
+            <div className={classes.backfillWrap}>
+                {joinNodes(pathifiedValue.current as V[], v => optionsMap!.get(v)?.[labelKey] ?? v.toString())}
+            </div>
+        )
     }
 
     return (

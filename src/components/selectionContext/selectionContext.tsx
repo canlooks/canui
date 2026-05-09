@@ -35,6 +35,9 @@ export type SelectionContextBaseProps<O extends OptionType<V>, V extends Id = Id
     disabled?: boolean
     onToggle?(checked: boolean, value: V, option?: O): void
     children?: ReactNode
+
+    /** 若设为true，则该Context不受父级Context影响，默认为`false` */
+    standalone?: boolean
 }
 
 export type ISelectionContext<O extends OptionType<V>, V extends Id = Id> = {

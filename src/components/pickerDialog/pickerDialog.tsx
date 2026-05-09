@@ -1,4 +1,4 @@
-import {ReactElement, ReactNode, Ref, cloneElement, isValidElement, useImperativeHandle, useRef, useState} from 'react'
+import {ReactElement, Ref, useImperativeHandle, useRef} from 'react'
 import {DialogCloseReason, Dialog, DialogProps} from '../dialog'
 import {clsx, mergeComponentProps, toArray, useControlled} from '../../utils'
 import {classes, style} from './pickerDialog.style'
@@ -6,7 +6,7 @@ import {OptionType, SelectionContext, SelectionContextBaseProps} from '../select
 import {Divider} from '../divider'
 import {SelectedList, SelectedListProps} from '../selectedList'
 import {Button} from '../button'
-import {Id} from '../../types'
+import {Id, SelectableProps} from '../../types'
 import {Icon} from '../icon'
 import {faTrashCan} from '@fortawesome/free-regular-svg-icons/faTrashCan'
 
@@ -14,14 +14,11 @@ export type PickerDialogRef<V extends Id = Id> = {
     open(value?: V | V[]): Promise<V | V[]>
 }
 
-export interface PickerDialogProps<O extends OptionType<V>, V extends Id = Id> extends Omit<DialogProps, 'ref' | 'children' | 'onConfirm' | 'onToggle'>,
-    Omit<SelectionContextBaseProps<O, V>, 'children'> {
+export interface PickerDialogBaseProps<O extends OptionType<V>, V extends Id = Id> extends Omit<DialogProps, 'ref' | 'onConfirm' | 'onToggle' | 'onChange'>,
+    SelectionContextBaseProps<O, V> {
     ref?: Ref<PickerDialogRef<V>>
     /** 默认的ref已被PickerDialogRef取代，需要dialogRef指向dialog元素 */
     dialogRef?: Ref<HTMLDivElement>
-
-    multiple?: boolean
-    children?: ReactNode | ((selectionProps: Omit<SelectionContextBaseProps<O, V>, 'children'> & { multiple?: boolean }) => ReactNode)
 
     showSelectedList?: boolean
     /** 已选列表的位置，默认为`right` */
@@ -30,6 +27,7 @@ export interface PickerDialogProps<O extends OptionType<V>, V extends Id = Id> e
     selectedItemProps?: SelectedListProps<V>['itemProps']
 
     onConfirm?(value: V | V[]): void
+    onClear?(): void
 
     /** @alias {@link options} */
     rows?: O[]
@@ -37,19 +35,21 @@ export interface PickerDialogProps<O extends OptionType<V>, V extends Id = Id> e
     nodes?: O[]
 }
 
+export type PickerDialogProps<O extends OptionType<V>, V extends Id = Id> = PickerDialogBaseProps<O, V> & SelectableProps<V>
+
 export const PickerDialog = (<O extends OptionType<V>, V extends Id = Id>({
     ref,
     dialogRef,
     multiple,
-    children,
     showSelectedList = !!multiple,
     selectedListPlacement = 'right',
     selectedListProps,
     selectedItemProps,
     onConfirm,
+    onClear,
     rows,
     nodes,
-    // 以下属性从SelectionContextBaseProps继承
+    // 以下属性从SelectionContextProps继承
     options = rows ?? nodes,
     primaryKey = 'id',
     childrenKey = 'children',
@@ -58,6 +58,9 @@ export const PickerDialog = (<O extends OptionType<V>, V extends Id = Id>({
     disabled,
     clearable = !!multiple,
     onToggle,
+    defaultValue,
+    value,
+    onChange,
     ...props
 }: PickerDialogProps<O, V>) => {
     const resolvers = useRef<PromiseWithResolvers<V | V[]>>(void 0)
@@ -71,11 +74,18 @@ export const PickerDialog = (<O extends OptionType<V>, V extends Id = Id>({
         }
     }))
 
-    const [innerValue, _setInnerValue] = useState<null | V | V[]>(multiple ? [] : null)
+    const [innerValue, _setInnerValue] = useControlled<any>(defaultValue || (multiple ? [] : null), value, onChange)
     const setInnerValue = (value: null | V | V[]) => {
         _setInnerValue(value)
         // 单选模式，值每次改变都触发确认
         !multiple && confirmHandler(value)
+    }
+
+    const clearHandler = () => {
+        onClear?.()
+        const newValue = multiple ? [] as any : null
+        onChange?.(newValue)
+        setInnerValue(newValue)
     }
 
     const [innerOpen, setInnerOpen] = useControlled(props.defaultOpen, props.open)
@@ -88,13 +98,13 @@ export const PickerDialog = (<O extends OptionType<V>, V extends Id = Id>({
         if (!open) {
             resolvers.current?.reject({
                 type: 'canceled',
-                value: innerValue
+                value: innerValue.current
             })
         }
         setInnerOpen(false)
     }
 
-    const confirmHandler = (value = innerValue) => {
+    const confirmHandler = (value = innerValue.current) => {
         onConfirm?.(value!)
         resolvers.current?.resolve(value!)
         setInnerOpen(false)
@@ -104,19 +114,7 @@ export const PickerDialog = (<O extends OptionType<V>, V extends Id = Id>({
         _setInnerValue(null)
     }
 
-    const renderChildren = () => {
-        const selectionProps = {rows, nodes, options, primaryKey, relation, integration, disabled, multiple}
-        return typeof children === 'function'
-            ? children(selectionProps)
-            : isValidElement(children)
-                ? cloneElement(children, {
-                    ...selectionProps,
-                    ...children.props as any
-                })
-                : children
-    }
-
-    const selectedCount = toArray(innerValue)?.length || 0
+    const selectedCount = toArray(innerValue.current)?.length || 0
 
     return (
         <SelectionContext
@@ -130,7 +128,7 @@ export const PickerDialog = (<O extends OptionType<V>, V extends Id = Id>({
                 clearable,
                 multiple
             }}
-            value={innerValue as any}
+            value={innerValue.current}
             onChange={setInnerValue}
             onToggle={onToggle}
         >
@@ -163,7 +161,7 @@ export const PickerDialog = (<O extends OptionType<V>, V extends Id = Id>({
                                         prefix={<Icon icon={faTrashCan}/>}
                                         variant="plain"
                                         color="text.secondary"
-                                        onClick={() => setInnerValue(multiple ? [] : null)}
+                                        onClick={clearHandler}
                                     >
                                         清空
                                     </Button>
@@ -185,7 +183,7 @@ export const PickerDialog = (<O extends OptionType<V>, V extends Id = Id>({
                     )
                 }}
             >
-                {renderChildren()}
+                {props.children}
             </Dialog>
         </SelectionContext>
     )

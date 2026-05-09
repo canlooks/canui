@@ -22,16 +22,13 @@ export function useSelection<O extends OptionType<V>, V extends Id = Id>({...pro
 
     const context = useSelectionContext<O, V>()
 
-    if (context.inSelection) {
+    if (!props.standalone && context.inSelection) {
         innerValue.current = context.value!
         setInnerValue = context.setValue!
         innerOptions.current = context.options!
     }
 
-    const optionsMap = useMemo(() => {
-        if (context.inSelection) {
-            return context.optionsMap!
-        }
+    const _optionsMap = useMemo(() => {
         const map = new Map<V, O>()
         const fn = (arr?: O[], parentId?: V) => {
             // 有时arr可能不为数组，需要判断，如DataGrid组件的row.children
@@ -45,7 +42,9 @@ export function useSelection<O extends OptionType<V>, V extends Id = Id>({...pro
         }
         fn(innerOptions.current)
         return map
-    }, [innerOptions.current, props.primaryKey, props.childrenKey, context.optionsMap])
+    }, [innerOptions.current, props.primaryKey, props.childrenKey])
+
+    const optionsMap = !props.standalone && context.inSelection ? context.optionsMap : _optionsMap
 
     const syncOptionsMap = useSync(optionsMap)
 
@@ -92,23 +91,18 @@ export function useSelection<O extends OptionType<V>, V extends Id = Id>({...pro
 
     const preCalSelectionStatus = useRef<Map<V, 1 | 2>>(void 0)
 
-    const selectionStatus = useMemo(() => {
-        if (context.inSelection) {
-            return context.selectionStatus!
-        }
+    const _selectionStatus = useMemo(() => {
         // 调用toggleSelected()方法后可能会预先计算selectionStatus
         const ret = preCalSelectionStatus.current || calSelectionStatus()
         preCalSelectionStatus.current = void 0
         return ret
-    }, [innerValue.current, optionsMap, props.multiple, props.relation, context.selectionStatus])
+    }, [innerValue.current, optionsMap, props.multiple, props.relation])
+
+    const selectionStatus = !props.standalone && context.inSelection ? context.selectionStatus : _selectionStatus
 
     const syncSelectionStatus = useSync(selectionStatus)
 
-    const toggleSelected = useCallback((value: V) => {
-        if (context.inSelection) {
-            context.toggleSelected!(value)
-            return
-        }
+    const _toggleSelected = useCallback((value: V) => {
         if (syncProps.current.disabled) {
             return
         }
@@ -200,7 +194,9 @@ export function useSelection<O extends OptionType<V>, V extends Id = Id>({...pro
                 children && loopOptions(callback, children, ret)
             })
         }
-    }, [context.inSelection])
+    }, [])
+
+    const toggleSelected = !props.standalone && context.inSelection ? context.toggleSelected : _toggleSelected
 
     return {
         inSelection: true,

@@ -48,7 +48,7 @@ export function CascadePanel({
             if (!option || typeof option !== 'object') {
                 return option
             }
-            const {_parentId, ...opt} = option
+            const {_parentId, _isLast, ...opt} = option
             const optVal = opt[primaryKey]
             const status = selectionStatus?.get(optVal)
             const opened = openedPanels[index] === optVal

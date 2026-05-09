@@ -60,7 +60,6 @@ export const style = defineCss(({spacing, text, easing}) => css`
                 white-space: nowrap;
                 text-overflow: ellipsis;
                 overflow: hidden;
-                direction: rtl;
             }
         }
     }

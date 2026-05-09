@@ -84,6 +84,7 @@ export const TreeSelect = memo(({
         toggleSelected,
         optionsMap
     } = useSelection<any, any>({
+        standalone: true,
         options: actualOptions,
         primaryKey,
         childrenKey,

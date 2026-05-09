@@ -91,7 +91,7 @@ interface DataGridSharedProps<R extends RowType = RowType> extends SlotsAndProps
 export type OrderType = 'ascend' | 'descend'
 
 export interface DataGridBaseProps<R extends RowType = RowType> extends DataGridSharedProps<R>,
-    Omit<DivProps, 'defaultValue' | 'onChange'> {
+    Omit<DivProps, 'defaultValue' | 'onToggle' | 'onChange'> {
     columns?: (ColumnType<R> | symbol)[]
     rows?: R[]
 
@@ -120,8 +120,8 @@ export interface DataGridBaseProps<R extends RowType = RowType> extends DataGrid
     integration?: SelectionContextProps<R>['integration']
     /** 是否允许全选，默认为true */
     allowSelectAll?: boolean
-
     selectorProps?(row: R, index: number, rows: R[]): CheckboxProps | RadioProps
+    onToggle?(checked: boolean, value: Id, option?: R): void
 
     defaultExpanded?: Id[]
     expanded?: Id[]
@@ -203,6 +203,7 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
     allowSelectAll = true,
     clickRowToSelect = true,
     selectorProps,
+    onToggle,
 
     indent = 24,
     renderExpandIcon,
@@ -402,6 +403,7 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
                             defaultValue={defaultValue as any}
                             value={value as any}
                             onChange={onChange as any}
+                            onToggle={onToggle}
                         >
                             <DataGridHead
                                 rows={rows}
