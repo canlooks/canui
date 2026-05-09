@@ -83,9 +83,7 @@ export const PickerDialog = (<O extends OptionType<V>, V extends Id = Id>({
 
     const clearHandler = () => {
         onClear?.()
-        const newValue = multiple ? [] as any : null
-        onChange?.(newValue)
-        setInnerValue(newValue)
+        setInnerValue(multiple ? [] : null)
     }
 
     const [innerOpen, setInnerOpen] = useControlled(props.defaultOpen, props.open)
