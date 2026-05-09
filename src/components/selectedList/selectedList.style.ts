@@ -18,5 +18,9 @@ export const style = defineCss(({spacing}) => css`
             text-overflow: ellipsis;
             overflow: hidden;
         }
+
+        .${alertClasses.description} {
+            margin-top: 0;
+        }
     }
 `)
