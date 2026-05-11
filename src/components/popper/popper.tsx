@@ -9,18 +9,61 @@ import {useTheme} from '../theme'
 
 export type Trigger = 'click' | 'hover' | 'focus' | 'enter' | 'contextMenu'
 
-const getAttemptOrder = (placement: Placement) => {
-    const order: Placement[] = ['top', 'bottom', 'left', 'right', 'topLeft', 'topRight', 'rightTop', 'rightBottom', 'bottomRight', 'bottomLeft', 'leftBottom', 'leftTop']
-    const index = order.indexOf(placement)
-    if (index > -1) {
-        return [
-            placement,
-            ...order.slice(index + 1),
-            ...order.slice(0, index),
-            placement
-        ]
+const defaultAttemptOrder: Placement[] = ['top', 'bottom', 'left', 'right', 'topLeft', 'topRight', 'rightTop', 'rightBottom', 'bottomRight', 'bottomLeft', 'leftBottom', 'leftTop']
+
+const contextMenuOrder: Placement[] = [
+    'bottomRight',
+    'rightBottom',
+
+    'bottomLeft',
+    'leftBottom',
+
+    'topLeft',
+    'leftTop',
+
+    'topRight',
+    'rightTop'
+]
+
+const getAttemptOrder = (startPlacement: Placement, contextMenu: boolean, sizeAdaptable: boolean, callback: (placement: Placement) => any) => {
+    if (contextMenu) {
+        const startIndex = Math.max(contextMenuOrder.indexOf(startPlacement), 0)
+        for (let i = 0; i <= contextMenuOrder.length + 1; i += 2) {
+            const index = (startIndex + i) % contextMenuOrder.length
+            if (callback(contextMenuOrder[index]) === false) {
+                break
+            }
+        }
+    } else {
+        let order = defaultAttemptOrder
+        let startIndex
+
+        if (sizeAdaptable) {
+            switch (startPlacement) {
+                case 'top':
+                    order = [startPlacement, 'bottom', startPlacement]
+                    break
+                case 'bottom':
+                    order = [startPlacement, 'top', startPlacement]
+                    break
+                case 'left':
+                    order = [startPlacement, 'right', startPlacement]
+                    break
+                case 'right':
+                    order = [startPlacement, 'left', startPlacement]
+            }
+            startIndex = 0
+        } else {
+            startIndex = Math.max(order.indexOf(startPlacement), 0)
+        }
+
+        for (let i = 0; i <= order.length; i++) {
+            const index = (startIndex + i) % order.length
+            if (callback(order[index]) === false) {
+                break
+            }
+        }
     }
-    return order
 }
 
 const splitPlacement = {
@@ -260,6 +303,24 @@ export function Popper({
 
             attempt = placement => {
                 switch (placement) {
+                    case 'bottomRight':
+                    case 'rightBottom':
+                        top = mouseY
+                        bottom = void 0
+                        left = mouseX
+                        right = void 0
+                        originX = '0%'
+                        originY = '0%'
+                        break
+                    case 'bottomLeft':
+                    case 'leftBottom':
+                        top = mouseY
+                        bottom = void 0
+                        left = void 0
+                        right = containerRect.width - mouseX
+                        originX = '100%'
+                        originY = '0%'
+                        break
                     case 'topLeft':
                     case 'leftTop':
                         top = void 0
@@ -277,62 +338,13 @@ export function Popper({
                         right = void 0
                         originX = '0%'
                         originY = '100%'
-                        break
-                    case 'bottomLeft':
-                    case 'leftBottom':
-                        top = mouseY
-                        bottom = void 0
-                        left = void 0
-                        right = containerRect.width - mouseX
-                        originX = '100%'
-                        originY = '0%'
-                        break
-                    case 'bottomRight':
-                    case 'rightBottom':
-                        top = mouseY
-                        bottom = void 0
-                        left = mouseX
-                        right = void 0
-                        originX = '0%'
-                        originY = '0%'
-                        break
-                    case 'top':
-                        top = mouseY - popperHeight
-                        bottom = void 0
-                        left = mouseX - popperWidth / 2
-                        right = void 0
-                        originX = '50%'
-                        originY = '100%'
-                        break
-                    case 'bottom':
-                        top = mouseY
-                        bottom = void 0
-                        left = mouseX - popperWidth / 2
-                        right = void 0
-                        originX = '50%'
-                        originY = '0%'
-                        break
-                    case 'left':
-                        top = mouseY - popperHeight / 2
-                        bottom = void 0
-                        left = mouseX - popperWidth
-                        right = void 0
-                        originX = '100%'
-                        originY = '50%'
-                        break
-                    case 'right':
-                        top = mouseY - popperHeight / 2
-                        bottom = void 0
-                        left = mouseX
-                        right = void 0
-                        originX = '0%'
-                        originY = '50%'
                 }
 
                 popperEl.style.top = typeof top === 'undefined' ? '' : top + 'px'
                 popperEl.style.bottom = typeof bottom === 'undefined' ? '' : bottom + 'px'
                 popperEl.style.left = typeof left === 'undefined' ? '' : left + 'px'
                 popperEl.style.right = typeof right === 'undefined' ? '' : right + 'px'
+
                 return isElementOverflowed(popperEl, containerEl.current)
             }
         } else {
@@ -422,6 +434,7 @@ export function Popper({
                 popperEl.style.right = typeof right === 'undefined' ? '' : right + 'px'
                 popperEl.style.width = typeof width === 'undefined' ? '' : width + 'px'
                 popperEl.style.height = typeof height === 'undefined' ? '' : height + 'px'
+
                 return isElementOverflowed(popperEl, containerEl.current)
             }
         }
@@ -431,13 +444,7 @@ export function Popper({
         } else {
             popperEl.style.transition = 'none'
             popperEl.style.transform = 'scale(1)'
-            const attemptOrder = getAttemptOrder(placement)
-            for (let i = 0; i < attemptOrder.length; i++) {
-                const t = attempt(attemptOrder[i])
-                if (t === false) {
-                    break
-                }
-            }
+            getAttemptOrder(placement, !!contextMenuEvent.current, sizeAdaptable, attempt)
         }
 
         beforeOpen?.()
