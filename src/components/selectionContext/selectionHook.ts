@@ -36,7 +36,12 @@ export function useSelection<O extends OptionType<V>, V extends Id = Id>({...pro
                 item._parentId = parentId
                 item._isLast = i === arr.length - 1
                 const id = item[props.primaryKey!]
-                !isUnset(id) && map.set(id, item)
+                if (!isUnset(id)) {
+                    if (map.has(id)) {
+                        console.warn(`[@canlooks/can-ui/<SelectionContext/>] option key "${id}" was duplicated`)
+                    }
+                    map.set(id, item)
+                }
                 fn(item[props.childrenKey!], id)
             })
         }

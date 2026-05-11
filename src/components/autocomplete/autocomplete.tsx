@@ -91,7 +91,12 @@ export const Autocomplete = memo(<O extends MenuOptionType>({
         actualOptions?.forEach(opt => {
             if (opt && typeof opt === 'object') {
                 const key = opt[primaryKey]
-                !isUnset(key) && map.set(key, opt)
+                if (!isUnset(key)) {
+                    if (map.has(key)) {
+                        console.warn(`[@canlooks/can-ui/<Autocomple/>] option key "${key}" was duplicated`)
+                    }
+                    map.set(key, opt)
+                }
             }
         })
         return map

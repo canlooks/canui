@@ -24,7 +24,12 @@ export function useColumnMap<C extends ColumnType<any> | CurdColumn<any>>(column
         columns?.forEach((col, i) => {
             if (typeof col !== 'symbol') {
                 const _key = setDefaultColumnKey(col, i)
-                !isUnset(_key) && map.set(_key, col)
+                if (!isUnset(_key)) {
+                    if (map.has(_key)) {
+                        console.warn(`[@canlooks/can-ui/<DataGrid/>] column key "${_key}" was duplicated`)
+                    }
+                    map.set(_key, col)
+                }
             }
         })
         return map

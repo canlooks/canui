@@ -4,6 +4,7 @@ import {MenuOptionType, OptionsBase, OptionsBaseSharedProps} from '../optionsBas
 import {Id} from '../../types'
 import {MenuItem} from '../menuItem'
 import {useFlatSelection} from '../selectionContext'
+import {isUnset} from '../../utils'
 
 export interface SelectOwnProps<O extends MenuOptionType> extends SelectBaseOwnProps, OptionsBaseSharedProps<O> {
 }
@@ -44,7 +45,15 @@ export const Select = memo(({
     const optionsMap = useMemo(() => {
         const map = new Map()
         optionsArr?.forEach(opt => {
-            opt && typeof opt === 'object' && map.set(opt[primaryKey], opt)
+            if (opt && typeof opt === 'object') {
+                const key = opt[primaryKey]
+                if (!isUnset(key)) {
+                    if (map.has(key)) {
+                        console.warn(`[@canlooks/can-ui/<Select/>] option key "${key}" was duplicated`)
+                    }
+                    map.set(opt[primaryKey], opt)
+                }
+            }
         })
         return map
     }, [optionsArr, primaryKey])
