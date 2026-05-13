@@ -280,6 +280,7 @@ export const Curd = memo(<R extends RowType, F extends FormValue = FormValue, V 
         const controlColumn: CurdColumn<R> = {
             key: CONTROL_COLUMN_KEY,
             title: controlColumnTitle,
+            className: classes.controlColumn,
             render(row) {
                 const _updatable = typeof updatable === 'function' ? updatable(row) : updatable
                 const _deletable = typeof deletable === 'function' ? deletable(row) : deletable

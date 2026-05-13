@@ -1,4 +1,4 @@
-import React, {memo, ReactElement, useMemo} from 'react'
+import React, {memo, ReactElement, RefObject, useMemo} from 'react'
 import {classes} from './dataGrid.style'
 import {ColumnType, DataGrid, DataGridProps, RowType} from './dataGrid'
 import {Id} from '../../types'
@@ -19,6 +19,7 @@ interface DataGridHeadProps<R extends RowType, V extends Id = Id> extends Requir
     | 'primaryKey' | 'orderType' | 'onOrderChange'
     | 'allowSelectAll' | 'columnResizable'
 >> {
+    ref: RefObject<HTMLTableSectionElement | null>
     rows: R[] | undefined
     orderColumn: Id | undefined
     flattedColumns: (symbol | ColumnType<R>)[] | undefined
@@ -29,6 +30,7 @@ interface DataGridHeadProps<R extends RowType, V extends Id = Id> extends Requir
 }
 
 export const DataGridHead = memo(<R extends RowType, V extends Id = Id>({
+    ref,
     allowSelectAll,
     columnResizable,
     flattedColumns,
@@ -215,5 +217,5 @@ export const DataGridHead = memo(<R extends RowType, V extends Id = Id>({
         )
     })
 
-    return <thead>{renderedHead}</thead>
+    return <thead ref={ref}>{renderedHead}</thead>
 }) as <R extends RowType, V extends Id = Id>(props: DataGridHeadProps<R, V>) => ReactElement

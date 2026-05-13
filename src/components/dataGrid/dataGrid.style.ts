@@ -91,25 +91,36 @@ export const style = defineCss(({spacing, mode, gray, text, colors, easing}) => 
                     }
                 }
             }
+            
+            tr {
+                position: relative;
+                z-index: 2;
+                
+                &[data-expanded=true] {
+                    position: sticky;
+                    z-index: 1;
+                }
+                
+                &.${classes.sub} {
+                    z-index: 0;
+                    background-color: ${gray(mode === 'light' ? .02 : .22)};
 
-            tr.${classes.sub} {
-                background-color: ${gray(mode === 'light' ? .02 : .22)};
+                    td.${classes.subTd} {
+                        padding: 0;
+                        border: none;
 
-                td.${classes.subTd} {
-                    padding: 0;
-                    border: none;
+                        .${classes.children} {
+                            padding: ${spacing[4]}px ${spacing[5]}px;
+                            border-bottom: 1px solid ${gray(mode === 'light' ? .12 : .32)};
 
-                    .${classes.children} {
-                        padding: ${spacing[4]}px ${spacing[5]}px;
-                        border-bottom: 1px solid ${gray(mode === 'light' ? .12 : .32)};
+                            thead, tfoot {
+                                z-index: 5;
+                            }
 
-                        thead, tfoot {
-                            z-index: 3;
-                        }
-
-                        th, td {
-                            &[data-sticky=left], &[data-sticky=right] {
-                                z-index: 2;
+                            th, td {
+                                &[data-sticky=left], &[data-sticky=right] {
+                                    z-index: 4;
+                                }
                             }
                         }
                     }
@@ -156,7 +167,7 @@ export const style = defineCss(({spacing, mode, gray, text, colors, easing}) => 
                 position: absolute;
                 top: 0;
                 right: -4px;
-                z-index: 1;
+                z-index: 3;
             }
 
             th:last-of-type {

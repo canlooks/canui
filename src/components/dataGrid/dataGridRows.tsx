@@ -12,6 +12,7 @@ import {Icon} from '../icon'
 import {faMinusSquare} from '@fortawesome/free-regular-svg-icons/faMinusSquare'
 import {faPlusSquare} from '@fortawesome/free-regular-svg-icons/faPlusSquare'
 import {classes} from './dataGrid.style'
+import {StickyRow} from './stickyRow'
 
 type DataGridRowsProps<R extends RowType, V extends Id = Id> = {
     rows: DataGridProps<R, V>['rows'] | undefined
@@ -32,7 +33,7 @@ export const DataGridRows = memo(<R extends RowType, V extends Id = Id>({
     } = useDataGridContext()
 
     const {
-        tr: Tr = 'tr'
+        tr: Tr = StickyRow
     } = slots || {}
 
     const {
@@ -53,18 +54,20 @@ export const DataGridRows = memo(<R extends RowType, V extends Id = Id>({
 
         const ret = [
             <Tr
-                {...mergeComponentProps<ComponentProps<'tr'>>(
+                {...mergeComponentProps<ComponentProps<typeof StickyRow>>(
                     TrProps,
                     _rowProps,
                     {
                         className: clsx(_rowProps, _level > 0 && classes.sub),
                         onClick() {
                             clickRowToSelect && toggleSelected(trKey)
-                        }
+                        },
+                        sticky: currentExpanded
                     }
                 )}
                 key={trKey}
                 data-selected={status === 2}
+                data-expanded={currentExpanded}
             >
                 {flattedColumns?.flatMap((col, j) => {
                     if (typeof col === 'symbol') {

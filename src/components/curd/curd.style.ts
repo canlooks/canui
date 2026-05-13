@@ -18,6 +18,7 @@ export const classes = defineInnerClasses('curd', [
     'toolbarRight',
     'divider',
     'card',
+    'controlColumn',
     'control',
     'dialogTitle',
     'copyButton'
@@ -31,7 +32,7 @@ export const style = defineCss(({spacing, text, background, borderRadius}) => cs
         min-height: 0;
         display: flex;
         flex-direction: column;
-        
+
         .${classes.filterForm} {
             min-height: 0;
             display: flex;

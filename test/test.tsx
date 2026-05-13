@@ -15,32 +15,44 @@ const Root = RC(() => {
 
     return (
         <>
-            <Button onClick={() => {
-                state.options = [
+            <DataGrid
+                style={{
+                    height: '100%'
+                }}
+                // slotProps={{
+                //     container: {
+                //         style: {
+                //             height: '100%'
+                //         }
+                //     }
+                // }}
+                childrenKey="children"
+                columns={[
                     {
-                        value: '1', label: '选项1', children: [
-                            {value: '1-1', label: '选项1-1'}
-                        ]
-                    }
-                ]
-            }}>
-                Button
-            </Button>
-            <Button onClick={() => {
-                state.options = [
+                        title: 'Name',
+                        field: 'name'
+                    },
                     {
-                        value: '1', label: '选项1', children: [
-                            {value: '1-1', label: '选项1-1', children: [
-                                    {value: '1-1-1', label: '选项1-1-1'}
-                                ]}
-                        ]
+                        title: 'Sex',
+                        field: 'sex'
                     }
-                ]
-            }}>
-                Button
-            </Button>
-            <Cascade
-                options={state.options}
+                ]}
+                rows={Array(12).fill(void 0).map((_, i) => (
+                    {
+                        id: i,
+                        name: 'Zhang San',
+                        sex: 'Male',
+                        children: i === 2
+                            ? () => (
+                                <div style={{height: 400, background: 'pink'}}/>
+                            )
+                            : i === 3
+                                ? () => (
+                                    <div style={{height: 200, background: 'blue'}}/>
+                                )
+                                : void 0
+                    }
+                ))}
             />
         </>
     )

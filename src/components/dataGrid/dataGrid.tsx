@@ -1,4 +1,4 @@
-import React, {ComponentProps, createContext, memo, ReactElement, ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import React, {ComponentProps, createContext, memo, ReactElement, ReactNode, RefObject, useCallback, useContext, useMemo, useRef, useState} from 'react'
 import {classes, style} from './dataGrid.style'
 import {DivProps, Id, Obj, SlotsAndProps, ToRequired} from '../../types'
 import {SelectionContext, SelectionContextProps, useSelectionContext} from '../selectionContext'
@@ -166,6 +166,7 @@ interface IDataGridContext<R extends RowType = RowType> extends ToRequired<DataG
     expandedSet: Set<Id>
     flattedColumns: (symbol | ColumnType<R>)[] | undefined
     toggleExpanded(key: Id): void
+    theadRef: RefObject<HTMLTableSectionElement | null>
 }
 
 const DataGridContext = createContext({} as IDataGridContext<any>)
@@ -366,6 +367,13 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
         return orderedRows?.slice((page! - 1) * pageSize!, page! * pageSize!)
     }, [orderedRows, _paginationProps.page, _paginationProps.pageSize, paginatable])
 
+    /**
+     * ---------------------------------------------------------------
+     * 渲染
+     */
+
+    const theadRef = useRef<HTMLTableSectionElement>(null)
+
     const {
         container: Container = TableContainer
     } = slots || {}
@@ -406,6 +414,7 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
                             onToggle={onToggle}
                         >
                             <DataGridHead
+                                ref={theadRef}
                                 rows={rows}
                                 flattedColumns={flattedColumns}
                                 completedColumns={completedColumns}
@@ -424,7 +433,7 @@ export const DataGrid = memo(<R extends RowType = RowType, V extends Id = Id>({
                             <tbody>
                             <DataGridContext value={
                                 useMemo(() => ({
-                                    slots, slotProps,
+                                    slots, slotProps, theadRef,
                                     rowProps, primaryKey, childrenKey, clickRowToSelect, indent, renderExpandIcon,
                                     expandedSet, flattedColumns, toggleExpanded
                                 }), [

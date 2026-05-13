@@ -109,7 +109,9 @@ function useStickyCellProps({
             ref: innerRef,
             css: style,
             className: classes.cell,
-            style: sticky && {[sticky]: offset},
+            ...sticky && {
+                style: {[sticky]: offset}
+            },
             'data-sticky': sticky
         }
     )

@@ -13,6 +13,7 @@ import {faGear} from '@fortawesome/free-solid-svg-icons/faGear'
 import {Id} from '../../types'
 import {DragDropProvider, useDragDropMonitor} from '@dnd-kit/react'
 import {DragDropEvents} from '@dnd-kit/abstract'
+import {Tooltip} from '../tooltip'
 
 export type CurdColumnConfigProps<R extends RowType> = {
     columns: CurdColumn<R>[] | undefined
@@ -73,7 +74,7 @@ const CurdColumnConfigContent = memo(({
     return (
         <Bubble
             placement="bottomRight"
-            trigger={['hover', 'click']}
+            trigger="click"
             {...columnConfigBubbleProps}
             css={style}
             open={open}
@@ -115,13 +116,15 @@ const CurdColumnConfigContent = memo(({
             }
             autoClose={false}
         >
-            <Button
-                shape="circular"
-                variant="text"
-                color="text.secondary"
-            >
-                <Icon icon={faGear}/>
-            </Button>
+            <Tooltip title="列设置" clickToClose>
+                <Button
+                    shape="circular"
+                    variant="text"
+                    color="text.secondary"
+                >
+                    <Icon icon={faGear}/>
+                </Button>
+            </Tooltip>
         </Bubble>
     )
 })

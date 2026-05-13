@@ -19,7 +19,7 @@ export const style = defineCss(({mode, spacing, gray, divider, background, easin
 
             thead, tfoot {
                 position: sticky;
-                z-index: 5;
+                z-index: 7;
 
                 th, td {
                     background-color: ${headerBg};
