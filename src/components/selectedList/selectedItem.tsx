@@ -2,15 +2,15 @@ import {Alert, AlertProps} from '../alert'
 import {Id} from '../../types'
 import {clsx, useLoading, useSyncState} from '../../utils'
 import React, {useMemo} from 'react'
-import {Collapse} from '../transitionBase'
 import {classes} from './selectedList.style'
-import {SelectedListProps} from './selectedList'
+import {SortableItem} from '../sortableItem'
 
-interface SelectedItemProps extends Omit<AlertProps, 'onClose'>, Pick<SelectedListProps, 'itemProps'> {
+interface SelectedItemProps extends Omit<AlertProps, 'onClose'> {
     value: Id
     index: number
     itemProps?(value: Id, index: number): AlertProps | Promise<AlertProps>
     onClose?(value: Id, index: number): void
+    sortable?: boolean
 }
 
 export function SelectedItem({
@@ -18,6 +18,7 @@ export function SelectedItem({
     index,
     itemProps,
     onClose,
+    sortable,
     ...props
 }: SelectedItemProps) {
     const [alertProps, setAlertProps] = useSyncState<AlertProps>()
@@ -36,16 +37,18 @@ export function SelectedItem({
     }
 
     return (
-        <Collapse {...props} className={classes.option}>
-            <Alert
-                closable
-                color="info"
-                showIcon={false}
-                {...alertProps.current}
-                className={clsx(classes.optionWrap, alertProps.current?.className)}
-                onClose={closeHandler}
-                loading={loading.current}
-            />
-        </Collapse>
+        <SortableItem
+            component={Alert}
+            id={value}
+            index={index}
+            closable
+            color="info"
+            showIcon={false}
+            {...props}
+            {...alertProps.current}
+            className={clsx(classes.optionWrap, alertProps.current?.className)}
+            onClose={closeHandler}
+            loading={loading.current}
+        />
     )
 }

@@ -3,7 +3,6 @@ import {defineInnerClasses, defineCss} from '../../utils'
 import {classes as alertClasses} from '../alert/alert.style'
 
 export const classes = defineInnerClasses('selected-list', [
-    'option',
     'optionWrap'
 ])
 
@@ -11,6 +10,10 @@ export const style = defineCss(({spacing}) => css`
     @layer override {
         .${classes.optionWrap} {
             margin-bottom: ${spacing[3]}px;
+            
+            &[data-draggable=true] {
+                cursor: grab;
+            }
         }
 
         .${alertClasses.title}, .${alertClasses.description} {

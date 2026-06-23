@@ -25,13 +25,25 @@ export const defaultSensors: Customizable<Sensors> = defaults => [
  * @param primaryKey 索引用的主键，默认为`id`
  * @return 返回新的数组，但如果顺序未改变，会得到null
  */
+export function onDndDragEnd<T>({operation}: Parameters<DragDropEvents<any, any, any>['dragend']>[0], items: T[]): T[] | null
+export function onDndDragEnd<T extends Obj>({operation}: Parameters<DragDropEvents<any, any, any>['dragend']>[0], items: T[], primaryKey?: keyof T): T[] | null
 export function onDndDragEnd<T extends Obj>({operation}: Parameters<DragDropEvents<any, any, any>['dragend']>[0], items: T[], primaryKey: keyof T = 'id'): T[] | null {
     const {source, target, canceled} = operation
     if (!source || !target || canceled) {
         return null
     }
-    const sourceIndex = items.findIndex(item => item[primaryKey] === source.id)
-    const targetIndex = items.findIndex(item => item[primaryKey] === target.id)
+    const sourceIndex = items.findIndex(item => {
+        if (typeof item === 'object' && item !== null) {
+            return item[primaryKey] === source.id
+        }
+        return item === source.id
+    })
+    const targetIndex = items.findIndex(item => {
+        if (typeof item === 'object' && item !== null) {
+            return item[primaryKey] === target.id
+        }
+        return item === target.id
+    })
 
     if (sourceIndex === -1 || targetIndex === -1) {
         if (typeof source.initialIndex === 'number' && typeof source.index === 'number') {

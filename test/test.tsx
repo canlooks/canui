@@ -1,59 +1,42 @@
 import {createRoot} from 'react-dom/client'
 import {css, Global} from '@emotion/react'
-import {App, Upload, Bubble, Button, Card, Curd, Deferred, Icon, imagePreset, LoadingIndicator, Placeholder, Tree, Loading, sortTreeNodes, Collapse, useUpdateEffect, useStrictEffect, ColorPicker, Palette, Tooltip, Dialog, Calendar, Gallery, Image, Pinchable, ContextMenu, useAppContext, Select, TreeSelect, Typography, Accordion, useDraggable, OptionsBase, useFlatSelection, usePopperContext, useFormContext, Autocomplete, Input, Tabs, Flex, TouchRipple, Slide, Fade, Grow, DataGrid, Skeleton, Form, FormRef, DateTimePicker, useLoading, DateTimeRangePicker, Popper, TableContainer, Radio, Cascade, MenuOptionType} from '../src'
-import React, {Activity, cloneElement, ReactNode, Ref, StrictMode, useDeferredValue, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react'
-import {Chip, RC, useReactive} from '@canlooks/reactive/react'
+import {App, Button, Collapse, defaultSensors, onDndDragEnd} from '../src'
+import React, {StrictMode, useState} from 'react'
+import {RC} from '@canlooks/reactive/react'
+import {useSortable} from '@dnd-kit/react/sortable'
+import {DragDropProvider} from '@dnd-kit/react'
+import {DragDropEvents} from '@dnd-kit/abstract'
+import {TransitionGroup} from 'react-transition-group'
+
+function Sortable({id, index, ...props}: any) {
+    const {ref} = useSortable({id, index})
+
+    return (
+        <Collapse {...props} ref={ref} component="li">
+            {/*<li className="item">Item {id}</li>*/}
+            Item {id}
+        </Collapse>
+    )
+}
 
 const Root = RC(() => {
-    const state = useReactive({
-        options: [
-            {
-                value: '1', label: '选项1'
-            }
-        ] as MenuOptionType[]
-    })
+    const [items, setItems] = useState([1, 2, 3, 4])
+
+    const dragEndHandler: DragDropEvents<any, any, any>['dragend'] = e => {
+        const newValue = onDndDragEnd(e, items)
+        newValue && setItems(newValue)
+    }
 
     return (
         <>
-            <DataGrid
-                style={{
-                    height: '100%'
-                }}
-                // slotProps={{
-                //     container: {
-                //         style: {
-                //             height: '100%'
-                //         }
-                //     }
-                // }}
-                childrenKey="children"
-                columns={[
-                    {
-                        title: 'Name',
-                        field: 'name'
-                    },
-                    {
-                        title: 'Sex',
-                        field: 'sex'
-                    }
-                ]}
-                rows={Array(12).fill(void 0).map((_, i) => (
-                    {
-                        id: i,
-                        name: 'Zhang San',
-                        sex: 'Male',
-                        children: i === 2
-                            ? () => (
-                                <div style={{height: 400, background: 'pink'}}/>
-                            )
-                            : i === 3
-                                ? () => (
-                                    <div style={{height: 200, background: 'blue'}}/>
-                                )
-                                : void 0
-                    }
-                ))}
-            />
+            <Button onClick={() => setItems([1, 2, 3, 4])}>Reset</Button>
+            <DragDropProvider sensors={defaultSensors} onDragEnd={dragEndHandler}>
+                <TransitionGroup component="ul">
+                    {items.map((id, index) =>
+                        <Sortable key={id} id={id} index={index}/>
+                    )}
+                </TransitionGroup>
+            </DragDropProvider>
         </>
     )
 })
